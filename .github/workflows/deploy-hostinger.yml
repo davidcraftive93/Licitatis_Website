@@ -143,20 +143,24 @@ jobs:
             *) DTYPE="OTRO(empieza por: $(printf '%s' "$SSH_KEY" | head -c 6))" ;;
           esac
           echo "::warning::[diag HOSTINGER_SSH_PRIVATE_KEY] longitud=${#SSH_KEY} tipo=$DTYPE"
-          # La clave puede guardarse en el secreto en base64 (RECOMENDADO: una sola línea,
-          # a prueba de saltos de línea/CRLF al pegar) o en texto PEM. Se prueba base64 y,
-          # si no da una clave válida, se usa el contenido tal cual quitando CRLF.
-          if printf '%s' "$SSH_KEY" | base64 -d > ~/.ssh/id_deploy 2>/dev/null \
-               && ssh-keygen -y -f ~/.ssh/id_deploy >/dev/null 2>&1; then
+          # La clave puede guardarse en el secreto en base64 (RECOMENDADO) o en texto PEM.
+          # IMPORTANTE: hay que hacer chmod 600 ANTES de validar/usar la clave, porque
+          # OpenSSH en Linux rechaza una clave privada con permisos abiertos.
+          # 1) Intento base64.
+          printf '%s' "$SSH_KEY" | base64 -d > ~/.ssh/id_deploy 2>/dev/null || true
+          chmod 600 ~/.ssh/id_deploy 2>/dev/null || true
+          if ssh-keygen -y -f ~/.ssh/id_deploy >/dev/null 2>&1; then
             echo "Clave privada leída desde base64."
           else
+            # 2) Fallback: PEM tal cual (quitando CR).
             printf '%s\n' "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_deploy
+            chmod 600 ~/.ssh/id_deploy 2>/dev/null || true
             echo "Clave privada leída como texto PEM."
           fi
-          chmod 600 ~/.ssh/id_deploy
-          # Valida que la clave se puede parsear ANTES de intentar conectar.
+          # Valida (con la clave ya en 600) y, si falla, muestra el error real de ssh-keygen.
           if ! ssh-keygen -y -f ~/.ssh/id_deploy >/dev/null 2>&1; then
-            echo "::error::El secreto HOSTINGER_SSH_PRIVATE_KEY no contiene una clave válida (ni base64 ni PEM). Vuelve a guardarlo; recomendado en base64 (ver docs/DEPLOYMENT.md)."
+            KEYERR="$(ssh-keygen -y -f ~/.ssh/id_deploy 2>&1 >/dev/null | head -2 | tr '\n' ' ')"
+            echo "::error::Clave SSH inválida. ssh-keygen dice: ${KEYERR:-<sin mensaje>}. (diag longitud=${#SSH_KEY}). Guarda el secreto en base64 (ver docs/DEPLOYMENT.md)."
             exit 1
           fi
           ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
