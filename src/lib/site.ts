@@ -5,7 +5,10 @@
  * Nota: `contactEmail` es un PLACEHOLDER pendiente de confirmación (ver docs/CONTENT-PENDING.md).
  */
 
-const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.licitatis.es";
+// Se usa "||" (no "??") para que una variable vacía ("") también use el valor por
+// defecto: en CI/despliegue las variables no definidas llegan como cadena vacía, y
+// `new URL("")` (metadataBase) lanzaría un error que rompería el build.
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.licitatis.es";
 
 export const siteConfig = {
   name: "LICITATIS",
@@ -15,9 +18,9 @@ export const siteConfig = {
   /** URL pública de la web comercial (sin barra final). */
   url: rawSiteUrl.replace(/\/$/, ""),
   /** URL de la aplicación privada (fuera de este repositorio/despliegue). */
-  appUrl: process.env.NEXT_PUBLIC_APP_URL ?? "https://app.licitatis.es",
+  appUrl: process.env.NEXT_PUBLIC_APP_URL || "https://app.licitatis.es",
   /** Correo de contacto — PLACEHOLDER, revisar antes de publicar. */
-  contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "contacto@licitatis.es",
+  contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "contacto@licitatis.es",
   locale: "es_ES",
   lang: "es",
 } as const;
