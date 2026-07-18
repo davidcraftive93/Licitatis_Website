@@ -134,6 +134,15 @@ jobs:
           SSH_USER: ${{ secrets.HOSTINGER_USERNAME }}
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          # Diagnóstico visible como anotación (NO expone la clave): longitud y tipo aparente.
+          case "$SSH_KEY" in
+            "") DTYPE="VACIO(secreto no llegó al entorno)" ;;
+            ssh-ed25519*|ssh-rsa*|ecdsa-*|sk-*) DTYPE="CLAVE_PUBLICA(empieza por ssh-...)" ;;
+            -----BEGIN*) DTYPE="PEM(-----BEGIN)" ;;
+            LS0tLS*) DTYPE="base64(LS0tLS, esperado)" ;;
+            *) DTYPE="OTRO(empieza por: $(printf '%s' "$SSH_KEY" | head -c 6))" ;;
+          esac
+          echo "::warning::[diag HOSTINGER_SSH_PRIVATE_KEY] longitud=${#SSH_KEY} tipo=$DTYPE"
           # La clave puede guardarse en el secreto en base64 (RECOMENDADO: una sola línea,
           # a prueba de saltos de línea/CRLF al pegar) o en texto PEM. Se prueba base64 y,
           # si no da una clave válida, se usa el contenido tal cual quitando CRLF.
