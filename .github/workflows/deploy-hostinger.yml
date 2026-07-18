@@ -1,0 +1,167 @@
+name: Deploy a Hostinger (manual)
+
+# Despliegue de PRODUCCIÓN a Hostinger.
+#
+# - SOLO se ejecuta manualmente (workflow_dispatch). No hay disparadores automáticos:
+#   subir código o fusionar una PR NUNCA despliega.
+# - Requiere escribir la confirmación exacta "DEPLOY LICITATIS".
+# - Por defecto solo despliega desde `main` (o una etiqueta); rechaza ramas feature/*.
+# - Usa el GitHub Environment "production", donde deben guardarse los secretos de Hostinger.
+# - Transfiere ÚNICAMENTE el artefacto estático generado (carpeta out/).
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Confirmación obligatoria. Escribe exactamente: DEPLOY LICITATIS"
+        required: true
+        type: string
+      git_ref:
+        description: "Rama, etiqueta o commit a desplegar (por defecto main)."
+        required: true
+        default: "main"
+        type: string
+
+concurrency:
+  group: deploy-hostinger-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: Validaciones previas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar confirmación exacta
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          if [ "$CONFIRMATION" != "DEPLOY LICITATIS" ]; then
+            echo "::error::Confirmación incorrecta. Debes escribir exactamente: DEPLOY LICITATIS"
+            exit 1
+          fi
+          echo "Confirmación válida."
+
+      - name: Rechazar ramas feature/*
+        env:
+          GIT_REF: ${{ inputs.git_ref }}
+        run: |
+          case "$GIT_REF" in
+            feature/*)
+              echo "::error::No se despliega una rama feature/* a producción. Usa main o una etiqueta."
+              exit 1
+              ;;
+          esac
+          echo "Ref permitido: $GIT_REF"
+
+  deploy:
+    name: Build y sincronización
+    needs: guard
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout del ref solicitado
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_ref }}
+          fetch-depth: 0
+
+      - name: Verificar que el ref pertenece a main o es una etiqueta
+        run: |
+          git fetch origin main --depth=1 || true
+          if git merge-base --is-ancestor HEAD origin/main 2>/dev/null; then
+            echo "OK: el commit está en el historial de main."
+          elif git describe --exact-match --tags HEAD >/dev/null 2>&1; then
+            echo "OK: el commit corresponde a una etiqueta."
+          else
+            echo "::error::El ref a desplegar no pertenece a main ni es una etiqueta. Abortando."
+            exit 1
+          fi
+
+      - name: Registrar commit a desplegar
+        run: |
+          SHA="$(git rev-parse HEAD)"
+          echo "Desplegando commit: $SHA"
+          echo "DEPLOY_SHA=$SHA" >> "$GITHUB_ENV"
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Build (export estático)
+        run: npm run build
+
+      - name: Verificar artefacto out/
+        run: |
+          test -d out || { echo "::error::No existe out/"; exit 1; }
+          test -f out/index.html || { echo "::error::No existe out/index.html"; exit 1; }
+          echo "Artefacto out/ verificado."
+
+      - name: Validar ruta de despliegue
+        env:
+          DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+        run: |
+          if [ -z "$DEPLOY_PATH" ]; then
+            echo "::error::HOSTINGER_DEPLOY_PATH está vacío."
+            exit 1
+          fi
+          case "$DEPLOY_PATH" in
+            */public_html*) echo "Ruta de despliegue válida." ;;
+            *) echo "::error::Ruta de despliegue inesperada ('$DEPLOY_PATH'). Abortando por seguridad."; exit 1 ;;
+          esac
+
+      - name: Preparar clave SSH
+        env:
+          SSH_KEY: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.HOSTINGER_HOST }}
+          SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Copia de seguridad remota (rollback)
+        env:
+          SSH_USER: ${{ secrets.HOSTINGER_USERNAME }}
+          SSH_HOST: ${{ secrets.HOSTINGER_HOST }}
+          SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
+          DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+        run: |
+          ssh -i ~/.ssh/id_deploy -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+            "DP='$DEPLOY_PATH'; if [ -d \"\$DP\" ]; then cp -a \"\$DP\" \"\${DP%/}.backup-$(date +%Y%m%d%H%M%S)\" && echo 'Backup creado.'; else echo 'Sin backup: el directorio aún no existe.'; fi" || \
+            echo "::warning::No se pudo crear backup remoto; continúa el despliegue."
+
+      - name: Sincronizar out/ hacia Hostinger (solo el directorio de despliegue)
+        env:
+          SSH_USER: ${{ secrets.HOSTINGER_USERNAME }}
+          SSH_HOST: ${{ secrets.HOSTINGER_HOST }}
+          SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
+          DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/id_deploy -p $SSH_PORT" \
+            out/ \
+            "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
+          echo "Sincronización completada."
+
+      - name: Verificar que la web responde
+        run: |
+          sleep 5
+          if curl -fsS -o /dev/null -w "HTTP %{http_code}\n" "https://licitatis.es/"; then
+            echo "Producción responde en licitatis.es"
+          elif curl -fsS -o /dev/null -w "HTTP %{http_code}\n" "https://www.licitatis.es/"; then
+            echo "Producción responde en www.licitatis.es"
+          else
+            echo "::warning::No se pudo verificar la URL pública (¿dominio aún no conectado en Hostinger?)."
+          fi
+
+      - name: Resumen del despliegue
+        run: echo "✅ Desplegado el commit $DEPLOY_SHA en Hostinger ($DEPLOY_PATH)."

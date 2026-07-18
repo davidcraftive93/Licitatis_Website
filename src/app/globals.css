@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --header-h: 4.5rem;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-paper font-sans text-ink-800 antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-ink-900;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Compensa la cabecera fija al saltar a un ancla. */
+  :where(section[id], [data-anchor]) {
+    scroll-margin-top: 5.5rem;
+  }
+
+  ::selection {
+    background-color: theme("colors.brand.200");
+    color: theme("colors.ink.900");
+  }
+
+  :focus-visible {
+    outline: 2px solid theme("colors.brand.600");
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+}
+
+@layer components {
+  /* Reveal al hacer scroll (activado por IntersectionObserver añadiendo .is-visible).
+     Mejora progresiva: el contenido solo se oculta cuando hay JS (clase .js en <html>).
+     Sin JS, todo permanece visible; así ninguna sección depende del cliente para verse. */
+  .reveal {
+    transition:
+      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  .js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Tipografía para páginas legales. */
+  .legal-prose {
+    @apply leading-relaxed text-ink-600;
+  }
+  .legal-prose h2 {
+    @apply mb-3 mt-10 text-xl font-semibold text-ink-900;
+  }
+  .legal-prose h3 {
+    @apply mb-2 mt-6 text-base font-semibold text-ink-900;
+  }
+  .legal-prose p {
+    @apply mb-4;
+  }
+  .legal-prose ul {
+    @apply mb-4 ml-5 list-disc space-y-1.5;
+  }
+  .legal-prose a {
+    @apply text-brand-700 underline underline-offset-2;
+  }
+  .legal-prose strong {
+    @apply font-semibold text-ink-800;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
