@@ -1,5 +1,8 @@
 import { ImageResponse } from "next/og";
 
+// Genera la imagen OG como archivo estático en el build (output: "export").
+export const dynamic = "force-static";
+
 export const alt = "LICITATIS — El copiloto para preparar y controlar licitaciones";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/site";
 
+// Necesario para generar el archivo estático con output: "export".
+export const dynamic = "force-static";
+
 /**
  * Fecha estable de última actualización por documento. Se usa una fecha fija (no la
  * hora de build) para que `lastmod` no cambie en cada despliegue sin cambios de

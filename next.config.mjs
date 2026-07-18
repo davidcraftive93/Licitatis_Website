@@ -1,63 +1,28 @@
 /**
  * Configuración de Next.js para la landing comercial de LICITATIS.
  *
- * Seguridad:
- * - Cabeceras de seguridad aplicadas globalmente (CSP moderada, HSTS, anti-clickjacking...).
- * - Source maps de producción desactivados para no exponer código interno.
+ * Despliegue: sitio ESTÁTICO exportado (`output: "export"`) para alojarse en Hostinger.
+ * El build genera la carpeta `out/`, que es el único artefacto que se sube al hosting.
  *
- * Nota sobre la CSP: script-src incluye 'unsafe-inline' para mantener las páginas
- * estáticas (mejor rendimiento y caché). Es un compromiso habitual y documentado en
- * `docs/SECURITY.md`, donde se describe la ruta de mejora a CSP con nonce.
+ * Importante:
+ * - Con `output: "export"` NO hay servidor: no se usan rutas de API ni `headers()`.
+ *   Las cabeceras de seguridad (CSP, HSTS, etc.) se configuran en `public/.htaccess`,
+ *   que Hostinger (Apache/LiteSpeed) aplica. Ver `docs/SECURITY.md`.
+ * - `trailingSlash: true` hace que cada ruta sea un directorio con `index.html`
+ *   (p. ej. `/privacidad/index.html`), lo que se sirve de forma natural en Apache.
+ * - Source maps de producción desactivados para no exponer código interno.
  */
-
-/** Hosts de terceros preparados para HubSpot y analítica (se activan tras consentimiento). */
-const HUBSPOT_HOSTS =
-  "https://*.hsforms.com https://*.hubspot.com https://*.hs-scripts.com https://*.hs-analytics.net https://*.hscollectedforms.net https://*.hs-banner.com";
-const ANALYTICS_HOSTS =
-  "https://www.googletagmanager.com https://www.google-analytics.com https://*.analytics.google.com";
-
-const ContentSecurityPolicy = [
-  "default-src 'self'",
-  "base-uri 'self'",
-  "object-src 'none'",
-  "frame-ancestors 'none'",
-  "form-action 'self'",
-  `script-src 'self' 'unsafe-inline' ${HUBSPOT_HOSTS} ${ANALYTICS_HOSTS}`,
-  "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data: blob: ${HUBSPOT_HOSTS} ${ANALYTICS_HOSTS}`,
-  "font-src 'self' data:",
-  `connect-src 'self' https://api.hsforms.com https://forms.hsforms.com ${HUBSPOT_HOSTS} ${ANALYTICS_HOSTS}`,
-  `frame-src 'self' ${HUBSPOT_HOSTS}`,
-  "manifest-src 'self'",
-  "upgrade-insecure-requests",
-].join("; ");
-
-const securityHeaders = [
-  { key: "Content-Security-Policy", value: ContentSecurityPolicy },
-  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
-  { key: "X-Content-Type-Options", value: "nosniff" },
-  { key: "X-Frame-Options", value: "DENY" },
-  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  {
-    key: "Permissions-Policy",
-    value: "camera=(), microphone=(), geolocation=(), browsing-topics=(), interest-cohort=()",
-  },
-  { key: "X-DNS-Prefetch-Control", value: "on" },
-];
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export",
+  trailingSlash: true,
   reactStrictMode: true,
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
-  compress: true,
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: securityHeaders,
-      },
-    ];
+  images: {
+    // La optimización bajo demanda no existe en export estático.
+    unoptimized: true,
   },
 };
 

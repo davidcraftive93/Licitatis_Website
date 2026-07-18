@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/icons";
 import { TextInput, TextArea, SelectInput, Checkbox } from "@/components/ui/FormFields";
 import { leadSchema, tendersPerYearOptions, challengeOptions } from "@/lib/validation";
 import { readUtmParams, readHubspotUtk } from "@/lib/utm";
+import { submitLeadToHubspot } from "@/lib/hubspot";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
@@ -115,34 +116,18 @@ export function DemoForm() {
     setStatus("submitting");
     setErrors({});
 
-    try {
-      const res = await fetch("/api/lead", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
-      });
-
-      if (res.ok) {
-        setStatus("success");
-        return;
-      }
-
-      if (res.status === 429) {
-        setStatus("error");
-        setServerMessage("Has realizado demasiados intentos. Espera un momento y prueba otra vez.");
-        return;
-      }
-
-      setStatus("error");
-      setServerMessage(
-        "No hemos podido enviar tu solicitud. Vuelve a intentarlo en unos minutos o escríbenos por correo.",
-      );
-    } catch {
-      setStatus("error");
-      setServerMessage(
-        "Ha ocurrido un problema de conexión. Comprueba tu red e inténtalo de nuevo.",
-      );
+    // Envío directo a HubSpot desde el cliente (sitio estático). Si HubSpot aún no
+    // está configurado, se muestra la confirmación igualmente para no bloquear la web.
+    const result = await submitLeadToHubspot(parsed.data);
+    if (result.delivered || result.reason === "not_configured") {
+      setStatus("success");
+      return;
     }
+
+    setStatus("error");
+    setServerMessage(
+      "No hemos podido enviar tu solicitud ahora mismo. Vuelve a intentarlo en unos minutos o escríbenos por correo.",
+    );
   }
 
   if (status === "success") {

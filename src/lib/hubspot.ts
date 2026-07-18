@@ -1,27 +1,25 @@
 /**
- * Integración con HubSpot mediante la Forms Submission API (lado servidor).
+ * Integración con HubSpot desde el CLIENTE (compatible con export estático).
  *
- * Se usa el endpoint de formularios (no requiere token privado en el navegador):
+ * Se envía a la Forms Submission API pública, que solo requiere identificadores
+ * PÚBLICOS (Portal ID y Form ID) y NO un token privado:
  *   POST https://api.hsforms.com/submissions/v3/integration/submit/{portalId}/{formId}
  *
- * El token privado (HUBSPOT_PRIVATE_APP_TOKEN), si se usa para enriquecer contactos
- * vía CRM API, SOLO debe existir en entorno de servidor. Nunca se expone al cliente.
+ * Se eligió el envío directo (manteniendo el formulario propio, accesible y con nuestro
+ * diseño) frente al formulario embebido porque:
+ *  - No inyecta scripts ni cookies de terceros para poder enviar (mejor para el
+ *    consentimiento: el envío es una acción explícita de primera parte y no depende de
+ *    aceptar cookies de marketing).
+ *  - Preserva la accesibilidad y el diseño del formulario.
+ * La alternativa embebida está documentada en docs/HUBSPOT.md.
  *
- * Si el portal/formulario no están configurados, la función NO lanza error: devuelve
- * { delivered: false, reason: "not_configured" } para que la landing siga siendo usable
- * antes de la puesta en producción. Ver docs/HUBSPOT.md.
+ * NUNCA se usa aquí HUBSPOT_PRIVATE_APP_TOKEN. Si hiciera falta una integración privada,
+ * debe hacerse desde un backend/servicio seguro independiente (fuera de este sitio estático).
  */
 
 import type { LeadInput } from "@/lib/validation";
 
 const HUBSPOT_SUBMIT_BASE = "https://api.hsforms.com/submissions/v3/integration/submit";
-
-export interface HubspotSubmitMeta {
-  pageUri?: string;
-  pageName?: string;
-  ipAddress?: string;
-  hutk?: string;
-}
 
 export interface HubspotSubmitResult {
   delivered: boolean;
@@ -59,12 +57,10 @@ function buildMessage(input: LeadInput): string {
   return parts.join("\n").trim();
 }
 
-export async function submitLeadToHubspot(
-  input: LeadInput,
-  meta: HubspotSubmitMeta = {},
-): Promise<HubspotSubmitResult> {
-  const portalId = process.env.HUBSPOT_PORTAL_ID ?? process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID;
-  const formId = process.env.HUBSPOT_FORM_ID ?? process.env.NEXT_PUBLIC_HUBSPOT_FORM_ID;
+/** Envía el lead a HubSpot desde el navegador. No lanza; devuelve un resultado. */
+export async function submitLeadToHubspot(input: LeadInput): Promise<HubspotSubmitResult> {
+  const portalId = process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID;
+  const formId = process.env.NEXT_PUBLIC_HUBSPOT_FORM_ID;
 
   if (!portalId || !formId) {
     return { delivered: false, reason: "not_configured" };
@@ -81,10 +77,9 @@ export async function submitLeadToHubspot(
   ].filter((f) => f.value !== "");
 
   const context: Record<string, string> = {};
-  if (meta.hutk) context.hutk = meta.hutk;
-  if (meta.pageUri) context.pageUri = meta.pageUri;
-  if (meta.pageName) context.pageName = meta.pageName;
-  if (meta.ipAddress) context.ipAddress = meta.ipAddress;
+  if (input.hutk) context.hutk = input.hutk;
+  if (input.pageUri) context.pageUri = input.pageUri;
+  context.pageName = "Landing LICITATIS — Solicitud de demostración";
 
   const body = {
     fields,
@@ -102,25 +97,13 @@ export async function submitLeadToHubspot(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-      // Evita cachear la respuesta del envío.
-      cache: "no-store",
     });
 
     if (!res.ok) {
-      // No exponemos el detalle al cliente; se registra en servidor.
-      let detail = "";
-      try {
-        detail = JSON.stringify(await res.json());
-      } catch {
-        detail = await res.text().catch(() => "");
-      }
-      console.error(`[hubspot] Envío fallido (${res.status}): ${detail.slice(0, 500)}`);
       return { delivered: false, reason: `hubspot_error_${res.status}` };
     }
-
     return { delivered: true };
-  } catch (error) {
-    console.error("[hubspot] Error de red al enviar el formulario:", error);
+  } catch {
     return { delivered: false, reason: "network_error" };
   }
 }
