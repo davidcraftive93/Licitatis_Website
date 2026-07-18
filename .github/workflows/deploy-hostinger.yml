@@ -181,6 +181,12 @@ jobs:
           SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
           DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
         run: |
+          # Limpia saltos de línea de los secretos (un Enter de más al pegarlos rompería
+          # la ruta o el host en el comando remoto).
+          DEPLOY_PATH="$(printf '%s' "$DEPLOY_PATH" | tr -d '\r\n')"
+          SSH_PORT="$(printf '%s' "$SSH_PORT" | tr -d '\r\n')"
+          SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '\r\n')"
+          SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
           ssh -i ~/.ssh/id_deploy -p "$SSH_PORT" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 "$SSH_USER@$SSH_HOST" \
             "DP='$DEPLOY_PATH'; if [ -d \"\$DP\" ]; then cp -a \"\$DP\" \"\${DP%/}.backup-$(date +%Y%m%d%H%M%S)\" && echo 'Backup creado.'; else echo 'Sin backup: el directorio aún no existe.'; fi" || \
             echo "::warning::No se pudo crear backup remoto; continúa el despliegue."
@@ -192,6 +198,11 @@ jobs:
           SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
           DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
         run: |
+          # Limpia saltos de línea de los secretos (un Enter de más rompería la ruta remota).
+          DEPLOY_PATH="$(printf '%s' "$DEPLOY_PATH" | tr -d '\r\n')"
+          SSH_PORT="$(printf '%s' "$SSH_PORT" | tr -d '\r\n')"
+          SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '\r\n')"
+          SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
           # Usar $HOME (no ~) dentro de la cadena -e: el ~ NO se expande entre comillas
           # dobles y rsync no invoca un shell, así que la ruta de la clave quedaba literal.
           set +e
