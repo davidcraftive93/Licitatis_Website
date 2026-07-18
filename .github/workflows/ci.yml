@@ -44,6 +44,14 @@ jobs:
         run: npm run test
 
       - name: Build (export estático)
+        # Variables públicas opcionales; si no están definidas, el build funciona igual.
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL }}
+          NEXT_PUBLIC_HUBSPOT_PORTAL_ID: ${{ vars.NEXT_PUBLIC_HUBSPOT_PORTAL_ID }}
+          NEXT_PUBLIC_HUBSPOT_FORM_ID: ${{ vars.NEXT_PUBLIC_HUBSPOT_FORM_ID }}
+          NEXT_PUBLIC_ENABLE_ANALYTICS: ${{ vars.NEXT_PUBLIC_ENABLE_ANALYTICS }}
+          NEXT_PUBLIC_GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
         run: npm run build
 
       - name: Comprobar artefacto out/

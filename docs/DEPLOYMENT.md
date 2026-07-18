@@ -10,6 +10,11 @@ aloja en **Hostinger**. **No se usa Vercel.** GitHub es la única fuente de verd
 - **Subir código a GitHub nunca despliega.** El despliegue es siempre **manual**.
 - La **CI** (`.github/workflows/ci.yml`) solo valida (lint, typecheck, test, build). Nunca despliega.
 
+> ⚠️ **No uses a la vez el auto-deploy Git de hPanel y este workflow.** La integración Git de
+> Hostinger hace `pull` del **código fuente** de `main` (no compila), por lo que serviría el
+> proyecto sin `index.html` → **error 403**; además chocaría con el `rsync` de Actions. Si la
+> activaste, **desactívala** en hPanel y deja que **GitHub Actions** compile y suba solo `out/`.
+
 ## Workflows
 
 | Workflow | Archivo | Disparador | Función |
@@ -38,6 +43,24 @@ este entorno, nunca en el código ni en variables públicas.
 **`HOSTINGER_DEPLOY_PATH`**: obtén la ruta real por SSH o desde hPanel. Su valor probable es
 equivalente a `/home/USUARIO/domains/licitatis.es/public_html`, pero debe confirmarse (por SSH:
 `pwd` dentro de `public_html`, o `ls -d ~/domains/*/public_html`).
+
+### 2b. Variables públicas del build (no secretas)
+
+Las `NEXT_PUBLIC_*` se incrustan en el build y NO son secretas. Defínelas como **Variables** (no
+secretos) del entorno `production` (o del repositorio): Settings → Environments → production →
+Variables. El build las inyecta automáticamente (ver el `env:` del workflow):
+
+| Variable | Ejemplo | Necesaria |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | `https://licitatis.es` | Recomendada (canonical/OG correctos) |
+| `NEXT_PUBLIC_HUBSPOT_PORTAL_ID` | `1234567` | Para que el formulario entregue leads |
+| `NEXT_PUBLIC_HUBSPOT_FORM_ID` | `xxxxxxxx-…` | Para que el formulario entregue leads |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | `contacto@licitatis.es` | Opcional |
+| `NEXT_PUBLIC_ENABLE_ANALYTICS` | `false` | Opcional |
+| `NEXT_PUBLIC_GA_ID` | `G-XXXXXXXXXX` | Opcional |
+
+Sin estas variables el sitio funciona igual (el formulario muestra confirmación pero no entrega el
+lead hasta configurar HubSpot).
 
 ### 3. Clave SSH
 
