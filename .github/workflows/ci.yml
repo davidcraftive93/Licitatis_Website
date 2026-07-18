@@ -1,0 +1,53 @@
+name: CI
+
+# Integración continua: valida el código en cada push y pull request.
+# NUNCA despliega. Su única función es comprobar lint, tipos, tests y build.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+# Evita ejecuciones duplicadas por rama.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Lint · Typecheck · Test · Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Comprobación de tipos
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm run test
+
+      - name: Build (export estático)
+        run: npm run build
+
+      - name: Comprobar artefacto out/
+        run: |
+          test -d out || { echo "::error::El build no generó la carpeta out/"; exit 1; }
+          test -f out/index.html || { echo "::error::No existe out/index.html"; exit 1; }
+          echo "Build correcto: out/ generado."
