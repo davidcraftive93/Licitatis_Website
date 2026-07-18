@@ -192,10 +192,19 @@ jobs:
           SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
           DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
         run: |
-          rsync -az --delete \
-            -e "ssh -i ~/.ssh/id_deploy -p $SSH_PORT -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20" \
+          # Usar $HOME (no ~) dentro de la cadena -e: el ~ NO se expande entre comillas
+          # dobles y rsync no invoca un shell, así que la ruta de la clave quedaba literal.
+          set +e
+          RS_OUT="$(rsync -az --delete \
+            -e "ssh -i $HOME/.ssh/id_deploy -p $SSH_PORT -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20" \
             out/ \
-            "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
+            "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/" 2>&1)"
+          RS_RC=$?
+          set -e
+          if [ "$RS_RC" -ne 0 ]; then
+            echo "::error::rsync falló (rc=$RS_RC). Salida: $(printf '%s' "$RS_OUT" | tail -4 | tr '\n' ' | ')"
+            exit 1
+          fi
           echo "Sincronización completada."
 
       - name: Verificar que la web responde
