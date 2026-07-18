@@ -67,7 +67,19 @@ lead hasta configurar HubSpot).
 ```bash
 ssh-keygen -t ed25519 -C "deploy-licitatis" -f ./id_licitatis_deploy
 # Sube la clave PÚBLICA (id_licitatis_deploy.pub) a hPanel → SSH → Claves SSH.
-# Pega el contenido de la clave PRIVADA (id_licitatis_deploy) en el secreto HOSTINGER_SSH_PRIVATE_KEY.
+```
+
+**Guarda la clave PRIVADA en `HOSTINGER_SSH_PRIVATE_KEY` en BASE64** (recomendado): una sola línea,
+a prueba de saltos de línea/CRLF al pegar (evita el error `Load key ... error in libcrypto`). El
+workflow la decodifica automáticamente (y también acepta el texto PEM si prefieres).
+
+```powershell
+# Windows PowerShell — copia la clave en base64 al portapapeles:
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("$env:USERPROFILE\.ssh\licitatis_deploy")) | Set-Clipboard
+```
+```bash
+# macOS/Linux:
+base64 -w0 ~/.ssh/licitatis_deploy   # (en macOS: base64 -i ~/.ssh/licitatis_deploy)
 ```
 
 ## Cómo desplegar (manual, con confirmación)
