@@ -126,16 +126,28 @@ jobs:
             *) echo "::error::Ruta de despliegue inesperada ('$DEPLOY_PATH'). Abortando por seguridad."; exit 1 ;;
           esac
 
-      - name: Preparar clave SSH
+      - name: Preparar clave SSH y comprobar conexión
         env:
           SSH_KEY: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.HOSTINGER_HOST }}
           SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
+          SSH_USER: ${{ secrets.HOSTINGER_USERNAME }}
         run: |
-          mkdir -p ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          # Escribe la clave quitando posibles retornos de carro (CRLF), que la
+          # invalidarían en Linux si se pegó el secreto desde Windows.
+          printf '%s\n' "$SSH_KEY" | tr -d '\r' > ~/.ssh/id_deploy
           chmod 600 ~/.ssh/id_deploy
-          ssh-keyscan -p "$SSH_PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          echo "== Comprobación de conexión SSH =="
+          if ssh -i ~/.ssh/id_deploy -p "$SSH_PORT" \
+               -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 \
+               "$SSH_USER@$SSH_HOST" "echo SSH_OK; whoami"; then
+            echo "Conexión SSH correcta."
+          else
+            echo "::error::No se pudo conectar por SSH (exit 255). Causas típicas: (1) clave privada mal pegada o con CRLF en el secreto HOSTINGER_SSH_PRIVATE_KEY; (2) la IP del runner de GitHub no está permitida en el allowlist de SSH de Hostinger; (3) host/puerto/usuario incorrectos. Revisa el mensaje de arriba (Permission denied = clave; Connection timed out = red/allowlist)."
+            exit 1
+          fi
 
       - name: Copia de seguridad remota (rollback)
         env:
@@ -144,7 +156,7 @@ jobs:
           SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
           DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
         run: |
-          ssh -i ~/.ssh/id_deploy -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" \
+          ssh -i ~/.ssh/id_deploy -p "$SSH_PORT" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 "$SSH_USER@$SSH_HOST" \
             "DP='$DEPLOY_PATH'; if [ -d \"\$DP\" ]; then cp -a \"\$DP\" \"\${DP%/}.backup-$(date +%Y%m%d%H%M%S)\" && echo 'Backup creado.'; else echo 'Sin backup: el directorio aún no existe.'; fi" || \
             echo "::warning::No se pudo crear backup remoto; continúa el despliegue."
 
@@ -156,7 +168,7 @@ jobs:
           DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
         run: |
           rsync -az --delete \
-            -e "ssh -i ~/.ssh/id_deploy -p $SSH_PORT" \
+            -e "ssh -i ~/.ssh/id_deploy -p $SSH_PORT -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20" \
             out/ \
             "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
           echo "Sincronización completada."
