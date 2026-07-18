@@ -1,77 +1,97 @@
-# Despliegue en Vercel
+# Despliegue en Hostinger (sitio estático vía GitHub Actions)
 
-Este proyecto se despliega en un **proyecto de Vercel independiente**, conectado exclusivamente
-al repositorio `davidcraftive93/Licitatis_Website`. No debe mezclarse con la aplicación privada
-ni con otros proyectos.
+La landing se publica como **sitio estático** (Next.js `output: "export"` → carpeta `out/`) y se
+aloja en **Hostinger**. **No se usa Vercel.** GitHub es la única fuente de verdad.
 
-## Configuración del proyecto
+## Principios
 
-| Ajuste                 | Valor                                        |
-| ---------------------- | -------------------------------------------- |
-| Nombre (visible)       | `Licitatis Website`                          |
-| Identificador técnico  | `licitatis-website`                          |
-| Repositorio            | `davidcraftive93/Licitatis_Website`          |
-| Rama de producción     | `main`                                       |
-| Framework preset       | Next.js (autodetectado)                      |
-| Root directory         | `./`                                         |
-| Build command          | `next build` (por defecto)                   |
-| Install command        | `npm install` (por defecto)                  |
+- Todo cambio va en una rama `feature/*`, con commits claros, se sube a GitHub y se revisa por PR.
+- El propietario controla merges, etiquetas, releases y despliegues.
+- **Subir código a GitHub nunca despliega.** El despliegue es siempre **manual**.
+- La **CI** (`.github/workflows/ci.yml`) solo valida (lint, typecheck, test, build). Nunca despliega.
 
-## Opción A — Importar desde el panel de Vercel (recomendada)
+## Workflows
 
-1. Entra en <https://vercel.com/new>.
-2. Importa el repositorio `davidcraftive93/Licitatis_Website`.
-3. Deja el framework como **Next.js** y el root directory en `./`.
-4. Añade las variables de entorno (ver [`.env.example`](../.env.example)) en cada entorno.
-5. Pulsa **Deploy**.
+| Workflow | Archivo | Disparador | Función |
+| --- | --- | --- | --- |
+| CI | `.github/workflows/ci.yml` | `push` y `pull_request` | Validar código (no despliega) |
+| Deploy Hostinger | `.github/workflows/deploy-hostinger.yml` | `workflow_dispatch` (manual) | Desplegar `out/` a Hostinger |
 
-## Opción B — Vercel CLI
+## Requisitos previos (una sola vez)
 
-Requiere una sesión autenticada con permisos para crear proyectos.
+### 1. GitHub Environment `production`
+
+Crea un *Environment* llamado **`production`** (Settings → Environments) y, opcionalmente, añade
+reglas de protección (revisores obligatorios). Los secretos de Hostinger se guardan **solo** en
+este entorno, nunca en el código ni en variables públicas.
+
+### 2. Secretos del entorno `production`
+
+| Secreto | Descripción | Cómo obtenerlo |
+| --- | --- | --- |
+| `HOSTINGER_HOST` | Host/IP SSH | hPanel → Avanzado → SSH |
+| `HOSTINGER_PORT` | Puerto SSH (habitualmente 22 o el que indique Hostinger) | hPanel → SSH |
+| `HOSTINGER_USERNAME` | Usuario SSH | hPanel → SSH |
+| `HOSTINGER_SSH_PRIVATE_KEY` | Clave privada SSH (contenido completo) | Genera un par de claves y añade la pública en hPanel |
+| `HOSTINGER_DEPLOY_PATH` | Ruta absoluta del directorio público | Ver más abajo — **no la inventes** |
+
+**`HOSTINGER_DEPLOY_PATH`**: obtén la ruta real por SSH o desde hPanel. Su valor probable es
+equivalente a `/home/USUARIO/domains/licitatis.es/public_html`, pero debe confirmarse (por SSH:
+`pwd` dentro de `public_html`, o `ls -d ~/domains/*/public_html`).
+
+### 3. Clave SSH
 
 ```bash
-npm i -g vercel        # instalar la CLI si no está disponible
-vercel login           # autenticación (acción humana)
-vercel link            # vincular este directorio a un proyecto (crea uno nuevo si no existe)
-vercel                 # despliegue de Preview
-vercel --prod          # despliegue de Producción (solo cuando el build y las auditorías pasen)
+ssh-keygen -t ed25519 -C "deploy-licitatis" -f ./id_licitatis_deploy
+# Sube la clave PÚBLICA (id_licitatis_deploy.pub) a hPanel → SSH → Claves SSH.
+# Pega el contenido de la clave PRIVADA (id_licitatis_deploy) en el secreto HOSTINGER_SSH_PRIVATE_KEY.
 ```
 
-> No ejecutes `vercel --prod` hasta que: el build sea correcto, no haya errores, la auditoría de
-> seguridad haya pasado, la rama esté subida y el proyecto correcto esté vinculado.
+## Cómo desplegar (manual, con confirmación)
 
-## Entornos y variables
+1. Ve a **Actions → Deploy a Hostinger (manual) → Run workflow**.
+2. Rellena:
+   - **confirmation**: escribe exactamente `DEPLOY LICITATIS` (si no coincide, el workflow se detiene).
+   - **git_ref**: `main` por defecto (o una etiqueta/commit para rollback). No se permiten ramas `feature/*`.
+3. El workflow: valida la confirmación y el ref → comprueba que pertenece a `main` o es una etiqueta →
+   `npm ci` → `npm run build` → verifica `out/` → crea una **copia de seguridad remota** → sincroniza
+   `out/` por `rsync`/SSH al `HOSTINGER_DEPLOY_PATH` → verifica que la web responde.
 
-Configura las variables en **Development**, **Preview** y **Production**:
+> ⚠️ El asistente (Claude) puede preparar y validar el workflow, **pero no lo ejecuta**. El despliegue
+> solo lo lanza el propietario, de forma manual, escribiendo la confirmación.
 
-- `NEXT_PUBLIC_SITE_URL`: en Production, la URL final (p. ej. `https://www.licitatis.es`); en
-  Preview puede usarse la URL de la preview.
-- Variables de HubSpot y analítica según [`docs/HUBSPOT.md`](./HUBSPOT.md).
-- `HUBSPOT_PRIVATE_APP_TOKEN` (si se usa) **solo** en el entorno de servidor de Vercel; nunca
-  como `NEXT_PUBLIC_`.
+## Qué se sube (y qué no)
 
-## Previews por pull request
+- **Se sube:** únicamente el contenido de `out/` (HTML, CSS, JS, imágenes, `sitemap.xml`,
+  `robots.txt`, `manifest.webmanifest`, `.htaccess`).
+- **No se sube:** código fuente, `node_modules`, `.env`, documentación interna, configuración local,
+  historial Git, secretos ni temporales.
 
-Cada PR hacia `main` genera automáticamente una **preview deployment** con su propia URL, útil
-para revisión antes de fusionar.
+## Rollback
 
-## Dominios
+El despliegue es reversible de dos formas:
 
-Cuando el dominio esté disponible:
+1. **Re-desplegar una versión anterior:** ejecuta el workflow indicando en `git_ref` una **etiqueta**
+   o **commit** previo (validado). Como el workflow reconstruye desde ese ref, la producción vuelve a
+   ese estado. Es la vía recomendada y no depende de artefactos no versionados.
+2. **Copia de seguridad remota:** antes de cada `rsync`, el workflow copia el directorio de despliegue
+   a `…/public_html.backup-<timestamp>`. Para restaurar, por SSH:
+   ```bash
+   # Sustituye <DEPLOY_PATH> y <timestamp> por los valores reales.
+   rsync -a --delete "<DEPLOY_PATH>.backup-<timestamp>/" "<DEPLOY_PATH>/"
+   ```
 
-1. Añade `licitatis.es` y `www.licitatis.es` en **Project → Settings → Domains**.
-2. Configura `licitatis.es` como dominio principal y `www.licitatis.es` como redirección.
-3. Deja que Vercel gestione el certificado **SSL**.
-4. Actualiza `NEXT_PUBLIC_SITE_URL` en Production a la URL final y vuelve a desplegar.
+Recomendación: crea una **etiqueta** por cada versión desplegada (p. ej. `git tag v1.0.0 && git push
+origin v1.0.0`) para poder volver a ella con `git_ref`.
 
-**No** configures `app.licitatis.es` en este proyecto: pertenece a la aplicación privada.
+## Dominio
 
-## Checklist previo a producción
+Conecta `licitatis.es` (principal) y `www.licitatis.es` en Hostinger (hPanel → Dominios), con SSL
+gestionado por Hostinger. `NEXT_PUBLIC_SITE_URL` debe ser la URL final. `app.licitatis.es` pertenece
+a la aplicación privada y **no** se gestiona aquí.
 
-- [ ] `npm run lint` sin errores
-- [ ] `npm run typecheck` sin errores
-- [ ] `npm run build` correcto
-- [ ] Variables de entorno configuradas en Vercel
-- [ ] HubSpot configurado y probado (o asumido pendiente conscientemente)
-- [ ] Rama subida y PR creada
-- [ ] Proyecto de Vercel correcto vinculado
+## Notas técnicas
+
+- Las cabeceras de seguridad se aplican vía `public/.htaccess` (Apache/LiteSpeed), no vía Next.
+- `trailingSlash: true` hace que cada ruta sea un directorio con `index.html` (compatible con Apache).
+- No hay backend: el formulario se envía a HubSpot desde el cliente (ver `docs/HUBSPOT.md`).

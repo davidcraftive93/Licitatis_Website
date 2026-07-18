@@ -56,8 +56,19 @@ Ubicación: `src/lib/content.ts` (array `features`, campo `status`).
 - [ ] `NEXT_PUBLIC_ENABLE_ANALYTICS=true` si se desea activar analítica.
 - [ ] `NEXT_PUBLIC_GA_ID` si se usa Google Analytics 4.
 
+## Despliegue (Hostinger)
+
+Ver [`DEPLOYMENT.md`](./DEPLOYMENT.md). Pendiente en el GitHub Environment `production`:
+
+- [ ] `HOSTINGER_HOST`
+- [ ] `HOSTINGER_PORT`
+- [ ] `HOSTINGER_USERNAME`
+- [ ] `HOSTINGER_SSH_PRIVATE_KEY` (par de claves SSH; la pública en hPanel)
+- [ ] `HOSTINGER_DEPLOY_PATH` — **obtener la ruta real** por SSH/hPanel (no inventar; probable
+      `/home/USUARIO/domains/licitatis.es/public_html`)
+
 ## SEO / dominio
 
-- [ ] `NEXT_PUBLIC_SITE_URL` con la URL final en Production.
-- [ ] Conectar `licitatis.es` y `www.licitatis.es` en Vercel (ver [`DEPLOYMENT.md`](./DEPLOYMENT.md)).
+- [ ] `NEXT_PUBLIC_SITE_URL` con la URL final antes de compilar el artefacto de producción.
+- [ ] Conectar `licitatis.es` y `www.licitatis.es` en Hostinger (SSL gestionado por Hostinger).
 - [ ] Verificar el sitio en Google Search Console cuando el dominio esté activo.

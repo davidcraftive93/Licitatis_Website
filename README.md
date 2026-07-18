@@ -48,11 +48,13 @@ proyecto de despliegue (ver [Separación de sistemas](#separación-de-sistemas))
 | Estilos         | Tailwind CSS 3.4 (sistema de diseño propio)            |
 | Tipografías     | Inter + Space Grotesk (autoalojadas vía `next/font`)   |
 | Validación      | [Zod](https://zod.dev)                                 |
-| Formularios/CRM | HubSpot Forms API (endpoint de servidor `/api/lead`)   |
+| Formularios/CRM | HubSpot Forms API (envío desde el cliente; ver docs)   |
 | Iconos          | Set SVG propio                                          |
-| Despliegue      | Vercel                                                 |
+| Salida          | Export estático (`output: "export"` → `out/`)          |
+| Despliegue      | Hostinger vía GitHub Actions (manual)                  |
 
-Sin base de datos. Sin dependencias de animación pesadas. Sin conexión con sistemas privados.
+Sin base de datos ni backend. Sin dependencias de animación pesadas. Sin conexión con sistemas
+privados. **No se usa Vercel.**
 
 ## Estructura
 
@@ -70,8 +72,7 @@ src/
 │  ├─ not-found.tsx         # 404
 │  ├─ error.tsx             # Límite de error
 │  ├─ gracias/              # Página de agradecimiento
-│  ├─ aviso-legal/ privacidad/ cookies/ terminos/   # Páginas legales (placeholders)
-│  └─ api/lead/route.ts     # Endpoint de envío del formulario a HubSpot
+│  └─ aviso-legal/ privacidad/ cookies/ terminos/   # Páginas legales (placeholders)
 ├─ components/
 │  ├─ layout/               # Header, Footer, Logo, LegalShell
 │  ├─ sections/             # Hero, Problem, Solution, Features, ... , FinalCta
@@ -79,8 +80,14 @@ src/
 │  ├─ forms/                # DemoForm
 │  ├─ ui/                   # Button, Section, Reveal, iconos, campos de formulario
 │  └─ analytics/            # Consentimiento de cookies + carga condicional de analítica
-└─ lib/                     # site, content, validation, hubspot, rate-limit, seo, consent, utm
+└─ lib/                     # site, content, validation, hubspot, seo, consent, utm
+
+public/.htaccess            # Cabeceras de seguridad, caché y compresión para Hostinger
+.github/workflows/          # ci.yml (validación) y deploy-hostinger.yml (despliegue manual)
 ```
+
+El build (`npm run build`) genera la carpeta **`out/`** (sitio estático), único artefacto que se
+despliega a Hostinger.
 
 ## Requisitos e instalación
 
@@ -103,18 +110,20 @@ Scripts disponibles:
 | Script                | Descripción                          |
 | --------------------- | ------------------------------------ |
 | `npm run dev`         | Servidor de desarrollo               |
-| `npm run build`       | Build de producción                  |
-| `npm run start`       | Sirve el build de producción         |
+| `npm run build`       | Build → export estático en `out/`    |
 | `npm run lint`        | ESLint (next lint)                   |
 | `npm run typecheck`   | Comprobación de tipos (`tsc --noEmit`) |
+| `npm run test`        | Tests unitarios (Vitest)             |
 | `npm run format`      | Formatea con Prettier                |
 
-## Build de producción
+## Build de producción (export estático)
 
 ```bash
-npm run build
-npm run start
+npm run build          # genera el sitio estático en out/
+npx serve out          # (opcional) previsualizar el export en local
 ```
+
+> Nota: `npm run start` no aplica con `output: "export"`; el artefacto es `out/`.
 
 ## Variables de entorno
 
@@ -127,20 +136,19 @@ Ver [`.env.example`](./.env.example) para la lista completa y comentada. Resumen
 | `NEXT_PUBLIC_CONTACT_EMAIL`       | Cliente  | No          | Correo de contacto mostrado                  |
 | `NEXT_PUBLIC_HUBSPOT_PORTAL_ID`   | Cliente  | Para leads  | Portal ID de HubSpot (público)               |
 | `NEXT_PUBLIC_HUBSPOT_FORM_ID`     | Cliente  | Para leads  | Form ID de HubSpot (público)                 |
-| `HUBSPOT_PORTAL_ID`               | Servidor | No          | Alternativa server-only al portal público    |
-| `HUBSPOT_FORM_ID`                 | Servidor | No          | Alternativa server-only al form público      |
-| `HUBSPOT_PRIVATE_APP_TOKEN`       | Servidor | No          | **Secreto.** Solo servidor. Nunca en cliente |
 | `NEXT_PUBLIC_ENABLE_ANALYTICS`    | Cliente  | No          | `true` para permitir analítica tras consentir |
 | `NEXT_PUBLIC_GA_ID`               | Cliente  | No          | ID de Google Analytics 4                      |
 
-Configúralas por entorno en Vercel (**Development**, **Preview**, **Production**).
+Se incrustan en el build (son públicas). Defínelas en local (`.env.local`) y en el entorno de build
+de CI/despliegue. Este sitio estático **no usa** `HUBSPOT_PRIVATE_APP_TOKEN`. Los **secretos de
+Hostinger** van exclusivamente en el GitHub Environment `production` (ver
+[`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md)).
 
 ## HubSpot
 
-El formulario se envía a HubSpot desde el servidor (`/api/lead`), de modo que ningún token
-sensible llega al navegador. Ver [`docs/HUBSPOT.md`](./docs/HUBSPOT.md) para la configuración
-paso a paso. Si HubSpot no está configurado, el formulario sigue funcionando y responde
-`delivered: false` (los envíos no se entregan a ningún CRM hasta configurarlo).
+El formulario se envía a HubSpot **desde el cliente** a su Forms API pública (solo IDs públicos, sin
+token), compatible con el sitio estático. Ver [`docs/HUBSPOT.md`](./docs/HUBSPOT.md). Si HubSpot no
+está configurado, el formulario sigue siendo usable (muestra confirmación sin entregar el lead).
 
 ## Analítica y cookies
 
@@ -149,31 +157,36 @@ paso a paso. Si HubSpot no está configurado, el formulario sigue funcionando y 
   consentimiento correspondiente.
 - Preparado para GA4 y para el script de tracking de HubSpot; ambos desactivados por defecto.
 
-## Vercel y despliegues
+## Integración continua y despliegue
 
-Proyecto de Vercel **independiente** conectado a este repositorio. Ver
-[`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md). Cada pull request genera una **preview deployment**;
-la rama de producción es `main`.
+- **CI** (`.github/workflows/ci.yml`): en cada `push` y `pull_request` ejecuta `lint`, `typecheck`,
+  `test` y `build`. **Nunca despliega.**
+- **Despliegue** (`.github/workflows/deploy-hostinger.yml`): **manual** (`workflow_dispatch`), con
+  confirmación `DEPLOY LICITATIS`, environment `production` y sincronización de `out/` a Hostinger.
+  Subir código o fusionar una PR **no** despliega. Ver [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md).
 
 ## Ramas
 
 ```text
-main                         # producción (protegida; no desarrollar aquí)
-└─ feature/landing-comercial # desarrollo de la landing
+main                          # producción (no desarrollar aquí; sin merge/deploy automático)
+├─ feature/landing-comercial  # landing (secciones, SEO, legal, cookies, analítica)
+└─ feature/deploy-hostinger   # export estático, HubSpot cliente, CI y despliegue a Hostinger
 ```
 
-Commits pequeños y descriptivos. No hacer `git add .` sin revisar. No forzar el historial.
+Trabaja en ramas `feature/*`, revisa con `git status`/`git diff`, agrupa en commits claros, sube a
+GitHub y abre PR. No hacer `git add .` sin revisar. No forzar el historial. No fusionar a `main` ni
+crear etiquetas/releases/despliegues sin autorización del propietario.
 
 ## Dominios
 
-Previsto: `licitatis.es` (principal) y `www.licitatis.es` (redirección). El subdominio
-`app.licitatis.es` pertenece a la aplicación privada y **no** se configura aquí. Mientras no
-exista dominio, se usa la URL temporal de Vercel.
+Previsto: `licitatis.es` (principal) y `www.licitatis.es` (redirección), con SSL gestionado por
+Hostinger. El subdominio `app.licitatis.es` pertenece a la aplicación privada y **no** se configura
+aquí.
 
 ## Seguridad
 
-Cabeceras de seguridad, CSP, validación en servidor, honeypot y rate limiting. Ver
-[`docs/SECURITY.md`](./docs/SECURITY.md).
+Cabeceras de seguridad y CSP vía `public/.htaccess` (Hostinger), validación en cliente (Zod),
+honeypot y consentimiento. Sin secretos en el sitio. Ver [`docs/SECURITY.md`](./docs/SECURITY.md).
 
 ## Separación de sistemas
 

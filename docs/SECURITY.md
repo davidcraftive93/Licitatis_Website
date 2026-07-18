@@ -1,69 +1,62 @@
 # Seguridad
 
-Resumen de las medidas de seguridad de la landing y de sus límites conocidos.
+Resumen de las medidas de seguridad de la landing (sitio **estático** en Hostinger) y sus límites.
 
-## Cabeceras HTTP
+## Cabeceras HTTP (vía `.htaccess`)
 
-Definidas en `next.config.mjs` y aplicadas a todas las rutas:
+Como el sitio es estático (`output: "export"`), **no** hay servidor Next: las cabeceras de
+`next.config.mjs` no aplican. Las cabeceras se configuran en **`public/.htaccess`** (se copia a
+`out/.htaccess` en el build) y las aplica Apache/LiteSpeed en Hostinger:
 
-| Cabecera                    | Valor / propósito                                            |
-| --------------------------- | ------------------------------------------------------------ |
-| `Content-Security-Policy`   | Restringe orígenes de scripts, estilos, imágenes, conexiones |
-| `Strict-Transport-Security` | Fuerza HTTPS (HSTS, 2 años, subdominios, preload)            |
-| `X-Content-Type-Options`    | `nosniff`                                                    |
-| `X-Frame-Options`           | `DENY` (anti-clickjacking)                                  |
-| `Referrer-Policy`           | `strict-origin-when-cross-origin`                            |
-| `Permissions-Policy`        | Desactiva cámara, micrófono, geolocalización, topics         |
+| Cabecera | Propósito |
+| --- | --- |
+| `Content-Security-Policy` | Restringe orígenes de scripts, estilos, imágenes y conexiones |
+| `Strict-Transport-Security` | Fuerza HTTPS (HSTS, 2 años, subdominios, preload) |
+| `X-Content-Type-Options: nosniff` | Evita el MIME sniffing |
+| `X-Frame-Options: DENY` | Anti-clickjacking |
+| `Referrer-Policy: strict-origin-when-cross-origin` | Limita el referrer |
+| `Permissions-Policy` | Desactiva cámara, micrófono, geolocalización, topics |
 
-Además: `poweredByHeader: false` (sin `X-Powered-By`) y `productionBrowserSourceMaps: false`
-(no se exponen source maps de producción).
+Además: redirección a HTTPS, `Options -Indexes` (sin listado de directorios), bloqueo de archivos
+ocultos sensibles, compresión y caché. Verifica las cabeceras tras el despliegue con `curl -I https://licitatis.es/`.
 
-## Content Security Policy — nota importante
+### CSP — nota
 
-La CSP actual incluye `script-src 'unsafe-inline'`. Es un **compromiso consciente** para mantener
-las páginas **estáticas** (mejor rendimiento y caché) sin recurrir a un nonce por petición. Dado
-que la landing no renderiza entrada de usuario (el formulario se envía a una API y no se refleja
-en el DOM), la superficie de XSS es muy baja.
+La CSP incluye `script-src 'unsafe-inline'` (necesario para los `<script type="application/ld+json">`
+y el bootstrap de `js`). En un sitio estático sin entrada de usuario reflejada, la superficie de XSS
+es muy baja. La CSP contempla además los orígenes de HubSpot y Google Analytics para cuando se
+activen tras consentimiento. Endurecer a CSP con hashes/nonce requeriría un paso de post-proceso
+sobre el HTML exportado (mejora futura opcional).
 
-**Ruta de mejora (CSP con nonce):** para eliminar `'unsafe-inline'` de `script-src`:
+## Formulario
 
-1. Crear `middleware.ts` que genere un `nonce` por petición y lo escriba en la cabecera CSP y en
-   `x-nonce` de la request.
-2. Sustituir `'unsafe-inline'` por `'nonce-<nonce>' 'strict-dynamic'` en `script-src`.
-3. Leer el nonce en el layout con `headers()` y pasarlo a los `<Script>` propios.
-
-Esto convierte las páginas en dinámicas (renderizado por petición), un coste asumible para una
-landing pero que conviene medir.
-
-## Validación y antispam del formulario
-
-- **Validación en servidor** con Zod (`src/lib/validation.ts`) como fuente de verdad; el cliente
-  valida además para dar feedback inmediato.
-- **Honeypot** (`company_url`): si llega relleno, se trata como spam sin procesar.
-- **Rate limiting** best-effort por IP (`src/lib/rate-limit.ts`): 5 envíos/min.
-  - *Limitación:* en serverless el estado no se comparte entre instancias. Para un límite robusto
-    y distribuido, usar un almacén tipo KV (p. ej. Upstash Redis).
+- **Validación con Zod** en el cliente (`src/lib/validation.ts`).
+- **Honeypot** (`company_url`): si llega relleno, no se envía.
 - **Consentimiento** de privacidad obligatorio antes de enviar.
-- Los errores de servidor no exponen detalles internos al cliente; se registran en el servidor.
+- Envío directo a la **Forms API pública** de HubSpot (solo IDs públicos; ver `docs/HUBSPOT.md`).
+- **Sin rate limiting propio** (no hay backend): la defensa antispam recae en el honeypot y en las
+  protecciones de la propia Forms API de HubSpot. Un control más estricto requeriría un backend
+  independiente.
 
 ## Gestión de secretos
 
-- `HUBSPOT_PRIVATE_APP_TOKEN` (si se usa) es **secreto** y solo debe existir en el entorno de
-  servidor de Vercel. **Nunca** como variable `NEXT_PUBLIC_` ni en el cliente.
-- Portal ID y Form ID de HubSpot son identificadores públicos, no secretos.
-- `.gitignore` excluye `.env` y `.env.*` (salvo `.env.example`), `.vercel/`, builds y temporales.
-- No se incluyen credenciales, tokens ni claves en el repositorio.
+- **No hay secretos en el sitio.** Solo se usan identificadores **públicos** de HubSpot
+  (`NEXT_PUBLIC_*`), que por diseño se incrustan en el build.
+- **`HUBSPOT_PRIVATE_APP_TOKEN` NO se usa** en esta web. Si hiciera falta, iría en un backend aparte.
+- Los **secretos de despliegue** (SSH/Hostinger) viven **solo** en el GitHub Environment
+  `production`, nunca en el código, README, YAML con valores reales, logs ni variables del frontend.
+- `.gitignore` excluye `.env`/`.env.*` (salvo `.env.example`), `out/`, `node_modules`, `.next` y temporales.
 
 ## Terceros y privacidad
 
 - Tipografías **autoalojadas** (`next/font`): sin peticiones a Google Fonts en runtime.
 - HubSpot Tracking y Google Analytics **no** se cargan hasta el consentimiento correspondiente.
-- La CSP contempla los hosts de HubSpot y Google para cuando se activen.
+- El envío del formulario (acción de primera parte) no depende de aceptar cookies de marketing.
 
 ## Comprobaciones recomendadas antes de desplegar
 
-- [ ] `npm audit` sin vulnerabilidades altas/críticas en dependencias de producción.
-- [ ] Revisar que no hay `.env*` reales en el control de versiones (`git status`).
-- [ ] Probar el formulario (éxito, error de validación, honeypot, rate limit).
-- [ ] Verificar cabeceras en la URL desplegada (p. ej. con las DevTools o `curl -I`).
-- [ ] Confirmar que no se cargan cookies/scripts de terceros antes del consentimiento.
+- [ ] `npm audit` sin vulnerabilidades altas/críticas (actualmente **0**).
+- [ ] `git status` sin `.env*` reales versionados.
+- [ ] `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build` en verde (los ejecuta la CI).
+- [ ] Tras el despliegue: cabeceras correctas (`curl -I`), sin scripts/cookies de terceros antes del
+      consentimiento, y formulario operativo.
