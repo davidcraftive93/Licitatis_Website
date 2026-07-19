@@ -72,7 +72,7 @@ export function Header() {
               Iniciar sesión
               <Icon name="external-link" size={14} />
             </a>
-            <Button href="/#demo" size="sm">
+            <Button href="/#demo" size="sm" variant="gradient">
               Solicitar demostración
             </Button>
           </div>
@@ -110,7 +110,7 @@ export function Header() {
                 ))}
               </ul>
               <div className="mt-4 flex flex-col gap-2.5">
-                <Button href="/#demo" size="md" onClick={() => setOpen(false)}>
+                <Button href="/#demo" size="md" variant="gradient" onClick={() => setOpen(false)}>
                   Solicitar demostración
                 </Button>
                 <a

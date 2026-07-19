@@ -1,48 +1,42 @@
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
+import { AiBadge } from "@/components/ui/AiBadge";
 import { BrowserFrame } from "@/components/mockups/BrowserFrame";
 import { DashboardMock } from "@/components/mockups/DashboardMock";
 
-/**
- * Hero above-the-fold. No usa <Reveal> a propósito: el contenido de la primera
- * pantalla (incluido el H1, candidato a LCP) debe verse en el primer paint, sin
- * depender de la hidratación del cliente.
- */
+/** Hero above-the-fold — sin <Reveal> (el H1 es candidato a LCP y debe verse al instante). */
 export function Hero() {
   return (
-    <section id="producto" className="relative overflow-hidden pb-16 pt-10 sm:pb-20 sm:pt-14">
-      {/* Fondo: rejilla sutil + resplandor de marca */}
+    <section id="producto" className="relative overflow-hidden pb-20 pt-8 sm:pb-24 sm:pt-12">
+      {/* Fondo: malla de gradientes + rejilla sutil */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-grid-ink bg-grid opacity-70 [mask-image:radial-gradient(ellipse_at_top,#000_20%,transparent_70%)]" />
-        <div className="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-brand-300/25 blur-3xl" />
-        <div className="absolute -left-24 top-24 h-80 w-80 rounded-full bg-amber-200/25 blur-3xl" />
+        <div className="absolute inset-0 bg-grid-ink bg-grid opacity-60 [mask-image:radial-gradient(ellipse_at_top,#000_15%,transparent_65%)]" />
+        <div className="absolute -right-32 -top-40 h-[32rem] w-[32rem] rounded-full bg-brand-300/30 blur-3xl" />
+        <div className="absolute -left-24 top-10 h-96 w-96 rounded-full bg-teal-200/40 blur-3xl" />
+        <div className="absolute left-1/3 top-40 h-80 w-80 rounded-full bg-violet-200/25 blur-3xl" />
       </div>
 
       <Container>
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-10">
-          {/* Columna de texto */}
+        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-10">
+          {/* Texto */}
           <div className="max-w-xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white/70 px-3 py-1 text-xs font-semibold text-ink-600 shadow-sm backdrop-blur">
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-brand-600 text-white">
-                <Icon name="check" size={11} />
-              </span>
-              Preparación · Coordinación · Control
+            <span className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white/70 py-1 pl-1 pr-3 text-xs font-semibold text-ink-600 shadow-sm backdrop-blur">
+              <AiBadge>IA</AiBadge>
+              El copiloto de licitaciones con inteligencia artificial
             </span>
 
-            <h1 className="mt-5 text-balance text-4xl font-bold leading-[1.08] tracking-tight text-ink-900 sm:text-5xl lg:text-[3.4rem]">
-              El copiloto para preparar y controlar tus{" "}
-              <span className="text-brand-700">licitaciones</span>
+            <h1 className="mt-5 text-balance text-[2.6rem] font-bold leading-[1.05] tracking-tight text-ink-900 sm:text-5xl lg:text-[3.6rem]">
+              La <span className="text-gradient">IA</span> que prepara y controla tus licitaciones
             </h1>
 
             <p className="mt-5 text-pretty text-lg leading-relaxed text-ink-500">
-              LICITATIS reúne pliegos, requisitos, documentos, tareas y plazos en un proceso claro y
-              coordinado. Menos trabajo manual, más control y menor riesgo de exclusión por errores
-              formales.
+              LICITATIS analiza pliegos con IA, organiza requisitos y documentos, y coordina tareas
+              y plazos. Menos trabajo manual, menos riesgo de errores y todo tu proceso bajo control.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button href="#demo" size="lg" withArrow>
+              <Button href="#demo" size="lg" variant="gradient" withArrow>
                 Solicitar demostración
               </Button>
               <Button href="#como-funciona" size="lg" variant="secondary">
@@ -50,24 +44,52 @@ export function Hero() {
               </Button>
             </div>
 
-            <p className="mt-6 flex items-center gap-2 text-sm text-ink-400">
-              <Icon name="users" size={16} className="text-brand-600" />
-              Pensado para equipos que preparan candidaturas a licitaciones públicas y privadas.
-            </p>
+            <ul className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-500">
+              <li className="flex items-center gap-1.5">
+                <Icon name="check" size={16} className="text-brand-600" /> Adaptada a tu caso
+              </li>
+              <li className="flex items-center gap-1.5">
+                <Icon name="check" size={16} className="text-brand-600" /> Sin compromiso
+              </li>
+              <li className="flex items-center gap-1.5">
+                <Icon name="check" size={16} className="text-brand-600" /> Para equipos que licitan
+              </li>
+            </ul>
           </div>
 
-          {/* Columna visual (mockup de demostración, expuesto como una sola imagen) */}
+          {/* Visual */}
           <div className="relative">
-            <div className="animate-float">
-              <BrowserFrame aria-label="Vista de demostración del panel de licitaciones de LICITATIS">
+            <div
+              aria-hidden="true"
+              className="absolute inset-6 -z-10 rounded-[2.5rem] bg-gradient-ai opacity-25 blur-2xl"
+            />
+            <div className="animate-float-slow">
+              <BrowserFrame
+                className="shadow-float"
+                aria-label="Vista de demostración del panel de licitaciones de LICITATIS"
+              >
                 <DashboardMock />
               </BrowserFrame>
             </div>
 
-            {/* Tarjetas flotantes de acento (decorativas) */}
             <div
               aria-hidden="true"
-              className="absolute -left-4 bottom-10 hidden rounded-xl border border-ink-100 bg-white px-3.5 py-2.5 shadow-lift sm:block"
+              className="absolute -left-4 bottom-12 hidden rounded-xl border border-ink-100 bg-white/95 px-3.5 py-2.5 shadow-lift backdrop-blur sm:block"
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-ai text-white">
+                  <Icon name="sparkles" size={16} />
+                </span>
+                <div>
+                  <div className="text-xs font-semibold text-ink-900">Pliego resumido</div>
+                  <div className="text-2xs text-ink-400">14 requisitos detectados</div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              aria-hidden="true"
+              className="absolute -right-3 -top-4 hidden rounded-xl border border-ink-100 bg-white/95 px-3.5 py-2.5 shadow-lift backdrop-blur md:block"
             >
               <div className="flex items-center gap-2.5">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
@@ -76,21 +98,6 @@ export function Hero() {
                 <div>
                   <div className="text-xs font-semibold text-ink-900">Plazo en 3 días</div>
                   <div className="text-2xs text-ink-400">EXP-2024-0138</div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              aria-hidden="true"
-              className="absolute -right-3 -top-4 hidden rounded-xl border border-ink-100 bg-white px-3.5 py-2.5 shadow-lift md:block"
-            >
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
-                  <Icon name="checklist" size={16} />
-                </span>
-                <div>
-                  <div className="text-xs font-semibold text-ink-900">Requisitos 12/14</div>
-                  <div className="text-2xs text-ink-400">Checklist documental</div>
                 </div>
               </div>
             </div>

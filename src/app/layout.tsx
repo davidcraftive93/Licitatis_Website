@@ -5,14 +5,15 @@ import { organizationLd, softwareApplicationLd, websiteLd } from "@/lib/seo";
 import { ConsentProvider } from "@/components/analytics/ConsentContext";
 import { ConsentBanner } from "@/components/analytics/ConsentBanner";
 import { Analytics } from "@/components/analytics/Analytics";
+import { TopBar } from "@/components/layout/TopBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "@/app/globals.css";
 
-const title = "LICITATIS — El copiloto para preparar y controlar licitaciones";
+const title = "LICITATIS — IA para preparar y controlar tus licitaciones";
 // Descripción concisa (~155 caracteres) para que quepa en el snippet de Google sin truncarse.
 const description =
-  "LICITATIS es el copiloto para preparar, organizar y controlar candidaturas a licitaciones: pliegos, requisitos, documentos y plazos bajo control. Pide una demo.";
+  "El copiloto con IA para licitaciones: analiza pliegos, organiza requisitos y documentos, y coordina tareas y plazos. Menos trabajo manual, todo bajo control.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -85,6 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <ConsentProvider>
+          <TopBar />
           <Header />
           <main id="contenido" tabIndex={-1} className="outline-none">
             {children}
