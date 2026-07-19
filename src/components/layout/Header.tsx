@@ -36,26 +36,24 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-colors duration-300",
-        scrolled || open
-          ? "border-b border-ink-100 bg-paper/85 backdrop-blur-md"
-          : "border-b border-transparent bg-transparent",
+        "sticky top-0 z-50 border-b bg-paper/80 backdrop-blur-md transition-shadow duration-300",
+        scrolled || open ? "border-ink-100 shadow-soft" : "border-ink-100/60",
       )}
     >
       <Container>
-        <div className="flex h-[var(--header-h)] items-center justify-between gap-4">
-          <Link href="/" aria-label="LICITATIS — Inicio" className="rounded-lg">
+        <div className="flex h-16 items-center justify-between gap-6">
+          <Link href="/" aria-label="LICITATIS — Inicio" className="shrink-0 rounded-lg">
             <Logo />
           </Link>
 
-          {/* Navegación de escritorio */}
-          <nav aria-label="Principal" className="hidden lg:block">
-            <ul className="flex items-center gap-1">
+          {/* Navegación de escritorio (centrada) */}
+          <nav aria-label="Principal" className="hidden flex-1 justify-center lg:flex">
+            <ul className="flex items-center gap-0.5">
               {navLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-ink-600 transition-colors hover:text-ink-900"
+                    className="whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-ink-50 hover:text-ink-900"
                   >
                     {link.label}
                   </Link>
@@ -64,16 +62,15 @@ export function Header() {
             </ul>
           </nav>
 
-          <div className="hidden items-center gap-2 lg:flex">
+          <div className="hidden shrink-0 items-center gap-3 lg:flex">
             <a
               href={siteConfig.appUrl}
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold text-ink-700 transition-colors hover:text-ink-900"
+              className="whitespace-nowrap text-sm font-semibold text-ink-600 transition-colors hover:text-ink-900"
             >
               Iniciar sesión
-              <Icon name="external-link" size={14} />
             </a>
             <Button href="/#beta" size="sm" variant="gradient">
-              Analizar una licitación real
+              Analizar licitación
             </Button>
           </div>
 

@@ -10,8 +10,8 @@ interface LogoProps {
 }
 
 /**
- * Marca de LICITATIS: un glifo que evoca un "recorrido con nodos" (el pipeline de la
- * candidatura) en forma de L sobre un cuadrado tinta. Construido en SVG propio.
+ * Marca de LICITATIS (brand kit §12): cuadrado violeta con la letra "L" en blanco.
+ * Sobrio y minimal. Construido en SVG propio.
  */
 export function Logo({ wordmark = true, tone = "dark", className, size = 32 }: LogoProps) {
   return (
@@ -25,16 +25,14 @@ export function Logo({ wordmark = true, tone = "dark", className, size = 32 }: L
         aria-label="LICITATIS"
         className="shrink-0"
       >
-        <rect width="32" height="32" rx="8" className="fill-ink-900" />
+        <rect width="32" height="32" rx="8" className="fill-brand-500" />
         <path
-          d="M11 8 V19 a3 3 0 0 0 3 3 H23"
-          className="stroke-brand-400"
-          strokeWidth="2.6"
+          d="M11.5 8 V20.5 H21.5"
+          stroke="#FFFFFF"
+          strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <circle cx="11" cy="8" r="2.3" className="fill-brand-400" />
-        <circle cx="23" cy="22" r="2.3" className="fill-amber-400" />
       </svg>
       {wordmark ? (
         <span

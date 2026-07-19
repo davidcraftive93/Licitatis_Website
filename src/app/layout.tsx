@@ -5,7 +5,6 @@ import { organizationLd, softwareApplicationLd, websiteLd } from "@/lib/seo";
 import { ConsentProvider } from "@/components/analytics/ConsentContext";
 import { ConsentBanner } from "@/components/analytics/ConsentBanner";
 import { Analytics } from "@/components/analytics/Analytics";
-import { TopBar } from "@/components/layout/TopBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "@/app/globals.css";
@@ -64,7 +63,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   colorScheme: "light",
-  themeColor: "#FBFAF9",
+  themeColor: "#F7F6FD",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -89,7 +88,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <ConsentProvider>
-          <TopBar />
           <Header />
           <main id="contenido" tabIndex={-1} className="outline-none">
             {children}
