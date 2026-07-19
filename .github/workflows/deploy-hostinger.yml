@@ -192,24 +192,32 @@ jobs:
           SSH_PORT="$(printf '%s' "$SSH_PORT" | tr -d '\r\n')"
           SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '\r\n')"
           SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
-          SSH="ssh -i $HOME/.ssh/id_deploy -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 $SSH_USER@$SSH_HOST"
-          REMOTE_HOME="$($SSH 'printf %s "$HOME"')"
-          echo "HOME remoto: ${REMOTE_HOME:-<desconocido>}"
-          CANDS="$REMOTE_HOME/public_html $DEPLOY_PATH"
+          # Opciones de ssh (se expanden por separado). NO metemos secretos dentro del
+          # comando remoto: los candidatos se calculan con $HOME EN EL SERVIDOR y el dominio
+          # va literal, así el enmascarado de secretos no puede romper el parseo remoto.
+          SSHO="-i $HOME/.ssh/id_deploy -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20"
           PROBE="__docroot_probe_${DEPLOY_SHA}.txt"
-          $SSH "for d in $CANDS; do if [ -d \"\$d\" ]; then printf '%s' \"\$d\" > \"\$d/$PROBE\" 2>/dev/null || true; fi; done"
+          # 1) Escribe la sonda en cada candidato (contenido = su propia ruta).
+          ssh $SSHO "$SSH_USER@$SSH_HOST" 'PB="'"$PROBE"'"; for d in "$HOME/public_html" "$HOME/domains/licitatis.es/public_html"; do [ -d "$d" ] && printf "%s" "$d" > "$d/$PB" 2>/dev/null || true; done' || true
+          # 2) La URL pública devuelve la sonda del docroot realmente servido.
           SERVED="$(curl -fsS "https://licitatis.es/$PROBE?cb=${DEPLOY_SHA}" 2>/dev/null | tr -d '\r\n' || true)"
-          $SSH "for d in $CANDS; do rm -f \"\$d/$PROBE\" 2>/dev/null || true; done"
+          # 3) Limpia las sondas.
+          ssh $SSHO "$SSH_USER@$SSH_HOST" 'PB="'"$PROBE"'"; for d in "$HOME/public_html" "$HOME/domains/licitatis.es/public_html"; do rm -f "$d/$PB" 2>/dev/null || true; done' || true
+          # 4) La respuesta debe ser una ruta absoluta; si no (p.ej. un .htaccess devolvió HTML), se descarta.
+          case "$SERVED" in
+            /*) : ;;
+            *) SERVED="" ;;
+          esac
           if [ -z "$SERVED" ]; then
-            echo "::warning::No se detectó el docroot por sonda HTTP; se prefiere ~/public_html."
-            if $SSH "[ -d \"$REMOTE_HOME/public_html\" ]"; then SERVED="$REMOTE_HOME/public_html"; else SERVED="$DEPLOY_PATH"; fi
+            echo "::warning::No se detectó el docroot por sonda HTTP; se usa ~/public_html si existe."
+            SERVED="$(ssh $SSHO "$SSH_USER@$SSH_HOST" 'if [ -d "$HOME/public_html" ]; then printf "%s" "$HOME/public_html"; fi' 2>/dev/null || true)"
           fi
           case "$SERVED" in
             */public_html*) : ;;
-            *) echo "::error::Docroot detectado inesperado ('$SERVED'). Abortando por seguridad."; exit 1 ;;
+            *) echo "::error::No se pudo determinar un docroot válido (obtenido: '${SERVED:-<vacío>}'). Abortando."; exit 1 ;;
           esac
           if [ "$SERVED" != "$DEPLOY_PATH" ]; then
-            echo "::warning::licitatis.es se sirve desde '$SERVED' (el secreto HOSTINGER_DEPLOY_PATH apunta a '$DEPLOY_PATH'). Se desplegará en el docroot servido."
+            echo "::warning::licitatis.es se sirve desde '$SERVED' (el secreto HOSTINGER_DEPLOY_PATH apunta a otra carpeta). Se despliega en el docroot servido."
           fi
           echo "Docroot servido: $SERVED"
           echo "TARGET=$SERVED" >> "$GITHUB_ENV"
