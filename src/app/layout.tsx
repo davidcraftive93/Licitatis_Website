@@ -1,18 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { inter, spaceGrotesk } from "@/app/fonts";
+import { inter, poppins, geistMono } from "@/app/fonts";
 import { siteConfig } from "@/lib/site";
 import { organizationLd, softwareApplicationLd, websiteLd } from "@/lib/seo";
 import { ConsentProvider } from "@/components/analytics/ConsentContext";
 import { ConsentBanner } from "@/components/analytics/ConsentBanner";
 import { Analytics } from "@/components/analytics/Analytics";
+import { TopBar } from "@/components/layout/TopBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "@/app/globals.css";
 
-const title = "LICITATIS — El copiloto para preparar y controlar licitaciones";
+const title = "LICITATIS — Prepara licitaciones públicas con IA";
 // Descripción concisa (~155 caracteres) para que quepa en el snippet de Google sin truncarse.
 const description =
-  "LICITATIS es el copiloto para preparar, organizar y controlar candidaturas a licitaciones: pliegos, requisitos, documentos y plazos bajo control. Pide una demo.";
+  "LICITATIS convierte pliegos en expedientes de candidatura: elegibilidad, documentación, memoria técnica, riesgos e informe para dirección. Beta gratuita.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -68,7 +69,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={siteConfig.lang} className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html
+      lang={siteConfig.lang}
+      className={`${inter.variable} ${poppins.variable} ${geistMono.variable}`}
+    >
       <body className="min-h-dvh bg-paper antialiased">
         {/* Mejora progresiva: marca que hay JS antes del primer paint para que los
             reveals solo se oculten con JS activo (sin JS, todo permanece visible). */}
@@ -85,6 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <ConsentProvider>
+          <TopBar />
           <Header />
           <main id="contenido" tabIndex={-1} className="outline-none">
             {children}

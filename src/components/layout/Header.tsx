@@ -72,8 +72,8 @@ export function Header() {
               Iniciar sesión
               <Icon name="external-link" size={14} />
             </a>
-            <Button href="/#demo" size="sm">
-              Solicitar demostración
+            <Button href="/#beta" size="sm" variant="gradient">
+              Analizar una licitación real
             </Button>
           </div>
 
@@ -110,8 +110,8 @@ export function Header() {
                 ))}
               </ul>
               <div className="mt-4 flex flex-col gap-2.5">
-                <Button href="/#demo" size="md" onClick={() => setOpen(false)}>
-                  Solicitar demostración
+                <Button href="/#beta" size="md" variant="gradient" onClick={() => setOpen(false)}>
+                  Analizar una licitación real
                 </Button>
                 <a
                   href={siteConfig.appUrl}

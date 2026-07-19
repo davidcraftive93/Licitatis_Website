@@ -34,12 +34,12 @@ export const leadSchema = z.object({
     .default("no-lo-se"),
   challenge: z
     .enum([
-      "dispersion-fuentes",
-      "analisis-pliegos",
-      "gestion-documental",
+      "decidir-presentarse",
+      "requisitos-solvencia",
+      "documentacion",
+      "memoria-tecnica",
       "plazos",
-      "coordinacion-equipo",
-      "trazabilidad",
+      "exclusion",
       "otra",
     ])
     .optional()
@@ -77,11 +77,11 @@ export const tendersPerYearOptions = [
 ] as const;
 
 export const challengeOptions = [
-  { value: "dispersion-fuentes", label: "Licitaciones dispersas en muchas fuentes" },
-  { value: "analisis-pliegos", label: "Revisión manual de pliegos y requisitos" },
-  { value: "gestion-documental", label: "Documentación desorganizada o versiones incorrectas" },
-  { value: "plazos", label: "Control de fechas límite" },
-  { value: "coordinacion-equipo", label: "Coordinación de tareas y responsables" },
-  { value: "trazabilidad", label: "Falta de trazabilidad y visibilidad" },
+  { value: "decidir-presentarse", label: "Decidir con criterio si presentarnos" },
+  { value: "requisitos-solvencia", label: "Descubrir tarde un requisito de solvencia" },
+  { value: "documentacion", label: "Certificados o firmas que faltan o caducan" },
+  { value: "memoria-tecnica", label: "Redactar memorias técnicas contra reloj" },
+  { value: "plazos", label: "Controlar plazos y no perder oportunidades" },
+  { value: "exclusion", label: "Evitar la exclusión por fallos administrativos" },
   { value: "otra", label: "Otra" },
 ] as const;

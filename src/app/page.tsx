@@ -1,14 +1,15 @@
 import { Hero } from "@/components/sections/Hero";
-import { TrustBar } from "@/components/sections/TrustBar";
-import { Problem } from "@/components/sections/Problem";
-import { Solution } from "@/components/sections/Solution";
-import { Features } from "@/components/sections/Features";
+import { ValueStats } from "@/components/sections/ValueStats";
+import { ProblemSolution } from "@/components/sections/ProblemSolution";
 import { HowItWorks } from "@/components/sections/HowItWorks";
-import { Audiences } from "@/components/sections/Audiences";
-import { Comparison } from "@/components/sections/Comparison";
-import { Security } from "@/components/sections/Security";
+import { Passport } from "@/components/sections/Passport";
+import { Features } from "@/components/sections/Features";
+import { WhyNotSearch } from "@/components/sections/WhyNotSearch";
+import { DualAudience } from "@/components/sections/DualAudience";
+import { Privacy } from "@/components/sections/Privacy";
+import { Plans } from "@/components/sections/Plans";
+import { BetaPartner } from "@/components/sections/BetaPartner";
 import { Faq } from "@/components/sections/Faq";
-import { DemoSection } from "@/components/sections/DemoSection";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { faqLd } from "@/lib/seo";
 
@@ -16,16 +17,17 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <TrustBar />
-      <Problem />
-      <Solution />
-      <Features />
+      <ValueStats />
+      <ProblemSolution />
       <HowItWorks />
-      <Audiences />
-      <Comparison />
-      <Security />
+      <Passport />
+      <Features />
+      <WhyNotSearch />
+      <DualAudience />
+      <Privacy />
+      <Plans />
+      <BetaPartner />
       <Faq />
-      <DemoSection />
       <FinalCta />
 
       <script

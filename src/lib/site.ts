@@ -12,15 +12,15 @@ const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.licitatis.es
 
 export const siteConfig = {
   name: "LICITATIS",
-  descriptor: "El copiloto para preparar y controlar licitaciones",
+  descriptor: "De pliego a candidatura preparada, controlada y defendible",
   shortValue:
-    "Convierte pliegos, requisitos, documentos, tareas y plazos en un proceso claro, coordinado y bajo control.",
+    "LICITATIS convierte pliegos de licitación pública en candidaturas preparadas, controladas y defendibles. La cabina de control de todo el proceso.",
   /** URL pública de la web comercial (sin barra final). */
   url: rawSiteUrl.replace(/\/$/, ""),
   /** URL de la aplicación privada (fuera de este repositorio/despliegue). */
   appUrl: process.env.NEXT_PUBLIC_APP_URL || "https://app.licitatis.es",
-  /** Correo de contacto — PLACEHOLDER, revisar antes de publicar. */
-  contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "contacto@licitatis.es",
+  /** Correo de contacto y de captación (Beta Partner). */
+  contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "david@craftive.es",
   locale: "es_ES",
   lang: "es",
 } as const;
@@ -30,12 +30,11 @@ export const siteConfig = {
  * funcionen desde las páginas legales (navegando a la home y desplazándose a la sección).
  */
 export const navLinks = [
-  { label: "Producto", href: "/#producto" },
   { label: "Cómo funciona", href: "/#como-funciona" },
+  { label: "El Pasaporte", href: "/#pasaporte" },
   { label: "Funcionalidades", href: "/#funcionalidades" },
-  { label: "Para quién es", href: "/#para-quien" },
-  { label: "Seguridad", href: "/#seguridad" },
-  { label: "Preguntas frecuentes", href: "/#faq" },
+  { label: "Planes", href: "/#planes" },
+  { label: "FAQ", href: "/#faq" },
 ] as const;
 
 /** Enlaces legales para el footer (páginas con placeholders pendientes de revisión legal). */

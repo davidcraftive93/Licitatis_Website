@@ -41,7 +41,18 @@ export type IconName =
   | "key"
   | "backup"
   | "target"
-  | "inbox";
+  | "inbox"
+  | "zap"
+  | "star"
+  | "quote"
+  | "message"
+  | "trending-up"
+  | "handshake"
+  | "book"
+  | "gauge"
+  | "euro"
+  | "radar"
+  | "id-card";
 
 type PathContent = React.ReactNode;
 
@@ -275,6 +286,78 @@ const PATHS: Record<IconName, PathContent> = {
       <path d="M3 13.5 6 5h12l3 8.5" />
       <path d="M3 13.5V18a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4.5" />
       <path d="M3 13.5h5l1.5 2.5h5l1.5-2.5h5" />
+    </>
+  ),
+  zap: (
+    <>
+      <path d="M13 3 4 14h7l-1 7 9-11h-7l1-7Z" />
+    </>
+  ),
+  star: (
+    <>
+      <path d="m12 3 2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 21.6l-5.2 2.4 1-5.75-4.2-4.1 5.8-.85L12 3Z" />
+    </>
+  ),
+  quote: (
+    <>
+      <path d="M9 7H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v2a2 2 0 0 1-2 2" />
+      <path d="M19 7h-4a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v2a2 2 0 0 1-2 2" />
+    </>
+  ),
+  message: (
+    <>
+      <path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4 3v-3H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
+      <path d="M8 10h8M8 13h5" />
+    </>
+  ),
+  "trending-up": (
+    <>
+      <path d="M3 17 10 10l4 4 7-7" />
+      <path d="M15 7h6v6" />
+    </>
+  ),
+  handshake: (
+    <>
+      <path d="m11 17 2 2a1 1 0 0 0 1.4 0l3.6-3.6a1 1 0 0 0 0-1.4L14 10" />
+      <path d="m5 8 3.5-3.5a1 1 0 0 1 1.4 0L13 8" />
+      <path d="M3.5 13.5 2 12l4-4 2.5 2.5a2 2 0 0 0 2.8 0L14 8l6 6-2 2" />
+      <path d="m8 13 2 2M11 16l1.5 1.5" />
+    </>
+  ),
+  book: (
+    <>
+      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z" />
+      <path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20" />
+      <path d="M8 7h8M8 10.5h6" />
+    </>
+  ),
+  gauge: (
+    <>
+      <path d="M4 15a8 8 0 1 1 16 0" />
+      <path d="M12 15 15 9.5" />
+      <circle cx="12" cy="15" r="1.2" fill="currentColor" stroke="none" />
+    </>
+  ),
+  euro: (
+    <>
+      <path d="M18.5 6.5A7 7 0 1 0 18.5 17.5" />
+      <path d="M4 10.5h8M4 13.5h7" />
+    </>
+  ),
+  radar: (
+    <>
+      <path d="M20 12a8 8 0 1 1-4-6.9" />
+      <path d="M12 12 18 6" />
+      <path d="M12 12a4 4 0 1 0 3.5 2" />
+      <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
+    </>
+  ),
+  "id-card": (
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <circle cx="8.5" cy="11" r="2" />
+      <path d="M5 16.2a3.5 3.5 0 0 1 7 0" />
+      <path d="M14 9.5h4M14 12.5h4M14 15.5h2.5" />
     </>
   ),
 };
