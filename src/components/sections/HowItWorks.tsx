@@ -9,8 +9,8 @@ export function HowItWorks() {
     <Section id="como-funciona" tone="paper">
       <SectionHeader
         eyebrow="Cómo funciona"
-        title="Cuatro pasos para pasar del pliego a la presentación"
-        description="Un flujo sencillo que ordena el trabajo desde que incorporas la licitación hasta que presentas la candidatura."
+        title="De pliego a candidatura, paso a paso"
+        description="Un flujo claro que ordena el trabajo desde que detectas la licitación hasta que decides y exportas."
       />
 
       <div className="mt-12 grid items-start gap-10 lg:grid-cols-2 lg:gap-16">

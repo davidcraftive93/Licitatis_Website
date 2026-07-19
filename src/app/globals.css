@@ -46,12 +46,8 @@
 }
 
 @layer components {
-  /* Texto con degradado de marca (esmeralda -> teal -> cyan). */
-  .text-gradient {
-    @apply bg-gradient-ai bg-clip-text text-transparent;
-    background-size: 200% 200%;
-  }
-
+  /* Texto con degradado de marca (violeta -> magenta -> coral). Solo en titulares hero. */
+  .text-gradient,
   .text-gradient-brand {
     @apply bg-gradient-brand bg-clip-text text-transparent;
   }

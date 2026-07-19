@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { inter, spaceGrotesk } from "@/app/fonts";
+import { inter, poppins, geistMono } from "@/app/fonts";
 import { siteConfig } from "@/lib/site";
 import { organizationLd, softwareApplicationLd, websiteLd } from "@/lib/seo";
 import { ConsentProvider } from "@/components/analytics/ConsentContext";
@@ -10,10 +10,10 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "@/app/globals.css";
 
-const title = "LICITATIS — IA para preparar y controlar tus licitaciones";
+const title = "LICITATIS — Prepara licitaciones públicas con IA";
 // Descripción concisa (~155 caracteres) para que quepa en el snippet de Google sin truncarse.
 const description =
-  "El copiloto con IA para licitaciones: analiza pliegos, organiza requisitos y documentos, y coordina tareas y plazos. Menos trabajo manual, todo bajo control.";
+  "LICITATIS convierte pliegos en expedientes de candidatura: elegibilidad, documentación, memoria técnica, riesgos e informe para dirección. Beta gratuita.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -69,7 +69,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang={siteConfig.lang} className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html
+      lang={siteConfig.lang}
+      className={`${inter.variable} ${poppins.variable} ${geistMono.variable}`}
+    >
       <body className="min-h-dvh bg-paper antialiased">
         {/* Mejora progresiva: marca que hay JS antes del primer paint para que los
             reveals solo se oculten con JS activo (sin JS, todo permanece visible). */}

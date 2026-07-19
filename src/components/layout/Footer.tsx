@@ -5,14 +5,15 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
 import { CookiePreferencesButton } from "@/components/analytics/CookiePreferencesButton";
 import { legalLinks, siteConfig } from "@/lib/site";
+import { disclaimers } from "@/lib/content";
 import { currentYear } from "@/lib/utils";
 
 const productLinks = [
-  { label: "Funcionalidades", href: "/#funcionalidades" },
   { label: "Cómo funciona", href: "/#como-funciona" },
+  { label: "El Pasaporte", href: "/#pasaporte" },
+  { label: "Funcionalidades", href: "/#funcionalidades" },
   { label: "Planes", href: "/#planes" },
-  { label: "Para quién es", href: "/#para-quien" },
-  { label: "Seguridad", href: "/#seguridad" },
+  { label: "Programa Beta", href: "/#beta" },
   { label: "Preguntas frecuentes", href: "/#faq" },
 ];
 
@@ -31,12 +32,12 @@ export function Footer() {
           <div className="lg:col-span-4">
             <Logo tone="light" />
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ink-300">
-              El copiloto con IA para preparar, coordinar y controlar tus candidaturas a
-              licitaciones.
+              De pliego a candidatura preparada, controlada y defendible. La cabina de control de
+              tus licitaciones públicas, con IA.
             </p>
             <div className="mt-5">
-              <Button href="/#demo" size="sm" variant="gradient">
-                Solicitar demostración
+              <Button href="/#beta" size="sm" variant="gradient">
+                Analizar una licitación real
               </Button>
             </div>
             <a
@@ -46,7 +47,6 @@ export function Footer() {
               <Icon name="mail" size={16} />
               {siteConfig.contactEmail}
             </a>
-            <p className="mt-1 text-2xs text-ink-400">Correo de contacto pendiente de confirmar.</p>
           </div>
 
           <nav aria-label="Producto" className="lg:col-span-3">
@@ -100,13 +100,17 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-2xs text-ink-300">
-            © {currentYear()} LICITATIS. Todos los derechos reservados.
+        <div className="mt-12 space-y-3 border-t border-white/10 pt-6">
+          <p className="text-2xs leading-relaxed text-ink-300">
+            <strong className="font-semibold text-ink-200">{disclaimers.noGuarantee}</strong>
           </p>
-          <p className="text-2xs text-ink-300">
-            Razón social, NIF y domicilio pendientes de datos legales definitivos.
-          </p>
+          <p className="text-2xs leading-relaxed text-ink-400">{disclaimers.dataSources}</p>
+          <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-2xs text-ink-400">
+              © {currentYear()} LICITATIS · Beta gratuita. Razón social, NIF y domicilio pendientes
+              de datos legales definitivos.
+            </p>
+          </div>
         </div>
       </Container>
     </footer>

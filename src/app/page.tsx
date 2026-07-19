@@ -1,18 +1,15 @@
 import { Hero } from "@/components/sections/Hero";
-import { LogosBand } from "@/components/sections/LogosBand";
 import { ValueStats } from "@/components/sections/ValueStats";
-import { Problem } from "@/components/sections/Problem";
-import { Spotlights } from "@/components/sections/Spotlights";
-import { Features } from "@/components/sections/Features";
+import { ProblemSolution } from "@/components/sections/ProblemSolution";
 import { HowItWorks } from "@/components/sections/HowItWorks";
-import { Benefits } from "@/components/sections/Benefits";
-import { Audiences } from "@/components/sections/Audiences";
-import { Comparison } from "@/components/sections/Comparison";
+import { Passport } from "@/components/sections/Passport";
+import { Features } from "@/components/sections/Features";
+import { WhyNotSearch } from "@/components/sections/WhyNotSearch";
+import { DualAudience } from "@/components/sections/DualAudience";
+import { Privacy } from "@/components/sections/Privacy";
 import { Plans } from "@/components/sections/Plans";
-import { Security } from "@/components/sections/Security";
-import { Testimonials } from "@/components/sections/Testimonials";
+import { BetaPartner } from "@/components/sections/BetaPartner";
 import { Faq } from "@/components/sections/Faq";
-import { DemoSection } from "@/components/sections/DemoSection";
 import { FinalCta } from "@/components/sections/FinalCta";
 import { faqLd } from "@/lib/seo";
 
@@ -20,20 +17,17 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <LogosBand />
       <ValueStats />
-      <Problem />
-      <Spotlights />
-      <Features />
+      <ProblemSolution />
       <HowItWorks />
-      <Benefits />
-      <Audiences />
-      <Comparison />
+      <Passport />
+      <Features />
+      <WhyNotSearch />
+      <DualAudience />
+      <Privacy />
       <Plans />
-      <Security />
-      <Testimonials />
+      <BetaPartner />
       <Faq />
-      <DemoSection />
       <FinalCta />
 
       <script

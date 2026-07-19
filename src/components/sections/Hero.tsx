@@ -1,72 +1,64 @@
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
-import { AiBadge } from "@/components/ui/AiBadge";
 import { BrowserFrame } from "@/components/mockups/BrowserFrame";
 import { DashboardMock } from "@/components/mockups/DashboardMock";
 
 /** Hero above-the-fold — sin <Reveal> (el H1 es candidato a LCP y debe verse al instante). */
 export function Hero() {
   return (
-    <section id="producto" className="relative overflow-hidden pb-20 pt-8 sm:pb-24 sm:pt-12">
-      {/* Fondo: malla de gradientes + rejilla sutil */}
+    <section id="producto" className="relative overflow-hidden pb-20 pt-10 sm:pb-24 sm:pt-14">
+      {/* Fondo sobrio: un único glow violeta + rejilla sutil (nada de blobs por todas partes). */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-grid-ink bg-grid opacity-60 [mask-image:radial-gradient(ellipse_at_top,#000_15%,transparent_65%)]" />
-        <div className="absolute -right-32 -top-40 h-[32rem] w-[32rem] rounded-full bg-brand-300/30 blur-3xl" />
-        <div className="absolute -left-24 top-10 h-96 w-96 rounded-full bg-teal-200/40 blur-3xl" />
-        <div className="absolute left-1/3 top-40 h-80 w-80 rounded-full bg-violet-200/25 blur-3xl" />
+        <div className="absolute inset-0 bg-grid-ink bg-grid opacity-50 [mask-image:radial-gradient(ellipse_at_top,#000_15%,transparent_60%)]" />
+        <div className="absolute -right-24 -top-32 h-[30rem] w-[30rem] rounded-full bg-brand-200/50 blur-3xl" />
       </div>
 
       <Container>
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.08fr)] lg:gap-10">
+        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.06fr)] lg:gap-10">
           {/* Texto */}
           <div className="max-w-xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white/70 py-1 pl-1 pr-3 text-xs font-semibold text-ink-600 shadow-sm backdrop-blur">
-              <AiBadge>IA</AiBadge>
-              El copiloto de licitaciones con inteligencia artificial
+            <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/70 px-3 py-1 text-xs font-semibold text-brand-800 shadow-sm backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true" />
+              Beta privada abierta a empresas y consultoras
             </span>
 
-            <h1 className="mt-5 text-balance text-[2.6rem] font-bold leading-[1.05] tracking-tight text-ink-900 sm:text-5xl lg:text-[3.6rem]">
-              La <span className="text-gradient">IA</span> que prepara y controla tus licitaciones
+            <h1 className="mt-5 text-balance font-display text-[2.5rem] font-bold leading-[1.06] tracking-tight text-ink-900 sm:text-5xl lg:text-[3.3rem]">
+              Prepara licitaciones públicas con IA, control documental y{" "}
+              <span className="text-gradient">menos riesgo de exclusión</span>.
             </h1>
 
             <p className="mt-5 text-pretty text-lg leading-relaxed text-ink-500">
-              LICITATIS analiza pliegos con IA, organiza requisitos y documentos, y coordina tareas
-              y plazos. Menos trabajo manual, menos riesgo de errores y todo tu proceso bajo control.
+              LICITATIS convierte pliegos en expedientes de candidatura: elegibilidad, documentación,
+              tareas, memoria técnica, oferta económica, riesgos e informe para dirección.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button href="#demo" size="lg" variant="gradient" withArrow>
-                Solicitar demostración
+              <Button href="#beta" size="lg" variant="gradient" withArrow>
+                Analizar una licitación real
               </Button>
-              <Button href="#como-funciona" size="lg" variant="secondary">
-                Ver cómo funciona
+              <Button href="#beta" size="lg" variant="secondary">
+                Ser Beta Partner
               </Button>
             </div>
 
-            <ul className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-500">
-              <li className="flex items-center gap-1.5">
-                <Icon name="check" size={16} className="text-brand-600" /> Adaptada a tu caso
-              </li>
-              <li className="flex items-center gap-1.5">
-                <Icon name="check" size={16} className="text-brand-600" /> Sin compromiso
-              </li>
-              <li className="flex items-center gap-1.5">
-                <Icon name="check" size={16} className="text-brand-600" /> Para equipos que licitan
-              </li>
-            </ul>
+            <p className="mt-6 flex items-start gap-2 text-sm text-ink-500">
+              <Icon name="shield" size={17} className="mt-0.5 shrink-0 text-brand-600" />
+              La IA asiste, no decide: cada análisis separa hechos, inferencias y recomendaciones, y
+              exige revisión humana.
+            </p>
           </div>
 
-          {/* Visual */}
+          {/* Visual del producto */}
           <div className="relative">
             <div
               aria-hidden="true"
-              className="absolute inset-6 -z-10 rounded-[2.5rem] bg-gradient-ai opacity-25 blur-2xl"
+              className="absolute inset-8 -z-10 rounded-[2.5rem] bg-brand-400/25 blur-2xl"
             />
             <div className="animate-float-slow">
               <BrowserFrame
                 className="shadow-float"
-                aria-label="Vista de demostración del panel de licitaciones de LICITATIS"
+                aria-label="Vista de demostración del expediente de una candidatura en LICITATIS"
               >
                 <DashboardMock />
               </BrowserFrame>
@@ -77,12 +69,12 @@ export function Hero() {
               className="absolute -left-4 bottom-12 hidden rounded-xl border border-ink-100 bg-white/95 px-3.5 py-2.5 shadow-lift backdrop-blur sm:block"
             >
               <div className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-ai text-white">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-brand text-white">
                   <Icon name="sparkles" size={16} />
                 </span>
                 <div>
-                  <div className="text-xs font-semibold text-ink-900">Pliego resumido</div>
-                  <div className="text-2xs text-ink-400">14 requisitos detectados</div>
+                  <div className="text-xs font-semibold text-ink-900">Go / no-go argumentado</div>
+                  <div className="text-2xs text-ink-400">con revisión humana</div>
                 </div>
               </div>
             </div>
@@ -93,11 +85,11 @@ export function Hero() {
             >
               <div className="flex items-center gap-2.5">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
-                  <Icon name="clock" size={16} />
+                  <Icon name="shield" size={16} />
                 </span>
                 <div>
-                  <div className="text-xs font-semibold text-ink-900">Plazo en 3 días</div>
-                  <div className="text-2xs text-ink-400">EXP-2024-0138</div>
+                  <div className="text-xs font-semibold text-ink-900">Anti-exclusión: 2 avisos</div>
+                  <div className="text-2xs text-ink-400">antes de presentar</div>
                 </div>
               </div>
             </div>

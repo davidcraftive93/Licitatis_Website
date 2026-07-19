@@ -7,7 +7,7 @@ export function AiBadge({ children = "IA", className }: { children?: ReactNode; 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-gradient-ai bg-[length:200%_200%] px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-white shadow-sm",
+        "inline-flex items-center gap-1 rounded-full bg-gradient-brand px-2 py-0.5 text-2xs font-bold uppercase tracking-wide text-white shadow-sm",
         className,
       )}
     >

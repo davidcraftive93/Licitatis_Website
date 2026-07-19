@@ -142,8 +142,8 @@ export function DemoForm() {
         </span>
         <h3 className="text-xl font-semibold text-ink-900">Solicitud recibida</h3>
         <p className="max-w-sm text-sm text-ink-600">
-          Gracias por tu interés en LICITATIS. Nuestro equipo se pondrá en contacto contigo para
-          organizar la demostración y resolver tus dudas.
+          Gracias por tu interés en el programa Beta Partner de LICITATIS. Nuestro equipo se pondrá
+          en contacto contigo para la activación y para analizar tu primera licitación real.
         </p>
         <Link
           href="/"
@@ -305,12 +305,13 @@ export function DemoForm() {
         <Button
           type="submit"
           size="lg"
+          variant="gradient"
           disabled={status === "submitting"}
           withArrow={status !== "submitting"}
         >
-          {status === "submitting" ? "Enviando…" : "Solicitar demostración"}
+          {status === "submitting" ? "Enviando…" : "Solicitar plaza en la beta"}
         </Button>
-        <p className="text-xs text-ink-400">Te responderemos lo antes posible.</p>
+        <p className="text-xs text-ink-400">Sin tarjeta · Beta gratuita.</p>
       </div>
     </form>
   );

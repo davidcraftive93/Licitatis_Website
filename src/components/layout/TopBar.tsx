@@ -10,10 +10,10 @@ export function TopBar() {
       <Container>
         <div className="flex h-9 items-center justify-between text-xs">
           <p className="flex items-center gap-2 text-ink-300">
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-ai text-white">
+            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-brand text-white">
               <Icon name="sparkles" size={10} />
             </span>
-            Software de licitaciones con inteligencia artificial
+            De pliego a candidatura preparada, controlada y defendible
           </p>
           <div className="flex items-center gap-5">
             <a
