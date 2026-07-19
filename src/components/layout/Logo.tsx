@@ -10,7 +10,7 @@ interface LogoProps {
 }
 
 /**
- * Marca de LICITATIS (brand kit §12): cuadrado violeta con la letra "L" en blanco.
+ * Marca de LICITATIS: cuadrado verde esmeralda con la letra "L" en blanco.
  * Sobrio y minimal. Construido en SVG propio.
  */
 export function Logo({ wordmark = true, tone = "dark", className, size = 32 }: LogoProps) {

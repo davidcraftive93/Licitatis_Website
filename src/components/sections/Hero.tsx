@@ -8,7 +8,7 @@ import { DashboardMock } from "@/components/mockups/DashboardMock";
 export function Hero() {
   return (
     <section id="producto" className="relative overflow-hidden pb-20 pt-10 sm:pb-24 sm:pt-14">
-      {/* Fondo sobrio: un único glow violeta + rejilla sutil (nada de blobs por todas partes). */}
+      {/* Fondo sobrio: un único glow verde + rejilla sutil (nada de blobs por todas partes). */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-grid-ink bg-grid opacity-50 [mask-image:radial-gradient(ellipse_at_top,#000_15%,transparent_60%)]" />
         <div className="absolute -right-24 -top-32 h-[30rem] w-[30rem] rounded-full bg-brand-200/50 blur-3xl" />

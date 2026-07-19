@@ -19,9 +19,9 @@ export default function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px",
-          backgroundColor: "#090817",
+          backgroundColor: "#0B1220",
           backgroundImage:
-            "radial-gradient(circle at 82% 6%, rgba(106,37,245,0.42), transparent 45%), radial-gradient(circle at 8% 96%, rgba(241,44,120,0.20), transparent 45%)",
+            "radial-gradient(circle at 82% 6%, rgba(16,185,129,0.42), transparent 45%), radial-gradient(circle at 8% 96%, rgba(245,158,11,0.20), transparent 45%)",
           color: "#ffffff",
           fontFamily: "sans-serif",
         }}
@@ -32,7 +32,7 @@ export default function OpengraphImage() {
               width: "64px",
               height: "64px",
               borderRadius: "16px",
-              backgroundColor: "#6A25F5",
+              backgroundColor: "#059669",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -63,7 +63,7 @@ export default function OpengraphImage() {
           >
             <div style={{ display: "flex" }}>Prepara licitaciones públicas</div>
             <div style={{ display: "flex" }}>
-              con <span style={{ color: "#C4B5FD", marginLeft: "16px" }}>IA</span>
+              con <span style={{ color: "#6EE7B7", marginLeft: "16px" }}>IA</span>
             </div>
           </div>
           <div style={{ fontSize: "27px", color: "#B9C5D9", maxWidth: "920px" }}>
@@ -72,7 +72,7 @@ export default function OpengraphImage() {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "14px", color: "#9CA3C0", fontSize: "22px" }}>
-          <div style={{ width: "40px", height: "4px", borderRadius: "2px", backgroundColor: "#6A25F5" }} />
+          <div style={{ width: "40px", height: "4px", borderRadius: "2px", backgroundColor: "#059669" }} />
           El Pasaporte del Licitador · Beta gratuita
         </div>
       </div>
