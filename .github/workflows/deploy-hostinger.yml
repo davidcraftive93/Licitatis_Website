@@ -107,11 +107,13 @@ jobs:
           NEXT_PUBLIC_GA_ID: ${{ vars.NEXT_PUBLIC_GA_ID }}
         run: npm run build
 
-      - name: Verificar artefacto out/
+      - name: Verificar artefacto out/ y escribir sentinela
         run: |
           test -d out || { echo "::error::No existe out/"; exit 1; }
           test -f out/index.html || { echo "::error::No existe out/index.html"; exit 1; }
-          echo "Artefacto out/ verificado."
+          # Sentinela de commit: permite verificar por HTTP que la web pública sirve ESTE build.
+          printf '%s' "$DEPLOY_SHA" > out/__build_sha.txt
+          echo "Artefacto out/ verificado. Sentinela __build_sha.txt=$DEPLOY_SHA"
 
       - name: Validar ruta de despliegue
         env:
@@ -174,60 +176,93 @@ jobs:
             exit 1
           fi
 
+      - name: Detectar el docroot realmente servido (autocorrección)
+        env:
+          SSH_USER: ${{ secrets.HOSTINGER_USERNAME }}
+          SSH_HOST: ${{ secrets.HOSTINGER_HOST }}
+          SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
+          DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
+        run: |
+          # Un deploy solo tiene efecto si escribe en el directorio DESDE EL QUE el servidor
+          # publica licitatis.es. En Hostinger el dominio principal se sirve desde ~/public_html,
+          # NO desde ~/domains/<dominio>/public_html. Lo detectamos sin adivinar: dejamos una
+          # "sonda" (fichero cuyo contenido es su propia ruta) en cada candidato y consultamos
+          # la URL pública; la que devuelve es el docroot realmente servido.
+          DEPLOY_PATH="$(printf '%s' "$DEPLOY_PATH" | tr -d '\r\n')"
+          SSH_PORT="$(printf '%s' "$SSH_PORT" | tr -d '\r\n')"
+          SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '\r\n')"
+          SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
+          SSH="ssh -i $HOME/.ssh/id_deploy -p $SSH_PORT -o BatchMode=yes -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 $SSH_USER@$SSH_HOST"
+          REMOTE_HOME="$($SSH 'printf %s "$HOME"')"
+          echo "HOME remoto: ${REMOTE_HOME:-<desconocido>}"
+          CANDS="$REMOTE_HOME/public_html $DEPLOY_PATH"
+          PROBE="__docroot_probe_${DEPLOY_SHA}.txt"
+          $SSH "for d in $CANDS; do if [ -d \"\$d\" ]; then printf '%s' \"\$d\" > \"\$d/$PROBE\" 2>/dev/null || true; fi; done"
+          SERVED="$(curl -fsS "https://licitatis.es/$PROBE?cb=${DEPLOY_SHA}" 2>/dev/null | tr -d '\r\n' || true)"
+          $SSH "for d in $CANDS; do rm -f \"\$d/$PROBE\" 2>/dev/null || true; done"
+          if [ -z "$SERVED" ]; then
+            echo "::warning::No se detectó el docroot por sonda HTTP; se prefiere ~/public_html."
+            if $SSH "[ -d \"$REMOTE_HOME/public_html\" ]"; then SERVED="$REMOTE_HOME/public_html"; else SERVED="$DEPLOY_PATH"; fi
+          fi
+          case "$SERVED" in
+            */public_html*) : ;;
+            *) echo "::error::Docroot detectado inesperado ('$SERVED'). Abortando por seguridad."; exit 1 ;;
+          esac
+          if [ "$SERVED" != "$DEPLOY_PATH" ]; then
+            echo "::warning::licitatis.es se sirve desde '$SERVED' (el secreto HOSTINGER_DEPLOY_PATH apunta a '$DEPLOY_PATH'). Se desplegará en el docroot servido."
+          fi
+          echo "Docroot servido: $SERVED"
+          echo "TARGET=$SERVED" >> "$GITHUB_ENV"
+
       - name: Copia de seguridad remota (rollback)
         env:
           SSH_USER: ${{ secrets.HOSTINGER_USERNAME }}
           SSH_HOST: ${{ secrets.HOSTINGER_HOST }}
           SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
-          DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
         run: |
-          # Limpia saltos de línea de los secretos (un Enter de más al pegarlos rompería
-          # la ruta o el host en el comando remoto).
-          DEPLOY_PATH="$(printf '%s' "$DEPLOY_PATH" | tr -d '\r\n')"
           SSH_PORT="$(printf '%s' "$SSH_PORT" | tr -d '\r\n')"
           SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '\r\n')"
           SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
+          # $TARGET viene del paso de autodetección (docroot realmente servido).
           ssh -i ~/.ssh/id_deploy -p "$SSH_PORT" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 "$SSH_USER@$SSH_HOST" \
-            "DP='$DEPLOY_PATH'; if [ -d \"\$DP\" ]; then cp -a \"\$DP\" \"\${DP%/}.backup-$(date +%Y%m%d%H%M%S)\" && echo 'Backup creado.'; else echo 'Sin backup: el directorio aún no existe.'; fi" || \
+            "DP='$TARGET'; if [ -d \"\$DP\" ]; then cp -a \"\$DP\" \"\${DP%/}.backup-$(date +%Y%m%d%H%M%S)\" && echo 'Backup creado.'; else echo 'Sin backup: el directorio aún no existe.'; fi" || \
             echo "::warning::No se pudo crear backup remoto; continúa el despliegue."
 
-      - name: Sincronizar out/ hacia Hostinger (solo el directorio de despliegue)
+      - name: Sincronizar out/ hacia el docroot servido
         env:
           SSH_USER: ${{ secrets.HOSTINGER_USERNAME }}
           SSH_HOST: ${{ secrets.HOSTINGER_HOST }}
           SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
-          DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
         run: |
-          # Limpia saltos de línea de los secretos (un Enter de más rompería la ruta remota).
-          DEPLOY_PATH="$(printf '%s' "$DEPLOY_PATH" | tr -d '\r\n')"
           SSH_PORT="$(printf '%s' "$SSH_PORT" | tr -d '\r\n')"
           SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '\r\n')"
           SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
-          # Usar $HOME (no ~) dentro de la cadena -e: el ~ NO se expande entre comillas
-          # dobles y rsync no invoca un shell, así que la ruta de la clave quedaba literal.
+          # $TARGET = docroot realmente servido (paso de autodetección).
+          # Usar $HOME (no ~) dentro de la cadena -e: el ~ NO se expande entre comillas dobles.
           set +e
           RS_OUT="$(rsync -az --delete \
             -e "ssh -i $HOME/.ssh/id_deploy -p $SSH_PORT -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20" \
             out/ \
-            "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/" 2>&1)"
+            "$SSH_USER@$SSH_HOST:$TARGET/" 2>&1)"
           RS_RC=$?
           set -e
           if [ "$RS_RC" -ne 0 ]; then
             echo "::error::rsync falló (rc=$RS_RC). Salida: $(printf '%s' "$RS_OUT" | tail -4 | tr '\n' ' | ')"
             exit 1
           fi
-          echo "Sincronización completada."
+          echo "Sincronización completada en $TARGET."
 
-      - name: Verificar que la web responde
+      - name: Verificar que la web sirve ESTE commit
         run: |
           sleep 5
-          if curl -fsS -o /dev/null -w "HTTP %{http_code}\n" "https://licitatis.es/"; then
-            echo "Producción responde en licitatis.es"
-          elif curl -fsS -o /dev/null -w "HTTP %{http_code}\n" "https://www.licitatis.es/"; then
-            echo "Producción responde en www.licitatis.es"
+          URL="https://licitatis.es/__build_sha.txt?cb=${DEPLOY_SHA}"
+          GOT="$(curl -fsS "$URL" 2>/dev/null | tr -d '\r\n' || true)"
+          if [ "$GOT" = "$DEPLOY_SHA" ]; then
+            echo "✅ Verificado: licitatis.es sirve el commit $DEPLOY_SHA."
           else
-            echo "::warning::No se pudo verificar la URL pública (¿dominio aún no conectado en Hostinger?)."
+            echo "::error::La web pública NO sirve el commit desplegado. Esperado '$DEPLOY_SHA', obtenido '${GOT:-<vacío o 404>}'. El rsync no llegó al docroot servido (TARGET='$TARGET'). Revisa el aviso del paso de autodetección."
+            exit 1
           fi
 
       - name: Resumen del despliegue
-        run: echo "✅ Desplegado el commit $DEPLOY_SHA en Hostinger ($DEPLOY_PATH)."
+        run: echo "✅ Desplegado el commit $DEPLOY_SHA en Hostinger ($TARGET)."
