@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --header-h: 4.5rem;
+    --header-h: 4rem;
   }
 
   html {
@@ -29,7 +29,6 @@
     text-wrap: pretty;
   }
 
-  /* Compensa la cabecera fija al saltar a un ancla. */
   :where(section[id], [data-anchor]) {
     scroll-margin-top: 5.5rem;
   }
@@ -47,24 +46,36 @@
 }
 
 @layer components {
-  /* Reveal al hacer scroll (activado por IntersectionObserver añadiendo .is-visible).
-     Mejora progresiva: el contenido solo se oculta cuando hay JS (clase .js en <html>).
-     Sin JS, todo permanece visible; así ninguna sección depende del cliente para verse. */
+  /* Texto con degradado de marca (esmeralda -> teal -> cyan). */
+  .text-gradient {
+    @apply bg-gradient-ai bg-clip-text text-transparent;
+    background-size: 200% 200%;
+  }
+
+  .text-gradient-brand {
+    @apply bg-gradient-brand bg-clip-text text-transparent;
+  }
+
+  /* Reveal al hacer scroll con mejora progresiva (solo se oculta si hay JS: clase .js). */
   .reveal {
     transition:
-      opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
     transition-delay: var(--reveal-delay, 0ms);
   }
-
   .js .reveal {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(22px);
   }
-
   .js .reveal.is-visible {
     opacity: 1;
     transform: none;
+  }
+
+  /* Máscara de bordes para marquesinas de logos. */
+  .fade-edges {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
   }
 
   /* Tipografía para páginas legales. */
@@ -95,7 +106,6 @@
   html {
     scroll-behavior: auto;
   }
-
   *,
   ::before,
   ::after {
@@ -103,7 +113,6 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
-
   .reveal {
     opacity: 1 !important;
     transform: none !important;

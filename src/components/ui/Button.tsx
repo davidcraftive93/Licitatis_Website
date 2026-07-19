@@ -3,13 +3,15 @@ import type { MouseEventHandler, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icons";
 
-type Variant = "primary" | "secondary" | "ghost" | "inverse";
+type Variant = "gradient" | "primary" | "secondary" | "ghost" | "inverse";
 type Size = "sm" | "md" | "lg";
 
 const base =
   "group inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 disabled:cursor-not-allowed disabled:opacity-60";
 
 const variants: Record<Variant, string> = {
+  gradient:
+    "bg-gradient-brand text-white shadow-brand-glow hover:shadow-brand-glow-lg hover:-translate-y-0.5 active:translate-y-0",
   primary:
     "bg-brand-700 text-white shadow-brand-glow hover:bg-brand-800 hover:-translate-y-0.5 active:translate-y-0",
   secondary:
@@ -21,7 +23,7 @@ const variants: Record<Variant, string> = {
 const sizes: Record<Size, string> = {
   sm: "h-9 px-4 text-sm",
   md: "h-11 px-5 text-[0.95rem]",
-  lg: "h-[3.25rem] px-7 text-base",
+  lg: "h-[3.35rem] px-7 text-base",
 };
 
 interface CommonProps {

@@ -30,12 +30,12 @@ export const siteConfig = {
  * funcionen desde las páginas legales (navegando a la home y desplazándose a la sección).
  */
 export const navLinks = [
-  { label: "Producto", href: "/#producto" },
-  { label: "Cómo funciona", href: "/#como-funciona" },
   { label: "Funcionalidades", href: "/#funcionalidades" },
+  { label: "Cómo funciona", href: "/#como-funciona" },
+  { label: "Planes", href: "/#planes" },
   { label: "Para quién es", href: "/#para-quien" },
   { label: "Seguridad", href: "/#seguridad" },
-  { label: "Preguntas frecuentes", href: "/#faq" },
+  { label: "FAQ", href: "/#faq" },
 ] as const;
 
 /** Enlaces legales para el footer (páginas con placeholders pendientes de revisión legal). */

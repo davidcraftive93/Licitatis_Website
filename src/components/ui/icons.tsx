@@ -41,7 +41,12 @@ export type IconName =
   | "key"
   | "backup"
   | "target"
-  | "inbox";
+  | "inbox"
+  | "zap"
+  | "star"
+  | "quote"
+  | "message"
+  | "trending-up";
 
 type PathContent = React.ReactNode;
 
@@ -275,6 +280,34 @@ const PATHS: Record<IconName, PathContent> = {
       <path d="M3 13.5 6 5h12l3 8.5" />
       <path d="M3 13.5V18a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4.5" />
       <path d="M3 13.5h5l1.5 2.5h5l1.5-2.5h5" />
+    </>
+  ),
+  zap: (
+    <>
+      <path d="M13 3 4 14h7l-1 7 9-11h-7l1-7Z" />
+    </>
+  ),
+  star: (
+    <>
+      <path d="m12 3 2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 21.6l-5.2 2.4 1-5.75-4.2-4.1 5.8-.85L12 3Z" />
+    </>
+  ),
+  quote: (
+    <>
+      <path d="M9 7H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v2a2 2 0 0 1-2 2" />
+      <path d="M19 7h-4a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h2v2a2 2 0 0 1-2 2" />
+    </>
+  ),
+  message: (
+    <>
+      <path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4 3v-3H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
+      <path d="M8 10h8M8 13h5" />
+    </>
+  ),
+  "trending-up": (
+    <>
+      <path d="M3 17 10 10l4 4 7-7" />
+      <path d="M15 7h6v6" />
     </>
   ),
 };
