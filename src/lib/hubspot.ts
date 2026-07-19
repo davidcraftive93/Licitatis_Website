@@ -27,12 +27,12 @@ export interface HubspotSubmitResult {
 }
 
 const CHALLENGE_LABELS: Record<string, string> = {
-  "dispersion-fuentes": "Licitaciones dispersas en muchas fuentes",
-  "analisis-pliegos": "Revisión manual de pliegos y requisitos",
-  "gestion-documental": "Documentación desorganizada o versiones incorrectas",
-  plazos: "Control de fechas límite",
-  "coordinacion-equipo": "Coordinación de tareas y responsables",
-  trazabilidad: "Falta de trazabilidad y visibilidad",
+  "decidir-presentarse": "Decidir con criterio si presentarnos",
+  "requisitos-solvencia": "Descubrir tarde un requisito de solvencia",
+  documentacion: "Certificados o firmas que faltan o caducan",
+  "memoria-tecnica": "Redactar memorias técnicas contra reloj",
+  plazos: "Controlar plazos y no perder oportunidades",
+  exclusion: "Evitar la exclusión por fallos administrativos",
   otra: "Otra",
 };
 
