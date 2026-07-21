@@ -11,7 +11,7 @@ export function Plans() {
       <SectionHeader
         eyebrow="Planes"
         title="Cuatro planes, límites reales"
-        description="Los límites se aplican de verdad (no son adorno). Ahora en beta gratuita; los precios se anunciarán al salir de beta."
+        description="Lo que ves es lo que hay: estos límites son los que aplica el servidor, sin letra pequeña. Y ahora mismo, todo en beta gratuita."
       />
 
       <div className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -106,8 +106,8 @@ export function Plans() {
       <Reveal delay={140}>
         <p className="mt-6 text-center text-xs text-ink-400">
           En el plan <strong className="font-semibold text-ink-600">Free</strong> la IA es simulada
-          (etiquetada como tal en la app); en Starter, Pro y Agency es IA real. Sin importes
-          inventados: los precios se comunicarán al salir de beta.
+          (etiquetada como tal en la app); en Starter, Pro y Agency es IA real. Los precios se
+          anunciarán al salir de beta.
         </p>
       </Reveal>
     </Section>

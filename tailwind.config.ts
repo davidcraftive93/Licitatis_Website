@@ -111,6 +111,14 @@ const config: Config = {
           "30%": { opacity: "1" },
           "100%": { opacity: "0", transform: "translateY(10px)" },
         },
+        // Haz de "escaneo" que recorre el hero de arriba abajo (metáfora del radar
+        // de licitaciones). Solo transform/opacity: compone en el compositor.
+        beam: {
+          "0%": { transform: "translateY(-8rem)", opacity: "0" },
+          "12%": { opacity: "0.65" },
+          "80%": { opacity: "0.65" },
+          "100%": { transform: "translateY(56rem)", opacity: "0" },
+        },
       },
       animation: {
         float: "float 6s ease-in-out infinite",
@@ -118,6 +126,7 @@ const config: Config = {
         "pulse-ring": "pulse-ring 2.4s cubic-bezier(0.16,1,0.3,1) infinite",
         aurora: "aurora 9s ease-in-out infinite",
         "scroll-dot": "scroll-dot 2s ease-out infinite",
+        beam: "beam 11s linear infinite",
       },
     },
   },

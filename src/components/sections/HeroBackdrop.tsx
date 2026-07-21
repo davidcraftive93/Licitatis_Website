@@ -11,7 +11,7 @@ import {
 interface Page {
   depth: number; // 0 (fondo) .. 1 (frente): cuánto sigue al puntero
   tilt: number; // rotación en grados
-  className: string; // posición y tamaño
+  className: string; // posición y tamaño (en el wrapper que ondula)
 }
 
 const PAGES: Page[] = [
@@ -24,9 +24,10 @@ const PAGES: Page[] = [
 ];
 
 /**
- * Fondo del hero: rejilla + glow + "pliegos" suspendidos en 3D que hacen
- * parallax con el puntero (variables CSS --mx/--my, actualizadas con rAF).
- * Sin JS o en táctil queda como composición estática elegante.
+ * Fondo vivo del hero: rejilla + auroras + foco que sigue al puntero + haz de
+ * "radar" descendente + pliegos suspendidos en 3D que ondulan y hacen parallax.
+ * Sin JS o en táctil queda como composición estática elegante; el listener
+ * global solo vive mientras el hero está en pantalla.
  */
 export function HeroBackdrop() {
   const ref = useRef<HTMLDivElement>(null);
@@ -51,8 +52,12 @@ export function HeroBackdrop() {
     const node = ref.current;
     if (!node) return;
     const { innerWidth, innerHeight } = window;
+    // Parallax de los pliegos (-1..1) + posición del foco en px locales.
     node.style.setProperty("--mx", ((clientX / innerWidth) * 2 - 1).toFixed(3));
     node.style.setProperty("--my", ((clientY / innerHeight) * 2 - 1).toFixed(3));
+    const rect = node.getBoundingClientRect();
+    node.style.setProperty("--sx", `${(clientX - rect.left).toFixed(0)}px`);
+    node.style.setProperty("--sy", `${(clientY - rect.top).toFixed(0)}px`);
   });
 
   useEffect(() => {
@@ -63,25 +68,42 @@ export function HeroBackdrop() {
   }, [active, onMove]);
 
   return (
-    <div ref={ref} aria-hidden="true" className="depth-field pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      {/* Rejilla técnica + glows de marca. */}
+    <div
+      ref={ref}
+      aria-hidden="true"
+      className="depth-field pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+    >
+      {/* Rejilla técnica + auroras de marca. */}
       <div className="absolute inset-0 bg-grid-ink bg-grid opacity-50 [mask-image:radial-gradient(ellipse_at_top,#000_15%,transparent_60%)]" />
       <div className="absolute -right-24 -top-32 h-[30rem] w-[30rem] animate-aurora rounded-full bg-brand-200/50 blur-3xl" />
       <div className="absolute -left-32 top-1/2 h-72 w-72 animate-aurora rounded-full bg-amber-100/60 blur-3xl [animation-delay:-4s]" />
 
-      {/* Pliegos suspendidos en profundidad. */}
+      {/* Foco suave que sigue al puntero (estático arriba a la derecha sin ratón). */}
+      <div className="hero-spotlight absolute left-0 top-0" />
+
+      {/* Haz de "radar" que barre el hero de arriba abajo. */}
+      <div className="absolute inset-x-0 top-0 hidden md:block">
+        <div className="h-20 animate-beam bg-gradient-to-b from-transparent via-brand-300/20 to-transparent" />
+      </div>
+
+      {/* Pliegos suspendidos: ondulan (wrapper) y hacen parallax (página). */}
       <div className="absolute inset-0 hidden md:block">
         {PAGES.map((p, i) => (
           <div
             key={i}
-            className={`pliego-page ${p.className}`}
-            style={
-              {
-                "--depth": p.depth,
-                "--tilt": `${p.tilt}deg`,
-              } as React.CSSProperties
-            }
-          />
+            className={`absolute animate-float-slow ${p.className}`}
+            style={{ animationDelay: `${-i * 1.4}s`, animationDuration: `${6 + (i % 3)}s` }}
+          >
+            <div
+              className="pliego-page inset-0"
+              style={
+                {
+                  "--depth": p.depth,
+                  "--tilt": `${p.tilt}deg`,
+                } as React.CSSProperties
+              }
+            />
+          </div>
         ))}
       </div>
     </div>

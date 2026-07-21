@@ -25,21 +25,21 @@ export interface ValueStat {
 }
 /** Cifras cualitativas honestas (no métricas de clientes). */
 export const valueStats: ValueStat[] = [
-  { value: "1", label: "Pasaporte que alimenta todo el proceso" },
+  { value: "1", label: "Pasaporte: lo rellenas una vez, vale para todas tus licitaciones" },
   { value: "6", label: "pasos del pliego a la candidatura lista" },
-  { value: "0", label: "datos de empresa inventados por la IA" },
-  { value: "PLACSP", label: "+ subvenciones BDNS, con matching explicable" },
+  { value: "0", label: "datos de tu empresa inventados por la IA" },
+  { value: "PLACSP", label: "y subvenciones BDNS, con un encaje que se explica criterio a criterio" },
 ];
 
 /* ------------------------------------------------------------- Problema → solución */
 export const problemSolution = {
   a: {
     title: "El problema no es encontrar licitaciones.",
-    body: "Los buscadores y las alertas ya existen. Lo que cuesta dinero es lo de después: decidir sin criterio si presentarse, descubrir tarde un requisito de solvencia, perder una oferta por un certificado caducado o una firma que falta, y redactar memorias técnicas contra reloj sin reutilizar nada.",
+    body: "Buscadores y alertas hay muchos. Lo caro viene después: decidir a ciegas si presentarte, descubrir tarde un requisito de solvencia, quedarte fuera por un certificado caducado o una firma que faltaba, y escribir la memoria técnica de madrugada sin poder aprovechar nada de la anterior.",
   },
   b: {
     title: "LICITATIS trabaja del pliego a la candidatura.",
-    body: "De la alerta a la oferta lista para presentar: análisis del expediente, encaje con tu empresa, matriz de elegibilidad, checklist documental, tareas, riesgos de exclusión, escenarios económicos, memoria técnica asistida y un informe ejecutivo para decidir con dirección.",
+    body: "Del aviso a la oferta lista: analiza el expediente, te dice si encajas y qué te podría dejar fuera, te monta el checklist y las tareas, te ayuda con la memoria y con los números, y te prepara un informe para decidirlo con dirección en una reunión, no en cinco.",
   },
 };
 
@@ -55,37 +55,37 @@ export const howItWorksSteps: HowItWorksStep[] = [
     number: "01",
     icon: "radar",
     title: "Detecta o importa",
-    text: "Feed de PLACSP con perfiles de búsqueda, o sube el pliego a mano.",
+    text: "El feed de PLACSP te avisa de lo que encaja contigo. ¿Ya tienes el pliego? Súbelo y listo.",
   },
   {
     number: "02",
     icon: "sparkles",
     title: "Analiza con IA",
-    text: "Resumen, requisitos, criterios de adjudicación y un go/no-go argumentado.",
+    text: "El resumen, los requisitos, los criterios y una recomendación clara: ir o no ir, y por qué.",
   },
   {
     number: "03",
     icon: "scale",
     title: "Comprueba elegibilidad",
-    text: "Qué cumples, qué no y qué está dudoso — con evidencia y severidad.",
+    text: "Requisito a requisito: esto lo cumples, esto no, esto conviene mirarlo. Con la evidencia al lado.",
   },
   {
     number: "04",
     icon: "checklist",
     title: "Prepara el expediente",
-    text: "Tareas, checklist documental y memoria técnica sobre tu evidencia real.",
+    text: "Tareas, checklist y una memoria técnica que parte de proyectos que tu empresa ya ha ejecutado.",
   },
   {
     number: "05",
     icon: "shield",
     title: "Controla el riesgo",
-    text: "Escáner anti-exclusión, brecha UTE/socio e índice de preparación.",
+    text: "Antes de presentar, el escáner busca los fallos que suelen dejar ofertas fuera. Y si no llegas solo, te dice qué perfil de socio te falta.",
   },
   {
     number: "06",
     icon: "euro",
     title: "Decide y exporta",
-    text: "Escenarios económicos e informe ejecutivo imprimible para dirección.",
+    text: "Tres escenarios de oferta y un informe listo para imprimir y decidir con tu dirección.",
   },
 ];
 
@@ -93,7 +93,7 @@ export const howItWorksSteps: HowItWorksStep[] = [
 export const passport = {
   eyebrow: "El diferencial",
   title: "El Pasaporte del Licitador",
-  lead: "Rellena tu Pasaporte una vez. A partir de ahí, cada licitación que encaja, cada certificado que caduca y cada oferta que preparas parte de él.",
+  lead: "Lo rellenas una vez y trabaja para ti en cada licitación: te avisa de lo que encaja, de lo que caduca y de lo que falta — antes de que se convierta en un problema.",
   contains: [
     { icon: "id-card" as IconName, title: "Identidad", text: "CIF (validado con dígito de control), razón social, CNAE, contacto." },
     { icon: "radar" as IconName, title: "Qué busca", text: "CPVs, zonas, palabras clave, importes, lotes y organismos favoritos o vetados." },
@@ -104,7 +104,7 @@ export const passport = {
     {
       icon: "gauge" as IconName,
       title: "Índice de Aptitud para Licitar",
-      text: "Un score general y por vertical/CPV, con bloqueantes explícitos (p. ej. «certificado AEAT no vigente»).",
+      text: "Una puntuación general y por vertical/CPV, con bloqueantes explícitos (p. ej. «certificado AEAT no vigente»).",
     },
     {
       icon: "shield" as IconName,
@@ -126,15 +126,15 @@ export interface Feature {
   text: string;
 }
 export const features: Feature[] = [
-  { icon: "sparkles", title: "Análisis IA del expediente", text: "Go/no-go con confianza, información faltante y revisión humana obligatoria." },
+  { icon: "sparkles", title: "Análisis IA del expediente", text: "Te dice si ir o no ir, con cuánta confianza y qué le falta por saber. Tú tienes la última palabra." },
   { icon: "scale", title: "Matriz de elegibilidad", text: "¿Podemos presentarnos? Requisito a requisito, con semáforo y evidencia." },
-  { icon: "shield", title: "Escáner anti-exclusión", text: "Los errores que dejan ofertas fuera, detectados antes de presentar." },
+  { icon: "shield", title: "Escáner anti-exclusión", text: "Los errores que dejan ofertas fuera, detectados cuando aún tienen arreglo." },
   { icon: "handshake", title: "Brecha UTE / Socio", text: "Un «no cumples» convertido en «viable con el socio adecuado»." },
-  { icon: "euro", title: "Escenarios económicos", text: "Conservador, equilibrado y agresivo — con margen y aviso de baja temeraria." },
-  { icon: "book", title: "Memoria técnica asistida", text: "Estructura por criterios con tu evidencia real. La IA no inventa capacidades." },
-  { icon: "message", title: "Chat con citas al pliego", text: "Pregunta al expediente; responde citando documento, fragmento y página." },
-  { icon: "checklist", title: "Tareas y checklist", text: "Generadas del análisis, asignables al equipo, exportables en formato estándar." },
-  { icon: "gauge", title: "Índice de preparación", text: "Un % explicable con bloqueantes: sabes qué falta para estar listos." },
+  { icon: "euro", title: "Escenarios económicos", text: "Tres formas de ofertar: prudente, equilibrada o agresiva. Con el margen claro y aviso si rozas la baja temeraria." },
+  { icon: "book", title: "Memoria técnica asistida", text: "Se estructura según los criterios del pliego y se apoya en lo que has hecho de verdad. Nada de capacidades inventadas." },
+  { icon: "message", title: "Chat con citas al pliego", text: "Pregúntale lo que quieras al expediente: te responde citando el documento y la página exacta." },
+  { icon: "checklist", title: "Tareas y checklist", text: "Salen solas del análisis, se reparten entre el equipo y se exportan donde las necesites." },
+  { icon: "gauge", title: "Índice de preparación", text: "Un porcentaje que se entiende: qué está listo, qué falta y qué te está bloqueando." },
 ];
 
 /* --------------------------------------------------- Por qué NO es un buscador (§9) */
@@ -144,7 +144,7 @@ export interface ContrastRow {
 }
 export const searchVsLicitatis: ContrastRow[] = [
   { search: "Te avisa de la oportunidad.", licitatis: "Te lleva hasta la oferta lista para presentar." },
-  { search: "«Aquí tienes 200 licitaciones».", licitatis: "«Estas encajan contigo; esta la puedes ganar, esta te excluiría por X»." },
+  { search: "«Aquí tienes 200 licitaciones».", licitatis: "«Estas encajan contigo; esta merece que la pelees, esta te excluiría por X»." },
   { search: "La documentación es cosa tuya.", licitatis: "Checklist, memoria y expediente sobre tu evidencia real." },
   { search: "El riesgo de exclusión lo descubres al presentar.", licitatis: "Lo ves antes: escáner anti-exclusión e índice de preparación." },
   { search: "Cada oferta empieza de cero.", licitatis: "El Pasaporte y la Biblioteca reutilizan lo que ya hiciste." },
@@ -164,7 +164,7 @@ export const audiences: AudienceCard[] = [
     icon: "building",
     eyebrow: "Para empresas",
     title: "Un proceso repetible, del pliego al expediente listo",
-    text: "Para pymes que se presentan a licitaciones públicas y hoy preparan ofertas contra reloj, sin proceso y con miedo a la exclusión.",
+    text: "Para pymes que licitan y se conocen el proceso de memoria: ofertas contra reloj, carpetas por todas partes y el miedo a quedarse fuera por un papel.",
     points: [
       "Activación documental guiada",
       "Análisis de licitaciones reales",
@@ -176,7 +176,7 @@ export const audiences: AudienceCard[] = [
     icon: "briefcase",
     eyebrow: "Para consultoras",
     title: "Modo multicliente, con expedientes por cliente",
-    text: "Para consultoras y despachos que gestionan concursos de varias empresas cliente y multiplican el trabajo manual por cada una.",
+    text: "Para consultoras y despachos que llevan concursos de varios clientes y acaban repitiendo el mismo trabajo una vez por cada uno.",
     points: [
       "Espacios de cliente separados y aislados",
       "Expedientes y candidaturas por cliente",
@@ -211,7 +211,7 @@ export const privacyPoints: PrivacyPoint[] = [
   {
     icon: "key",
     title: "Acceso por roles",
-    text: "Owner, admin, gestor y lector con permisos granulares; la autorización vive en el servidor.",
+    text: "Owner, admin, gestor y lector con permisos granulares, comprobados siempre en el servidor.",
   },
   {
     icon: "shield",
@@ -230,16 +230,16 @@ export const privacyPoints: PrivacyPoint[] = [
   },
   {
     icon: "backup",
-    title: "Hospedaje en la UE",
-    text: "Infraestructura en la Unión Europea; sesiones endurecidas.",
+    title: "Datos alojados en la UE",
+    text: "Infraestructura en la Unión Europea, con protección de sesión reforzada.",
   },
 ];
 
 /* --------------------------------------------------------- Programa Beta Partner (§15) */
 export const betaPartner = {
-  eyebrow: "Conversión",
+  eyebrow: "Programa Beta",
   title: "Programa Beta Partner LICITATIS",
-  sub: "Plazas limitadas para empresas licitadoras y consultoras. Incluye la Activación Documental IA: cargamos tu documentación, configuramos tu perfil de solvencia y analizamos contigo tu primera licitación real.",
+  sub: "Plazas limitadas para empresas que licitan y consultoras. Nosotros hacemos el trabajo pesado de arrancar: cargamos tu documentación, montamos tu perfil de solvencia y analizamos contigo tu primera licitación real.",
 };
 
 /* ------------------------------------------------------------------------ Planes (§11) */
@@ -298,7 +298,7 @@ export const faqs: Faq[] = [
   {
     question: "¿LICITATIS presenta la oferta por mí?",
     answer:
-      "No. Prepara y controla el expediente, pero no custodia tus certificados ni firma o presenta en tu nombre. Tú das el paso final.",
+      "No. Prepara y controla el expediente, pero no custodia tus certificados y no firma ni presenta en tu nombre. Tú das el paso final.",
   },
   {
     question: "¿La IA se inventa datos de mi empresa?",
@@ -313,11 +313,11 @@ export const faqs: Faq[] = [
   {
     question: "¿Cómo sabe qué licitaciones me encajan?",
     answer:
-      "Con tu Pasaporte y un cálculo determinista y explicable (CPV, territorio, importe, palabras clave…). Si no hay señal en tu Pasaporte, no te llenamos de ruido.",
+      "Con tu Pasaporte y un cálculo con reglas fijas que puedes revisar (CPV, territorio, importe, palabras clave…). Si no hay señal en tu Pasaporte, no te llenamos de ruido.",
   },
   {
     question: "¿Usáis mis documentos para entrenar la IA?",
-    answer: "No.",
+    answer: "No. No usamos tus documentos para entrenar modelos propios.",
   },
   {
     question: "¿Cuánto cuesta?",
