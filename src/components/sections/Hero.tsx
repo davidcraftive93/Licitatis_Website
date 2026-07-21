@@ -3,29 +3,34 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
 import { BrowserFrame } from "@/components/mockups/BrowserFrame";
 import { DashboardMock } from "@/components/mockups/DashboardMock";
+import { HeroBackdrop } from "@/components/sections/HeroBackdrop";
+import { TiltCard } from "@/components/motion/TiltCard";
+import { Magnetic } from "@/components/motion/Magnetic";
 
-/** Hero above-the-fold — sin <Reveal> (el H1 es candidato a LCP y debe verse al instante). */
+/**
+ * Hero above-the-fold — la "superficie" del viaje: pliegos suspendidos en 3D
+ * al fondo y el panel de control en perspectiva. Sin <Reveal> en el H1 (LCP).
+ */
 export function Hero() {
   return (
-    <section id="producto" className="relative overflow-hidden pb-20 pt-10 sm:pb-24 sm:pt-14">
-      {/* Fondo sobrio: un único glow verde + rejilla sutil (nada de blobs por todas partes). */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-grid-ink bg-grid opacity-50 [mask-image:radial-gradient(ellipse_at_top,#000_15%,transparent_60%)]" />
-        <div className="absolute -right-24 -top-32 h-[30rem] w-[30rem] rounded-full bg-brand-200/50 blur-3xl" />
-      </div>
+    <section id="producto" className="relative overflow-hidden pb-24 pt-10 sm:pt-14 lg:pb-28">
+      <HeroBackdrop />
 
       <Container>
         <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.06fr)] lg:gap-10">
           {/* Texto */}
           <div className="max-w-xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/70 px-3 py-1 text-xs font-semibold text-brand-800 shadow-sm backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true" />
+              <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
+                <span className="absolute h-1.5 w-1.5 animate-pulse-ring rounded-full bg-brand-500" />
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+              </span>
               Beta privada abierta a empresas y consultoras
             </span>
 
             <h1 className="mt-5 text-balance font-display text-[2.5rem] font-bold leading-[1.06] tracking-tight text-ink-900 sm:text-5xl lg:text-[3.3rem]">
               Prepara licitaciones públicas con IA, control documental y{" "}
-              <span className="text-gradient">menos riesgo de exclusión</span>.
+              <span className="text-gradient-live">menos riesgo de exclusión</span>.
             </h1>
 
             <p className="mt-5 text-pretty text-lg leading-relaxed text-ink-500">
@@ -34,9 +39,11 @@ export function Hero() {
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button href="#beta" size="lg" variant="gradient" withArrow>
-                Analizar una licitación real
-              </Button>
+              <Magnetic>
+                <Button href="#beta" size="lg" variant="gradient" withArrow>
+                  Analizar una licitación real
+                </Button>
+              </Magnetic>
               <Button href="#beta" size="lg" variant="secondary">
                 Ser Beta Partner
               </Button>
@@ -49,20 +56,22 @@ export function Hero() {
             </p>
           </div>
 
-          {/* Visual del producto */}
+          {/* Visual del producto en perspectiva 3D. */}
           <div className="relative">
             <div
               aria-hidden="true"
               className="absolute inset-8 -z-10 rounded-[2.5rem] bg-brand-400/25 blur-2xl"
             />
-            <div className="animate-float-slow">
-              <BrowserFrame
-                className="shadow-float"
-                aria-label="Vista de demostración del expediente de una candidatura en LICITATIS"
-              >
-                <DashboardMock />
-              </BrowserFrame>
-            </div>
+            <TiltCard maxTilt={4} idlePose="rotateX(2deg) rotateY(-5deg)">
+              <div className="animate-float-slow">
+                <BrowserFrame
+                  className="shadow-float"
+                  aria-label="Vista de demostración del expediente de una candidatura en LICITATIS"
+                >
+                  <DashboardMock />
+                </BrowserFrame>
+              </div>
+            </TiltCard>
 
             <div
               aria-hidden="true"
@@ -94,6 +103,22 @@ export function Hero() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Invitación al descenso. */}
+        <div className="mt-14 hidden justify-center lg:flex">
+          <a
+            href="#como-funciona"
+            className="group flex flex-col items-center gap-2 text-xs font-medium text-ink-400 transition-colors hover:text-brand-700"
+          >
+            <span>Entra en el proceso</span>
+            <span
+              aria-hidden="true"
+              className="flex h-9 w-6 items-start justify-center rounded-full border border-ink-200 p-1.5 transition-colors group-hover:border-brand-300"
+            >
+              <span className="h-1.5 w-1 animate-scroll-dot rounded-full bg-brand-500" />
+            </span>
+          </a>
         </div>
       </Container>
     </section>

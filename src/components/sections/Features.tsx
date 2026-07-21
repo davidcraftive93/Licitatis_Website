@@ -15,8 +15,8 @@ export function Features() {
       <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((feature, i) => (
           <Reveal key={feature.title} delay={(i % 3) * 60}>
-            <article className="flex h-full flex-col rounded-2xl border border-ink-100 bg-paper p-6 transition-all hover:-translate-y-0.5 hover:shadow-card">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
+            <article className="group flex h-full flex-col rounded-2xl border border-ink-100 bg-paper p-6 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:bg-white hover:shadow-card">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-700 transition-all duration-300 group-hover:scale-110 group-hover:bg-gradient-brand group-hover:text-white group-hover:shadow-brand-glow">
                 <Icon name={feature.icon} size={22} />
               </span>
               <h3 className="mt-4 text-base font-semibold text-ink-900">{feature.title}</h3>

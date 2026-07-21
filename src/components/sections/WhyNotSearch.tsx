@@ -22,14 +22,19 @@ export function WhyNotSearch() {
           </div>
         </div>
         <ul className="divide-y divide-ink-100">
-          {searchVsLicitatis.map((row) => (
-            <Reveal as="li" key={row.licitatis} className="grid grid-cols-1 sm:grid-cols-2">
+          {searchVsLicitatis.map((row, i) => (
+            <Reveal
+              as="li"
+              key={row.licitatis}
+              delay={i * 60}
+              className="grid grid-cols-1 transition-colors hover:bg-brand-50/30 sm:grid-cols-2"
+            >
               <div className="flex items-start gap-3 px-6 py-4 text-sm text-ink-500">
                 <Icon name="close" size={16} className="mt-0.5 shrink-0 text-ink-300" />
                 {row.search}
               </div>
-              <div className="flex items-start gap-3 border-t border-ink-100 px-6 py-4 text-sm text-ink-700 sm:border-l sm:border-t-0">
-                <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white">
+              <div className="flex items-start gap-3 border-t border-ink-100 px-6 py-4 text-sm font-medium text-ink-700 sm:border-l sm:border-t-0">
+                <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-brand-600 text-white shadow-brand-glow">
                   <Icon name="check" size={11} />
                 </span>
                 {row.licitatis}

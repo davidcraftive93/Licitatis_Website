@@ -3,6 +3,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/icons";
 import { BrowserFrame } from "@/components/mockups/BrowserFrame";
 import { PassportMock } from "@/components/mockups/PassportMock";
+import { TiltCard } from "@/components/motion/TiltCard";
 import { passport } from "@/lib/content";
 
 /** El Pasaporte del Licitador — el diferencial. Sección propia (§6). */
@@ -48,18 +49,20 @@ export function Passport() {
           </div>
         </Reveal>
 
-        {/* Mock del Pasaporte */}
+        {/* Mock del Pasaporte, con profundidad 3D y animación al entrar. */}
         <Reveal delay={100} className="relative">
           <div
             aria-hidden="true"
-            className="absolute inset-8 -z-10 rounded-[2.5rem] bg-brand-400/25 blur-2xl"
+            className="absolute inset-8 -z-10 animate-aurora rounded-[2.5rem] bg-brand-400/25 blur-2xl"
           />
-          <BrowserFrame
-            url="app.licitatis.es/pasaporte"
-            aria-label="Vista de demostración del Pasaporte del Licitador en LICITATIS"
-          >
-            <PassportMock />
-          </BrowserFrame>
+          <TiltCard maxTilt={4} idlePose="rotateX(1.5deg) rotateY(5deg)">
+            <BrowserFrame
+              url="app.licitatis.es/pasaporte"
+              aria-label="Vista de demostración del Pasaporte del Licitador en LICITATIS"
+            >
+              <PassportMock />
+            </BrowserFrame>
+          </TiltCard>
         </Reveal>
       </div>
     </Section>

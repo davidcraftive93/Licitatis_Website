@@ -1,8 +1,10 @@
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
+import { CountUp } from "@/components/motion/CountUp";
 import { valueStats } from "@/lib/content";
+import { cn } from "@/lib/utils";
 
-/** Banda de valor con cifras cualitativas honestas (no métricas de clientes inventadas). */
+/** Banda de valor con cifras cualitativas honestas; las numéricas cuentan al entrar. */
 export function ValueStats() {
   return (
     <section className="bg-paper py-14 sm:py-16">
@@ -12,10 +14,15 @@ export function ValueStats() {
             <Reveal
               key={stat.label}
               delay={i * 70}
-              className="text-center sm:border-r sm:border-ink-100 sm:last:border-r-0 lg:text-left"
+              className={cn(
+                "text-center lg:text-left",
+                // Bordes por índice: en 2 col (sm) solo los impares; en 4 col (lg) todos menos el último.
+                i % 2 === 0 && "sm:border-r sm:border-ink-100",
+                i === 1 && "lg:border-r lg:border-ink-100",
+              )}
             >
               <div className="font-display text-4xl font-bold leading-none text-gradient-brand">
-                {stat.value}
+                <CountUp value={stat.value} />
               </div>
               <p className="mx-auto mt-2 max-w-[16rem] text-sm text-ink-500 lg:mx-0">{stat.label}</p>
             </Reveal>

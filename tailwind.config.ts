@@ -99,11 +99,25 @@ const config: Config = {
           "70%": { transform: "scale(1.6)", opacity: "0" },
           "100%": { transform: "scale(1.6)", opacity: "0" },
         },
+        // Glow de fondo que "respira" muy despacio (solo opacity/translate:
+        // ambas componen en el compositor sin re-rasterizar la capa con blur).
+        aurora: {
+          "0%, 100%": { opacity: "0.55", transform: "translateY(0)" },
+          "50%": { opacity: "0.9", transform: "translateY(-14px)" },
+        },
+        // Rueda del indicador de scroll del hero.
+        "scroll-dot": {
+          "0%": { opacity: "0", transform: "translateY(0)" },
+          "30%": { opacity: "1" },
+          "100%": { opacity: "0", transform: "translateY(10px)" },
+        },
       },
       animation: {
         float: "float 6s ease-in-out infinite",
         "float-slow": "float-slow 7s ease-in-out infinite",
         "pulse-ring": "pulse-ring 2.4s cubic-bezier(0.16,1,0.3,1) infinite",
+        aurora: "aurora 9s ease-in-out infinite",
+        "scroll-dot": "scroll-dot 2s ease-out infinite",
       },
     },
   },
