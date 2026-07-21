@@ -6,6 +6,7 @@ import {
   useFinePointer,
   useRafCallback,
 } from "@/components/motion/hooks";
+import { ConstellationCanvas } from "@/components/motion/ConstellationCanvas";
 
 /** Página de pliego flotando en el campo de profundidad del hero. */
 interface Page {
@@ -17,7 +18,6 @@ interface Page {
 const PAGES: Page[] = [
   { depth: 0.25, tilt: -7, className: "left-[4%] top-[12%] h-40 w-32 opacity-40 blur-[1.5px]" },
   { depth: 0.45, tilt: 5, className: "left-[16%] top-[52%] h-32 w-24 opacity-50 blur-[1px]" },
-  { depth: 0.8, tilt: -4, className: "left-[38%] top-[20%] h-24 w-20 opacity-70" },
   { depth: 0.35, tilt: 9, className: "right-[30%] top-[64%] h-28 w-[5.5rem] opacity-40 blur-[1px]" },
   { depth: 0.6, tilt: 6, className: "right-[8%] top-[10%] h-36 w-28 opacity-60" },
   { depth: 1, tilt: -9, className: "right-[20%] top-[40%] h-20 w-16 opacity-80" },
@@ -73,18 +73,21 @@ export function HeroBackdrop() {
       aria-hidden="true"
       className="depth-field pointer-events-none absolute inset-0 -z-10 overflow-hidden"
     >
-      {/* Rejilla técnica + auroras de marca. */}
-      <div className="absolute inset-0 bg-grid-ink bg-grid opacity-50 [mask-image:radial-gradient(ellipse_at_top,#000_15%,transparent_60%)]" />
-      <div className="absolute -right-24 -top-32 h-[30rem] w-[30rem] animate-aurora rounded-full bg-brand-200/50 blur-3xl" />
-      <div className="absolute -left-32 top-1/2 h-72 w-72 animate-aurora rounded-full bg-amber-100/60 blur-3xl [animation-delay:-4s]" />
+      {/* Fondo de "cabina": rejilla clara + auroras intensas de marca. */}
+      <div className="absolute inset-0 bg-grid-light bg-grid opacity-30 [mask-image:radial-gradient(ellipse_at_top,#000_20%,transparent_70%)]" />
+      <div className="absolute -right-32 -top-40 h-[34rem] w-[34rem] animate-aurora rounded-full bg-brand-600/30 blur-3xl" />
+      <div className="absolute -left-40 top-1/3 h-96 w-96 animate-aurora rounded-full bg-brand-500/20 blur-3xl [animation-delay:-4s]" />
 
-      {/* Foco suave que sigue al puntero (estático arriba a la derecha sin ratón). */}
+      {/* Foco que sigue al puntero (estático arriba a la derecha sin ratón). */}
       <div className="hero-spotlight absolute left-0 top-0" />
 
-      {/* Haz de "radar" que barre el hero de arriba abajo. */}
+      {/* Haz de "radar" que barre el hero de arriba abajo (sutil: pasa tras el texto). */}
       <div className="absolute inset-x-0 top-0 hidden md:block">
-        <div className="h-20 animate-beam bg-gradient-to-b from-transparent via-brand-300/20 to-transparent" />
+        <div className="h-24 animate-beam bg-gradient-to-b from-transparent via-brand-400/15 to-transparent" />
       </div>
+
+      {/* Constelación de expedientes que responde al puntero. */}
+      <ConstellationCanvas className="absolute inset-0 h-full w-full" />
 
       {/* Pliegos suspendidos: ondulan (wrapper) y hacen parallax (página). */}
       <div className="absolute inset-0 hidden md:block">
@@ -106,6 +109,9 @@ export function HeroBackdrop() {
           </div>
         ))}
       </div>
+
+      {/* Viñeta inferior: funde el hero oscuro hacia la siguiente sección. */}
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-ink-950" />
     </div>
   );
 }

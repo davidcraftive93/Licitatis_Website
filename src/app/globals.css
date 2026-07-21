@@ -61,7 +61,7 @@
   }
   .js .reveal {
     opacity: 0;
-    transform: translateY(22px);
+    transform: translateY(28px) scale(0.98);
   }
   .js .reveal.is-visible {
     opacity: 1;
@@ -87,8 +87,11 @@
       background-position: 100% 50%;
     }
   }
+  /* Variante luminosa para el hero oscuro: los stops oscuros de gradient-brand
+     (#047857) quedarían apagados (~3.6:1) sobre ink-950. */
   .text-gradient-live {
-    @apply bg-gradient-brand bg-clip-text text-transparent;
+    background-image: linear-gradient(100deg, #6ee7b7 0%, #34d399 50%, #2dd4bf 100%);
+    @apply bg-clip-text text-transparent;
     background-size: 200% 200%;
     animation: gradient-x 7s ease-in-out 2;
   }
@@ -123,18 +126,39 @@
     animation-delay: var(--enter-delay, 0ms);
   }
 
+  /* Marquesina de términos del sector (dos copias del contenido; -50% = bucle). */
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 36s linear infinite;
+    will-change: transform;
+  }
+  /* Mecanismo de pausa (SC 2.2.2): la marquesina se detiene al señalar/enfocar. */
+  .marquee-pause:hover .marquee-track,
+  .marquee-pause:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+
   /* Foco suave que sigue al puntero por el hero (translate: compone en compositor). */
   .hero-spotlight {
-    width: 42rem;
-    height: 42rem;
+    width: 44rem;
+    height: 44rem;
     border-radius: 9999px;
     background: radial-gradient(
       circle,
-      rgba(16, 185, 129, 0.14),
-      rgba(245, 158, 11, 0.05) 45%,
+      rgba(16, 185, 129, 0.22),
+      rgba(245, 158, 11, 0.07) 45%,
       transparent 70%
     );
-    transform: translate(calc(var(--sx, 68vw) - 21rem), calc(var(--sy, 6rem) - 21rem));
+    transform: translate(calc(var(--sx, 68vw) - 22rem), calc(var(--sy, 8rem) - 22rem));
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform;
   }
@@ -147,14 +171,17 @@
     --mx: 0;
     --my: 0;
   }
+  /* En el hero oscuro las páginas brillan como documentos "escaneados". */
   .pliego-page {
     position: absolute;
     border-radius: 0.75rem;
     background:
-      linear-gradient(to bottom, rgba(11, 18, 32, 0.07) 1.5px, transparent 1.5px) 0 1.4rem / 100% 0.85rem repeat-y,
-      linear-gradient(180deg, #ffffff 0%, #f6f8f7 100%);
-    border: 1px solid rgba(11, 18, 32, 0.08);
-    box-shadow: 0 18px 40px -18px rgba(11, 18, 32, 0.25);
+      linear-gradient(to bottom, rgba(11, 18, 32, 0.09) 1.5px, transparent 1.5px) 0 1.4rem / 100% 0.85rem repeat-y,
+      linear-gradient(180deg, #f2fbf7 0%, #e2f5ec 100%);
+    border: 1px solid rgba(110, 231, 183, 0.35);
+    box-shadow:
+      0 18px 40px -18px rgba(0, 0, 0, 0.5),
+      0 0 24px -6px rgba(16, 185, 129, 0.35);
     transform:
       translate3d(calc(var(--mx) * var(--depth) * 18px), calc(var(--my) * var(--depth) * 14px), 0)
       rotate(var(--tilt, 0deg));
