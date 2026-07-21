@@ -9,6 +9,7 @@ import { Icon } from "@/components/ui/icons";
 import { navLinks, siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
+/** Header de cristal oscuro, a juego con la "cabina de control" del hero. */
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -33,17 +34,28 @@ export function Header() {
     };
   }, [open]);
 
+  // Al cruzar al breakpoint de escritorio (lg), cierra el menú móvil: si quedara
+  // abierto, el body seguiría con overflow hidden y sin ningún control visible.
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => {
+      if (mq.matches) setOpen(false);
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b bg-paper/80 backdrop-blur-md transition-shadow duration-300",
-        scrolled || open ? "border-ink-100 shadow-soft" : "border-ink-100/60",
+        "sticky top-0 z-50 border-b bg-ink-950/80 backdrop-blur-lg transition-shadow duration-300",
+        scrolled || open ? "border-white/10 shadow-lift" : "border-white/5",
       )}
     >
       <Container>
         <div className="flex h-16 items-center justify-between gap-6">
           <Link href="/" aria-label="LICITATIS — Inicio" className="shrink-0 rounded-lg">
-            <Logo />
+            <Logo tone="light" />
           </Link>
 
           {/* Navegación de escritorio (centrada) */}
@@ -53,7 +65,7 @@ export function Header() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-ink-50 hover:text-ink-900"
+                    className="whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-ink-200 transition-colors hover:bg-white/10 hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -65,7 +77,7 @@ export function Header() {
           <div className="hidden shrink-0 items-center gap-3 lg:flex">
             <a
               href={siteConfig.appUrl}
-              className="whitespace-nowrap text-sm font-semibold text-ink-600 transition-colors hover:text-ink-900"
+              className="whitespace-nowrap text-sm font-semibold text-ink-200 transition-colors hover:text-white"
             >
               Iniciar sesión
             </a>
@@ -77,7 +89,7 @@ export function Header() {
           {/* Botón de menú móvil */}
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-ink-800 hover:bg-ink-100 lg:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-white hover:bg-white/10 lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Cerrar menú" : "Abrir menú"}
@@ -92,14 +104,14 @@ export function Header() {
       {open ? (
         <div id="mobile-menu" className="lg:hidden">
           <Container>
-            <nav aria-label="Principal (móvil)" className="border-t border-ink-100 py-4">
+            <nav aria-label="Principal (móvil)" className="border-t border-white/10 py-4">
               <ul className="flex flex-col gap-1">
                 {navLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
                       onClick={() => setOpen(false)}
-                      className="block rounded-lg px-3 py-2.5 text-base font-medium text-ink-700 hover:bg-ink-100"
+                      className="block rounded-lg px-3 py-2.5 text-base font-medium text-ink-100 hover:bg-white/10"
                     >
                       {link.label}
                     </Link>
@@ -112,7 +124,7 @@ export function Header() {
                 </Button>
                 <a
                   href={siteConfig.appUrl}
-                  className="inline-flex items-center justify-center gap-1.5 rounded-full border border-ink-200 px-4 py-2.5 text-sm font-semibold text-ink-800 hover:bg-ink-50"
+                  className="inline-flex items-center justify-center gap-1.5 rounded-full border border-white/20 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10"
                 >
                   Iniciar sesión
                   <Icon name="external-link" size={14} />
