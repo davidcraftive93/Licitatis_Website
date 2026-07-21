@@ -8,7 +8,7 @@ export function Privacy() {
     <Section id="seguridad" tone="ink" className="relative overflow-hidden">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-0">
         <div className="absolute inset-0 bg-grid-light bg-grid opacity-30 [mask-image:radial-gradient(ellipse_at_center,#000_10%,transparent_65%)]" />
-        <div className="absolute -top-20 right-1/4 h-64 w-96 rounded-full bg-brand-600/20 blur-3xl" />
+        <div className="absolute -top-20 right-1/4 h-64 w-96 animate-aurora rounded-full bg-brand-600/20 blur-3xl" />
       </div>
       <div className="relative">
         <SectionHeader

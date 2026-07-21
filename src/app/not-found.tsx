@@ -19,7 +19,7 @@ export default function NotFound() {
         <Button href="/" size="md">
           Volver al inicio
         </Button>
-        <Button href="/#demo" size="md" variant="secondary">
+        <Button href="/#beta" size="md" variant="secondary">
           Solicitar demostración
         </Button>
       </div>

@@ -19,10 +19,10 @@ export function Plans() {
           <Reveal key={plan.name} delay={i * 60} className="h-full">
             <article
               className={cn(
-                "relative flex h-full flex-col rounded-3xl p-6 sm:p-7",
+                "relative flex h-full flex-col rounded-3xl p-6 transition-all duration-300 sm:p-7",
                 plan.highlighted
-                  ? "bg-ink-950 text-ink-100 shadow-lift ring-1 ring-white/10"
-                  : "border border-ink-100 bg-white shadow-soft",
+                  ? "bg-ink-950 text-ink-100 shadow-lift ring-1 ring-brand-500/40 hover:shadow-brand-glow-lg"
+                  : "border border-ink-100 bg-white shadow-soft hover:-translate-y-1 hover:shadow-card",
               )}
             >
               {plan.highlighted ? (
