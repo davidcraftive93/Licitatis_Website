@@ -15,7 +15,7 @@ export function Privacy() {
           tone="dark"
           eyebrow="Confianza y seguridad"
           title="Tu documentación es información confidencial"
-          description="Documentos y expedientes aislados por organización · acceso por roles · sin usar tus documentos para entrenar modelos · toda salida de IA con revisión humana."
+          description="Y la tratamos como tal: aislada por organización, con acceso por roles, sin usarla para entrenar modelos, y con revisión humana en todo lo que salga de la IA."
         />
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
