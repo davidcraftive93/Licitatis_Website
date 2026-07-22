@@ -39,6 +39,7 @@ interface FormValues {
   challenge: string;
   message: string;
   privacy: boolean;
+  marketing: boolean;
   company_url: string; // honeypot
 }
 
@@ -53,6 +54,7 @@ const initialValues: FormValues = {
   challenge: "otra",
   message: "",
   privacy: false,
+  marketing: false, // opcional, NUNCA premarcado
   company_url: "",
 };
 
@@ -298,7 +300,7 @@ export function DemoForm() {
 
       {/* Información básica de protección de datos (primera capa). El detalle y la
           base jurídica definitiva están en la política de privacidad (pendiente de
-          revisión legal). No se recogen consentimientos de marketing en este formulario. */}
+          revisión legal). El consentimiento de marketing es aparte y opcional. */}
       <div className="rounded-xl border border-ink-100 bg-paper/70 p-3.5 text-xs leading-relaxed text-ink-500">
         <p>
           <strong className="font-semibold text-ink-700">Responsable:</strong> LICITATIS.{" "}
@@ -340,7 +342,18 @@ export function DemoForm() {
         >
           política de privacidad
         </Link>
-        .
+        . <span className="text-ink-400">(obligatorio)</span>
+      </Checkbox>
+
+      {/* Marketing OPCIONAL: no premarcado, no obligatorio, registrado por separado. */}
+      <Checkbox
+        id="marketing"
+        name="marketing"
+        checked={values.marketing}
+        onChange={(e) => update("marketing", e.target.checked)}
+      >
+        Quiero recibir novedades y comunicaciones comerciales de LICITATIS.{" "}
+        <span className="text-ink-400">(opcional)</span>
       </Checkbox>
 
       {status === "error" && serverMessage ? (

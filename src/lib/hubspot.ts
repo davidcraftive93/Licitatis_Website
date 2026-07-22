@@ -53,6 +53,8 @@ function buildMessage(input: LeadInput): string {
         .join(" / ")}`,
     );
   }
+  // El consentimiento de marketing se registra por separado del de privacidad.
+  meta.push(`Consentimiento de marketing: ${input.marketing ? "Sí" : "No"}`);
   if (meta.length) parts.push(`\n---\n${meta.join("\n")}`);
   return parts.join("\n").trim();
 }
@@ -87,7 +89,7 @@ export async function submitLeadToHubspot(input: LeadInput): Promise<HubspotSubm
     legalConsentOptions: {
       consent: {
         consentToProcess: true,
-        text: "Acepto que LICITATIS trate mis datos para gestionar mi solicitud de demostración.",
+        text: "Acepto que LICITATIS trate mis datos para gestionar mi solicitud de demostración. El consentimiento de comunicaciones comerciales es opcional y se recoge por separado.",
       },
     },
   };
