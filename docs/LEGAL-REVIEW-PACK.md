@@ -53,3 +53,14 @@ Decisiones concretas que requieren criterio **jurídico** y/o **datos del propie
 - **Ubicación:** `content.ts` `plans`, `planLimitRows`.
 - **Pendiente (producto):** confirmar límites reales con la app o marcar «durante la beta».
 - **Estado:** `BLOCKED_PRODUCT_CONFIRMATION`.
+
+## 11. Dependencias (npm audit)
+- **Resultado:** 7 vulnerabilidades (1 crítica, 3 altas, 3 moderadas) en **herramientas de
+  desarrollo/build** (vitest, vite, esbuild) y en next/sharp.
+- **Riesgo real para el sitio servido:** bajo. El sitio es un **export estático**: vitest/vite/
+  esbuild no se despliegan; next/sharp solo intervienen en el build. Ninguna vulnerabilidad es
+  código en ejecución servido al usuario.
+- **Corrección:** requiere cambios **mayores** (vitest 4, y el «fix» de next apunta a 14.x, que
+  sería un downgrade). **No se ha ejecutado `npm audit fix --force`** (podría romper el build).
+- **Recomendación al propietario/dev:** planificar la actualización de vitest a 4.x y evaluar la
+  versión de Next en una rama aparte, con pruebas. No bloquea la beta.
