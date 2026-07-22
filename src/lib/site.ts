@@ -8,7 +8,11 @@
 // Se usa "||" (no "??") para que una variable vacía ("") también use el valor por
 // defecto: en CI/despliegue las variables no definidas llegan como cadena vacía, y
 // `new URL("")` (metadataBase) lanzaría un error que rompería el build.
-const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.licitatis.es";
+// Dominio canónico DECIDIDO: https://licitatis.es (sin www). www.licitatis.es debe
+// redirigir 301 al dominio principal (configuración en Hostinger). El release gate de
+// producción (npm run verify:legal-launch --mode production) bloquea si NEXT_PUBLIC_SITE_URL
+// no es el dominio canónico.
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://licitatis.es";
 
 export const siteConfig = {
   name: "LICITATIS",

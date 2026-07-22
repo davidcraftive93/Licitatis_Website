@@ -5,7 +5,8 @@ import { siteConfig } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Aviso legal",
   description: "Aviso legal e información del titular de la web de LICITATIS.",
-  robots: { index: true, follow: true },
+  // noindex mientras el contenido tenga placeholders sin resolver (revisión legal pendiente).
+  robots: { index: false, follow: false },
   alternates: { canonical: "/aviso-legal" },
 };
 

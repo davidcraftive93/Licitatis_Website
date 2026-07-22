@@ -5,7 +5,8 @@ import { siteConfig } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Política de privacidad",
   description: "Cómo trata LICITATIS los datos personales de quienes solicitan una demostración.",
-  robots: { index: true, follow: true },
+  // noindex mientras el contenido tenga placeholders sin resolver (revisión legal pendiente).
+  robots: { index: false, follow: false },
   alternates: { canonical: "/privacidad" },
 };
 

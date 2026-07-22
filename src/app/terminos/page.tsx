@@ -5,7 +5,8 @@ import { siteConfig } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Términos de uso",
   description: "Condiciones de uso de la web comercial de LICITATIS.",
-  robots: { index: true, follow: true },
+  // noindex mientras el contenido tenga placeholders sin resolver (revisión legal pendiente).
+  robots: { index: false, follow: false },
   alternates: { canonical: "/terminos" },
 };
 

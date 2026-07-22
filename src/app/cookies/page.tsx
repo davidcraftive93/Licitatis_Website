@@ -4,7 +4,8 @@ import { LegalShell } from "@/components/layout/LegalShell";
 export const metadata: Metadata = {
   title: "Política de cookies",
   description: "Qué cookies utiliza la web de LICITATIS y cómo puedes gestionarlas.",
-  robots: { index: true, follow: true },
+  // noindex mientras el contenido tenga placeholders sin resolver (revisión legal pendiente).
+  robots: { index: false, follow: false },
   alternates: { canonical: "/cookies" },
 };
 
