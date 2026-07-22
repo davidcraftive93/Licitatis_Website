@@ -77,7 +77,9 @@ export function Footer() {
               {companyPending.map((label) => (
                 <li key={label} className="flex items-center gap-2 text-sm text-ink-400">
                   {label}
-                  <span className="rounded bg-white/5 px-1.5 py-0.5 text-2xs text-ink-400">pronto</span>
+                  <span className="rounded bg-white/5 px-1.5 py-0.5 text-2xs text-ink-400">
+                    pronto
+                  </span>
                 </li>
               ))}
             </ul>

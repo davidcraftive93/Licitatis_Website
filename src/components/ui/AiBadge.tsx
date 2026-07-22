@@ -3,7 +3,13 @@ import { Icon } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 
 /** Distintivo de "IA" con el degradado de marca. */
-export function AiBadge({ children = "IA", className }: { children?: ReactNode; className?: string }) {
+export function AiBadge({
+  children = "IA",
+  className,
+}: {
+  children?: ReactNode;
+  className?: string;
+}) {
   return (
     <span
       className={cn(
