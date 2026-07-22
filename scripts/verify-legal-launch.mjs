@@ -26,6 +26,7 @@ import {
   NOINDEX_WHILE_PLACEHOLDER,
   PLACEHOLDER_PATTERNS,
   PROHIBITED_CLAIM_PATTERNS,
+  CERTIFICATION_PATTERNS,
   scanText,
   isCanonicalUrlOk,
 } from "./legal-launch-rules.mjs";
@@ -57,7 +58,11 @@ function walk(dir, exts, acc = []) {
 const problems = []; // {level: 'block'|'warn', code, msg}
 const block = (code, msg) => problems.push({ level: "block", code, msg });
 const warn = (code, msg) => problems.push({ level: "warn", code, msg });
-const rel = (f) => f.replace(ROOT + "\\", "").replace(ROOT + "/", "").replace(/\\/g, "/");
+const rel = (f) =>
+  f
+    .replace(ROOT + "\\", "")
+    .replace(ROOT + "/", "")
+    .replace(/\\/g, "/");
 
 const OUT = join(ROOT, "out");
 const hasBuild = existsSync(OUT);
@@ -102,15 +107,21 @@ if (!defaultUrlMatch || !isCanonicalUrlOk(defaultUrlMatch[1])) {
 }
 if (PROD) {
   const envUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  if (!envUrl) block("DOMINIO_CANONICO", "NEXT_PUBLIC_SITE_URL no está definido en el entorno de producción.");
-  else if (!isCanonicalUrlOk(envUrl)) block("DOMINIO_CANONICO", `NEXT_PUBLIC_SITE_URL="${envUrl}" no es el dominio canónico ${CANONICAL_DOMAIN}.`);
+  if (!envUrl)
+    block("DOMINIO_CANONICO", "NEXT_PUBLIC_SITE_URL no está definido en el entorno de producción.");
+  else if (!isCanonicalUrlOk(envUrl))
+    block(
+      "DOMINIO_CANONICO",
+      `NEXT_PUBLIC_SITE_URL="${envUrl}" no es el dominio canónico ${CANONICAL_DOMAIN}.`,
+    );
 }
 
 // ---------------------------------------------------------------- 4) HubSpot (pérdida de leads)
 const portal = process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID;
 const formId = process.env.NEXT_PUBLIC_HUBSPOT_FORM_ID;
 if (!portal || !formId) {
-  const msg = "HubSpot no está configurado (NEXT_PUBLIC_HUBSPOT_PORTAL_ID / _FORM_ID). El formulario mostrará un canal de correo alternativo, no un falso éxito.";
+  const msg =
+    "HubSpot no está configurado (NEXT_PUBLIC_HUBSPOT_PORTAL_ID / _FORM_ID). El formulario mostrará un canal de correo alternativo, no un falso éxito.";
   if (PROD) block("HUBSPOT_NO_CONFIGURADO", msg);
   else warn("HUBSPOT_NO_CONFIGURADO", msg);
 }
@@ -131,7 +142,10 @@ if (existsSync(sitemapSource)) {
   const text = readFileSync(sitemapSource, "utf8");
   for (const route of NOINDEX_WHILE_PLACEHOLDER) {
     if (new RegExp(`\\\`\\$\\{base\\}/${route}\``).test(text)) {
-      block("SITEMAP_NOINDEX", `src/app/sitemap.ts incluye /${route}, que es noindex mientras tenga placeholders.`);
+      block(
+        "SITEMAP_NOINDEX",
+        `src/app/sitemap.ts incluye /${route}, que es noindex mientras tenga placeholders.`,
+      );
     }
   }
 }
@@ -139,16 +153,59 @@ if (PROD && existsSync(join(OUT, "sitemap.xml"))) {
   const text = readFileSync(join(OUT, "sitemap.xml"), "utf8");
   for (const route of NOINDEX_WHILE_PLACEHOLDER) {
     if (new RegExp(`/${route}([/"<])`).test(text)) {
-      block("SITEMAP_NOINDEX", `out/sitemap.xml incluye /${route}, que es noindex mientras tenga placeholders.`);
+      block(
+        "SITEMAP_NOINDEX",
+        `out/sitemap.xml incluye /${route}, que es noindex mientras tenga placeholders.`,
+      );
     }
   }
+}
+
+// ---------------------------------------------------------------- 7) Enlaces legales del footer
+// Cada enlace legal del footer debe apuntar a una página existente (no roto).
+const siteFile = readFileSync(join(ROOT, "src", "lib", "site.ts"), "utf8");
+const legalBlock = siteFile.match(/legalLinks\s*=\s*\[([\s\S]*?)\]/);
+if (legalBlock) {
+  const hrefs = [...legalBlock[1].matchAll(/href:\s*"(\/[a-z0-9-]+)"/gi)].map((m) => m[1]);
+  for (const href of hrefs) {
+    const route = href.replace(/^\//, "");
+    const exists =
+      existsSync(join(ROOT, "src", "app", route, "page.tsx")) ||
+      existsSync(join(OUT, route, "index.html"));
+    if (!exists)
+      block("ENLACE_LEGAL_ROTO", `El footer enlaza a ${href}, pero no existe la página.`);
+  }
+}
+
+// ---------------------------------------------------------------- 8) Marketing no premarcado
+const demoForm = existsSync(join(ROOT, "src", "components", "forms", "DemoForm.tsx"))
+  ? readFileSync(join(ROOT, "src", "components", "forms", "DemoForm.tsx"), "utf8")
+  : "";
+if (/marketing:\s*true/.test(demoForm) || /name="marketing"[^>]*checked=\{true\}/.test(demoForm)) {
+  block(
+    "MARKETING_PREMARCADO",
+    "El consentimiento de marketing no debe estar premarcado en el formulario.",
+  );
+}
+
+// ---------------------------------------------------------------- 9) Certificaciones sin acreditar (aviso)
+for (const file of contentFiles) {
+  const hits = scanText(readFileSync(file, "utf8"), CERTIFICATION_PATTERNS);
+  if (hits.length)
+    warn(
+      "CERTIFICACION_SIN_ACREDITAR",
+      `${rel(file)}: revisar afirmación de ${[...new Set(hits)].join(", ")}`,
+    );
 }
 
 // ---------------------------------------------------------------- Veredicto
 // En despliegue controlado (--deploy), placeholders y HubSpot no bloquean (ver arriba).
 if (DEPLOY) {
   for (const p of problems) {
-    if (p.level === "block" && (p.code === "PLACEHOLDER_EN_HTML" || p.code === "HUBSPOT_NO_CONFIGURADO")) {
+    if (
+      p.level === "block" &&
+      (p.code === "PLACEHOLDER_EN_HTML" || p.code === "HUBSPOT_NO_CONFIGURADO")
+    ) {
       p.level = "warn";
     }
   }
@@ -164,8 +221,11 @@ if (!problems.length) console.log("  ✓ Sin incidencias.");
 // Estado global.
 let result = "PASS";
 if (blockers.some((b) => b.code === "PLACEHOLDER_EN_HTML")) result = "BLOCKED_LEGAL_REVIEW";
-else if (blockers.some((b) => b.code === "HUBSPOT_NO_CONFIGURADO")) result = "BLOCKED_PROVIDER_CONFIRMATION";
+else if (blockers.some((b) => b.code === "HUBSPOT_NO_CONFIGURADO"))
+  result = "BLOCKED_PROVIDER_CONFIRMATION";
 else if (blockers.length) result = "FAIL";
 
-console.log(`${"=".repeat(48)}\nResultado: ${result}  (${blockers.length} bloqueantes, ${warnings.length} avisos)\n`);
+console.log(
+  `${"=".repeat(48)}\nResultado: ${result}  (${blockers.length} bloqueantes, ${warnings.length} avisos)\n`,
+);
 process.exit(blockers.length ? 1 : 0);
