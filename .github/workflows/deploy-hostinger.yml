@@ -115,6 +115,18 @@ jobs:
           printf '%s' "$DEPLOY_SHA" > out/__build_sha.txt
           echo "Artefacto out/ verificado. Sentinela __build_sha.txt=$DEPLOY_SHA"
 
+      - name: Release gate legal (producción)
+        # Bloquea el despliegue ante defectos que nunca deben salir a producción: dominio
+        # canónico incorrecto, claims prohibidos, páginas legales ausentes o páginas noindex
+        # en el sitemap. Con --deploy, los placeholders legales (páginas noindex) y HubSpot
+        # sin configurar (el formulario degrada a correo, no pierde leads) quedan como AVISO.
+        # Para comprobar la apertura pública completa: npm run verify:legal-launch:prod (estricto).
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_HUBSPOT_PORTAL_ID: ${{ vars.NEXT_PUBLIC_HUBSPOT_PORTAL_ID }}
+          NEXT_PUBLIC_HUBSPOT_FORM_ID: ${{ vars.NEXT_PUBLIC_HUBSPOT_FORM_ID }}
+        run: node scripts/verify-legal-launch.mjs --mode production --deploy
+
       - name: Validar ruta de despliegue
         env:
           DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
@@ -136,15 +148,12 @@ jobs:
           SSH_USER: ${{ secrets.HOSTINGER_USERNAME }}
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          # Diagnóstico visible como anotación (NO expone la clave): longitud y tipo aparente.
-          case "$SSH_KEY" in
-            "") DTYPE="VACIO(secreto no llegó al entorno)" ;;
-            ssh-ed25519*|ssh-rsa*|ecdsa-*|sk-*) DTYPE="CLAVE_PUBLICA(empieza por ssh-...)" ;;
-            -----BEGIN*) DTYPE="PEM(-----BEGIN)" ;;
-            LS0tLS*) DTYPE="base64(LS0tLS, esperado)" ;;
-            *) DTYPE="OTRO(empieza por: $(printf '%s' "$SSH_KEY" | head -c 6))" ;;
-          esac
-          echo "::warning::[diag HOSTINGER_SSH_PRIVATE_KEY] longitud=${#SSH_KEY} tipo=$DTYPE"
+          # Higiene de secretos: NO se imprime longitud, prefijo ni tipo de la clave
+          # (evita filtrar información identificable del secreto en los logs).
+          if [ -z "$SSH_KEY" ]; then
+            echo "::error::El secreto HOSTINGER_SSH_PRIVATE_KEY está vacío o no llegó al entorno."
+            exit 1
+          fi
           # La clave puede guardarse en el secreto en base64 (RECOMENDADO) o en texto PEM.
           # IMPORTANTE: hay que hacer chmod 600 ANTES de validar/usar la clave, porque
           # OpenSSH en Linux rechaza una clave privada con permisos abiertos.
@@ -162,7 +171,7 @@ jobs:
           # Valida (con la clave ya en 600) y, si falla, muestra el error real de ssh-keygen.
           if ! ssh-keygen -y -f ~/.ssh/id_deploy >/dev/null 2>&1; then
             KEYERR="$(ssh-keygen -y -f ~/.ssh/id_deploy 2>&1 >/dev/null | head -2 | tr '\n' ' ')"
-            echo "::error::Clave SSH inválida. ssh-keygen dice: ${KEYERR:-<sin mensaje>}. (diag longitud=${#SSH_KEY}). Guarda el secreto en base64 (ver docs/DEPLOYMENT.md)."
+            echo "::error::Clave SSH inválida. ssh-keygen dice: ${KEYERR:-<sin mensaje>}. Guarda el secreto en base64 (ver docs/DEPLOYMENT.md)."
             exit 1
           fi
           ssh-keyscan -p "$SSH_PORT" "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
@@ -231,10 +240,13 @@ jobs:
           SSH_PORT="$(printf '%s' "$SSH_PORT" | tr -d '\r\n')"
           SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '\r\n')"
           SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
-          # $TARGET viene del paso de autodetección (docroot realmente servido).
+          # $TARGET = docroot realmente servido (paso de autodetección). Reglas:
+          #  - Si el directorio existe y el backup FALLA -> abortar (no hay rollback fiable).
+          #  - Primer despliegue (directorio inexistente) -> continuar sin backup.
+          #  - Retención: se conservan los 5 backups más recientes; los antiguos se borran.
+          # Sin "|| echo warning": un fallo de backup debe detener el despliegue.
           ssh -i ~/.ssh/id_deploy -p "$SSH_PORT" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20 "$SSH_USER@$SSH_HOST" \
-            "DP='$TARGET'; if [ -d \"\$DP\" ]; then cp -a \"\$DP\" \"\${DP%/}.backup-$(date +%Y%m%d%H%M%S)\" && echo 'Backup creado.'; else echo 'Sin backup: el directorio aún no existe.'; fi" || \
-            echo "::warning::No se pudo crear backup remoto; continúa el despliegue."
+            "DP='$TARGET'; if [ -d \"\$DP\" ]; then BK=\"\${DP%/}.backup-$(date +%Y%m%d%H%M%S)\"; if cp -a \"\$DP\" \"\$BK\"; then echo \"Backup creado: \$BK\"; ls -dt \"\${DP%/}\".backup-* 2>/dev/null | tail -n +6 | xargs -r rm -rf; echo 'Retención aplicada (5 backups).'; else echo '::error::No se pudo crear el backup; se aborta el despliegue por falta de rollback.'; exit 1; fi; else echo 'Primer despliegue: aún no hay contenido que respaldar.'; fi"
 
       - name: Sincronizar out/ hacia el docroot servido
         env:
@@ -247,8 +259,18 @@ jobs:
           SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
           # $TARGET = docroot realmente servido (paso de autodetección).
           # Usar $HOME (no ~) dentro de la cadena -e: el ~ NO se expande entre comillas dobles.
+          # --delete sincroniza el docroot con out/. Se EXCLUYEN rutas gestionadas por
+          # Hostinger/Apache o de validación externa para que --delete nunca las borre.
+          # (Exclusiones por defecto y conservadoras; verificar en el servidor y ajustar
+          # si existieran otras carpetas administradas. Ver docs/DEPLOYMENT.md.)
           set +e
           RS_OUT="$(rsync -az --delete \
+            --exclude='.well-known/' \
+            --exclude='cgi-bin/' \
+            --exclude='.htpasswd' \
+            --exclude='.user.ini' \
+            --exclude='error_log' \
+            --exclude='__docroot_probe_*.txt' \
             -e "ssh -i $HOME/.ssh/id_deploy -p $SSH_PORT -o StrictHostKeyChecking=accept-new -o ConnectTimeout=20" \
             out/ \
             "$SSH_USER@$SSH_HOST:$TARGET/" 2>&1)"
