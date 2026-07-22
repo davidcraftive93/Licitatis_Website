@@ -83,7 +83,9 @@ export function PassportMock() {
       {/* Credenciales con caducidad (aparecen en cascada) */}
       <div className="mt-4">
         <div className="mb-2 flex items-center justify-between">
-          <p className="text-2xs font-semibold uppercase tracking-wide text-ink-400">Credenciales</p>
+          <p className="text-2xs font-semibold uppercase tracking-wide text-ink-400">
+            Credenciales
+          </p>
           <span className="text-2xs text-ink-400">Completitud 85%</span>
         </div>
         <ul className="space-y-1.5">

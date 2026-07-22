@@ -47,7 +47,10 @@ export function Plans() {
                     <Icon
                       name="check"
                       size={16}
-                      className={cn("mt-0.5 shrink-0", plan.highlighted ? "text-brand-400" : "text-brand-600")}
+                      className={cn(
+                        "mt-0.5 shrink-0",
+                        plan.highlighted ? "text-brand-400" : "text-brand-600",
+                      )}
                     />
                     <span className={plan.highlighted ? "text-ink-200" : "text-ink-600"}>{h}</span>
                   </li>
@@ -79,7 +82,11 @@ export function Plans() {
                   Límite
                 </th>
                 {planNames.map((name) => (
-                  <th key={name} scope="col" className="px-5 py-4 text-center font-semibold text-ink-900">
+                  <th
+                    key={name}
+                    scope="col"
+                    className="px-5 py-4 text-center font-semibold text-ink-900"
+                  >
                     {name}
                   </th>
                 ))}

@@ -161,7 +161,6 @@ export function Hero() {
             </div>
           </div>
         </div>
-
       </Container>
 
       {/* Marquesina de términos del sector: la web "respira" oficio.
