@@ -47,4 +47,7 @@ export const legalLinks = [
   { label: "Privacidad", href: "/privacidad" },
   { label: "Cookies", href: "/cookies" },
   { label: "Términos", href: "/terminos" },
+  { label: "Seguridad y privacidad", href: "/seguridad-y-privacidad" },
+  { label: "Acuerdo de tratamiento (DPA)", href: "/acuerdo-tratamiento-datos" },
+  { label: "Subencargados", href: "/subencargados" },
 ] as const;

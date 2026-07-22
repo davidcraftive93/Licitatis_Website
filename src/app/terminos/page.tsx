@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LegalShell } from "@/components/layout/LegalShell";
 import { siteConfig } from "@/lib/site";
+import { legalDocs } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Términos de uso",
@@ -15,11 +16,12 @@ export default function TerminosPage() {
     <LegalShell
       title="Términos de uso"
       intro="Condiciones que regulan el acceso y uso de esta web comercial."
+      docMeta={legalDocs.terminos}
     >
       <h2>1. Aceptación</h2>
       <p>
-        El acceso y uso de este sitio web implica la aceptación de los presentes términos. Si no
-        estás de acuerdo, te rogamos que no utilices el sitio.
+        Estas condiciones se aplican al uso de este sitio web. Si continúas utilizándolo, entendemos
+        que las conoces; si no estás de acuerdo, te pedimos que no lo utilices.
       </p>
 
       <h2>2. Uso del sitio</h2>
@@ -32,7 +34,8 @@ export default function TerminosPage() {
       <p>
         El envío del formulario de demostración no genera ninguna obligación contractual. La
         información sobre condiciones comerciales, disponibilidad y precios de {siteConfig.name} se
-        facilitará, en su caso, durante el contacto comercial. [Contenido pendiente de confirmar.]
+        facilitará, en su caso, durante el contacto comercial. Durante el programa beta el uso es
+        gratuito y sin tarjeta.
       </p>
 
       <h2>4. Ausencia de garantías sobre resultados</h2>
@@ -50,8 +53,9 @@ export default function TerminosPage() {
 
       <h2>6. Modificaciones y legislación</h2>
       <p>
-        Nos reservamos el derecho a modificar estos términos. Se rigen por la legislación española.
-        [Texto pendiente de revisión legal.]
+        Podremos actualizar estos términos; publicaremos la versión vigente en esta página. Se rigen
+        por la legislación española. La determinación del fuero y la jurisdicción competente queda
+        pendiente de revisión profesional.
       </p>
     </LegalShell>
   );

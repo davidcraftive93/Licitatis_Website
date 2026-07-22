@@ -16,7 +16,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Solo se incluyen páginas indexables. Las páginas legales llevan noindex mientras
   // tengan placeholders sin resolver (revisión legal pendiente), así que NO figuran en
   // el sitemap. Cuando su contenido esté validado e indexable, vuelve a añadirlas aquí.
-  return [
-    { url: `${base}/`, lastModified: LAST_UPDATED, changeFrequency: "weekly", priority: 1 },
-  ];
+  return [{ url: `${base}/`, lastModified: LAST_UPDATED, changeFrequency: "weekly", priority: 1 }];
 }
