@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { LegalShell } from "@/components/layout/LegalShell";
 import { siteConfig } from "@/lib/site";
+import { legalEntity, legalContact, legalDocs } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Aviso legal",
   description: "Aviso legal e información del titular de la web de LICITATIS.",
-  robots: { index: true, follow: true },
+  // noindex mientras el contenido tenga placeholders sin resolver (revisión legal pendiente).
+  robots: { index: false, follow: false },
   alternates: { canonical: "/aviso-legal" },
 };
 
@@ -14,6 +16,7 @@ export default function AvisoLegalPage() {
     <LegalShell
       title="Aviso legal"
       intro="Información general en cumplimiento de la normativa aplicable (LSSI-CE)."
+      docMeta={legalDocs.avisoLegal}
     >
       <h2>1. Titular del sitio web</h2>
       <p>
@@ -21,41 +24,45 @@ export default function AvisoLegalPage() {
       </p>
       <ul>
         <li>
-          <strong>Razón social:</strong> [Razón social]
+          <strong>Denominación:</strong> {legalEntity.commercialName} — {legalEntity.legalName}
         </li>
         <li>
-          <strong>NIF/CIF:</strong> [NIF]
+          <strong>NIF/CIF:</strong> {legalEntity.taxId}
         </li>
         <li>
-          <strong>Domicilio social:</strong> [Dirección completa]
+          <strong>Domicilio social:</strong> {legalEntity.address}
         </li>
         <li>
-          <strong>Correo de contacto:</strong> {siteConfig.contactEmail} (pendiente de confirmación)
+          <strong>Correo de contacto:</strong> {legalContact.general}
         </li>
         <li>
-          <strong>Datos registrales:</strong> [Registro Mercantil, tomo, folio, hoja]
+          <strong>Datos registrales:</strong> {legalEntity.registry}
         </li>
       </ul>
 
       <h2>2. Objeto</h2>
       <p>
         Este sitio web tiene carácter informativo y comercial sobre el producto {siteConfig.name} y
-        la posibilidad de solicitar una demostración. El acceso y uso del sitio implica la
-        aceptación del presente aviso legal.
+        la posibilidad de solicitar una demostración. Estas condiciones se aplican al uso del sitio;
+        si continúas utilizándolo, entendemos que las conoces, y si no estás de acuerdo, te pedimos
+        que no lo utilices.
       </p>
 
       <h2>3. Propiedad intelectual e industrial</h2>
       <p>
         Los contenidos de este sitio (textos, marca, logotipos, diseño e imágenes) son titularidad
-        de [Razón social] o de terceros que han autorizado su uso, y están protegidos por la
-        normativa de propiedad intelectual e industrial. Queda prohibida su reproducción sin
-        autorización.
+        de {legalEntity.commercialName} ({legalEntity.legalName}) o de terceros que han autorizado
+        su uso, y están protegidos por la normativa de propiedad intelectual e industrial. Queda
+        prohibida su reproducción sin autorización.
       </p>
 
-      <h2>4. Exención de responsabilidad</h2>
+      <h2>4. Responsabilidad</h2>
       <p>
-        [Razón social] no se hace responsable del uso indebido de los contenidos ni de posibles
-        daños derivados del acceso al sitio. [Texto pendiente de revisión legal.]
+        Procuramos que la información del sitio sea correcta y esté actualizada, pero no podemos
+        garantizar la ausencia total de errores. En la medida permitida por la ley, y salvo dolo o
+        negligencia grave, no asumimos responsabilidad por el uso indebido de los contenidos por
+        parte de terceros. Nada en este aviso excluye responsabilidades que no puedan excluirse
+        legalmente frente a consumidores.
       </p>
 
       <h2>5. Enlaces a la aplicación</h2>
@@ -66,8 +73,8 @@ export default function AvisoLegalPage() {
 
       <h2>6. Legislación aplicable</h2>
       <p>
-        El presente aviso legal se rige por la legislación española. [Fuero y jurisdicción
-        pendientes de definir.]
+        El presente aviso legal se rige por la legislación española. La determinación del fuero y la
+        jurisdicción competente queda pendiente de revisión profesional.
       </p>
     </LegalShell>
   );

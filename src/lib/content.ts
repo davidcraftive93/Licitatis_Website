@@ -28,7 +28,10 @@ export const valueStats: ValueStat[] = [
   { value: "1", label: "Pasaporte: lo rellenas una vez, vale para todas tus licitaciones" },
   { value: "6", label: "pasos del pliego a la candidatura lista" },
   { value: "0", label: "datos de tu empresa inventados por la IA" },
-  { value: "PLACSP", label: "y subvenciones BDNS, con un encaje que se explica criterio a criterio" },
+  {
+    value: "PLACSP",
+    label: "y subvenciones BDNS, con un encaje que se explica criterio a criterio",
+  },
 ];
 
 /* ------------------------------------------------------------- Problema → solución */
@@ -95,10 +98,26 @@ export const passport = {
   title: "El Pasaporte del Licitador",
   lead: "Lo rellenas una vez y trabaja para ti en cada licitación: te avisa de lo que encaja, de lo que caduca y de lo que falta — antes de que se convierta en un problema.",
   contains: [
-    { icon: "id-card" as IconName, title: "Identidad", text: "CIF (validado con dígito de control), razón social, CNAE, contacto." },
-    { icon: "radar" as IconName, title: "Qué busca", text: "CPVs, zonas, palabras clave, importes, lotes y organismos favoritos o vetados." },
-    { icon: "trending-up" as IconName, title: "Capacidad", text: "Experiencia, solvencia técnica y económica, facturación, certificaciones." },
-    { icon: "key" as IconName, title: "Credenciales con caducidad", text: "ISO, ENS, ROLECE, clasificación, AEAT/TGSS, seguros y poderes, con fechas." },
+    {
+      icon: "id-card" as IconName,
+      title: "Identidad",
+      text: "CIF (validado con dígito de control), razón social, CNAE, contacto.",
+    },
+    {
+      icon: "radar" as IconName,
+      title: "Qué busca",
+      text: "CPVs, zonas, palabras clave, importes, lotes y organismos favoritos o vetados.",
+    },
+    {
+      icon: "trending-up" as IconName,
+      title: "Capacidad",
+      text: "Experiencia, solvencia técnica y económica, facturación, certificaciones.",
+    },
+    {
+      icon: "key" as IconName,
+      title: "Credenciales con caducidad",
+      text: "ISO, ENS, ROLECE, clasificación, AEAT/TGSS, seguros y poderes, con fechas.",
+    },
   ],
   highlights: [
     {
@@ -119,6 +138,51 @@ export const passport = {
   ],
 };
 
+/* ------------------------------------------------- Cómo usamos la IA (transparencia) */
+export interface AiPoint {
+  icon: IconName;
+  title: string;
+  text: string;
+}
+export const aiTransparency = {
+  eyebrow: "Transparencia de IA",
+  title: "Cómo utiliza la IA LICITATIS",
+  lead: "Usamos IA para ayudarte a preparar candidaturas, no para decidir por ti. Queremos que sepas qué hace, qué no hace y dónde está siempre tu criterio.",
+  points: [
+    {
+      icon: "sparkles" as IconName,
+      title: "Tareas asistidas por IA",
+      text: "Resumen de pliegos, extracción de requisitos, borradores de memoria, análisis de elegibilidad y de riesgos. Son apoyos al trabajo, no resoluciones.",
+    },
+    {
+      icon: "alert-triangle" as IconName,
+      title: "Puede equivocarse",
+      text: "La IA puede omitir o interpretar mal un dato. Por eso separa hechos, inferencias y recomendaciones, y marca lo que le falta en vez de rellenarlo con datos no verificados.",
+    },
+    {
+      icon: "check" as IconName,
+      title: "Revisión humana obligatoria",
+      text: "Ningún resultado se da por bueno sin que una persona lo valide. La decisión de presentarse, y cómo, es siempre del equipo usuario.",
+    },
+    {
+      icon: "book" as IconName,
+      title: "El pliego oficial manda",
+      text: "Lo que dice LICITATIS es un apoyo; ante cualquier duda, prevalece el pliego y la documentación oficial de la licitación.",
+    },
+    {
+      icon: "shield" as IconName,
+      title: "Datos que tratan proveedores",
+      text: "Algunas funciones pueden apoyarse en proveedores de IA. Qué se envía, a qué proveedor y con qué garantías se detalla en la política de privacidad y en la lista de subencargados.",
+    },
+    {
+      icon: "scale" as IconName,
+      title: "Sin decisiones automáticas de adjudicación",
+      text: "LICITATIS no adjudica ni excluye por ti, y no garantiza la obtención de contratos. Prepara y controla; tú decides y presentas.",
+    },
+  ] as AiPoint[],
+  note: "La información específica de transparencia dentro de la aplicación (por ejemplo, el marcado de contenido generado por IA) se implementa en la propia app y está pendiente de revisión jurídica; esta web no afirma un cumplimiento definitivo del Reglamento de IA.",
+};
+
 /* --------------------------------------------------------------- Funcionalidades (§8) */
 export interface Feature {
   icon: IconName;
@@ -126,15 +190,51 @@ export interface Feature {
   text: string;
 }
 export const features: Feature[] = [
-  { icon: "sparkles", title: "Análisis IA del expediente", text: "Te dice si ir o no ir, con cuánta confianza y qué le falta por saber. Tú tienes la última palabra." },
-  { icon: "scale", title: "Matriz de elegibilidad", text: "¿Podemos presentarnos? Requisito a requisito, con semáforo y evidencia." },
-  { icon: "shield", title: "Escáner anti-exclusión", text: "Los errores que dejan ofertas fuera, detectados cuando aún tienen arreglo." },
-  { icon: "handshake", title: "Brecha UTE / Socio", text: "Un «no cumples» convertido en «viable con el socio adecuado»." },
-  { icon: "euro", title: "Escenarios económicos", text: "Tres formas de ofertar: prudente, equilibrada o agresiva. Con el margen claro y aviso si rozas la baja temeraria." },
-  { icon: "book", title: "Memoria técnica asistida", text: "Se estructura según los criterios del pliego y se apoya en lo que has hecho de verdad. Nada de capacidades inventadas." },
-  { icon: "message", title: "Chat con citas al pliego", text: "Pregúntale lo que quieras al expediente: te responde citando el documento y la página exacta." },
-  { icon: "checklist", title: "Tareas y checklist", text: "Salen solas del análisis, se reparten entre el equipo y se exportan donde las necesites." },
-  { icon: "gauge", title: "Índice de preparación", text: "Un porcentaje que se entiende: qué está listo, qué falta y qué te está bloqueando." },
+  {
+    icon: "sparkles",
+    title: "Análisis IA del expediente",
+    text: "Te dice si ir o no ir, con cuánta confianza y qué le falta por saber. Tú tienes la última palabra.",
+  },
+  {
+    icon: "scale",
+    title: "Matriz de elegibilidad",
+    text: "¿Podemos presentarnos? Requisito a requisito, con semáforo y evidencia.",
+  },
+  {
+    icon: "shield",
+    title: "Escáner anti-exclusión",
+    text: "Los errores que dejan ofertas fuera, detectados cuando aún tienen arreglo.",
+  },
+  {
+    icon: "handshake",
+    title: "Brecha UTE / Socio",
+    text: "Un «no cumples» convertido en «viable con el socio adecuado».",
+  },
+  {
+    icon: "euro",
+    title: "Escenarios económicos",
+    text: "Tres formas de ofertar: prudente, equilibrada o agresiva. Con el margen claro y aviso si rozas la baja temeraria.",
+  },
+  {
+    icon: "book",
+    title: "Memoria técnica asistida",
+    text: "Se estructura según los criterios del pliego y se apoya en lo que has hecho de verdad. Nada de capacidades inventadas.",
+  },
+  {
+    icon: "message",
+    title: "Chat con citas al pliego",
+    text: "Pregúntale lo que quieras al expediente: te responde citando el documento y la página exacta.",
+  },
+  {
+    icon: "checklist",
+    title: "Tareas y checklist",
+    text: "Salen solas del análisis, se reparten entre el equipo y se exportan donde las necesites.",
+  },
+  {
+    icon: "gauge",
+    title: "Índice de preparación",
+    text: "Un porcentaje que se entiende: qué está listo, qué falta y qué te está bloqueando.",
+  },
 ];
 
 /* --------------------------------------------------- Por qué NO es un buscador (§9) */
@@ -143,11 +243,26 @@ export interface ContrastRow {
   licitatis: string;
 }
 export const searchVsLicitatis: ContrastRow[] = [
-  { search: "Te avisa de la oportunidad.", licitatis: "Te lleva hasta la oferta lista para presentar." },
-  { search: "«Aquí tienes 200 licitaciones».", licitatis: "«Estas encajan contigo; esta merece que la pelees, esta te excluiría por X»." },
-  { search: "La documentación es cosa tuya.", licitatis: "Checklist, memoria y expediente sobre tu evidencia real." },
-  { search: "El riesgo de exclusión lo descubres al presentar.", licitatis: "Lo ves antes: escáner anti-exclusión e índice de preparación." },
-  { search: "Cada oferta empieza de cero.", licitatis: "El Pasaporte y la Biblioteca reutilizan lo que ya hiciste." },
+  {
+    search: "Te avisa de la oportunidad.",
+    licitatis: "Te lleva hasta la oferta lista para presentar.",
+  },
+  {
+    search: "«Aquí tienes 200 licitaciones».",
+    licitatis: "«Estas encajan contigo; esta merece que la pelees, esta te excluiría por X».",
+  },
+  {
+    search: "La documentación es cosa tuya.",
+    licitatis: "Checklist, memoria y expediente sobre tu evidencia real.",
+  },
+  {
+    search: "El riesgo de exclusión lo descubres al presentar.",
+    licitatis: "Lo ves antes: escáner anti-exclusión e índice de preparación.",
+  },
+  {
+    search: "Cada oferta empieza de cero.",
+    licitatis: "El Pasaporte y la Biblioteca reutilizan lo que ya hiciste.",
+  },
 ];
 
 /* -------------------------------------------------------------- Dos públicos (§3, §15) */

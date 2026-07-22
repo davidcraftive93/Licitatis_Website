@@ -21,10 +21,12 @@ export function ValueStats() {
                 i === 1 && "lg:border-r lg:border-ink-100",
               )}
             >
-              <div className="font-display text-4xl font-bold leading-none text-gradient-brand">
+              <div className="text-gradient-brand font-display text-4xl font-bold leading-none">
                 <CountUp value={stat.value} />
               </div>
-              <p className="mx-auto mt-2 max-w-[16rem] text-sm text-ink-500 lg:mx-0">{stat.label}</p>
+              <p className="mx-auto mt-2 max-w-[16rem] text-sm text-ink-500 lg:mx-0">
+                {stat.label}
+              </p>
             </Reveal>
           ))}
         </div>

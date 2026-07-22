@@ -16,7 +16,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "verify:legal-launch": "node scripts/verify-legal-launch.mjs",
+    "verify:legal-launch:prod": "node scripts/verify-legal-launch.mjs --mode production"
   },
   "dependencies": {
     "next": "^15.4.0",

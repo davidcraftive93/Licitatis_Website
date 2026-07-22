@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { LegalShell } from "@/components/layout/LegalShell";
+import { legalDocs } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Política de cookies",
   description: "Qué cookies utiliza la web de LICITATIS y cómo puedes gestionarlas.",
-  robots: { index: true, follow: true },
+  // noindex mientras el contenido tenga placeholders sin resolver (revisión legal pendiente).
+  robots: { index: false, follow: false },
   alternates: { canonical: "/cookies" },
 };
 
@@ -13,6 +15,7 @@ export default function CookiesPage() {
     <LegalShell
       title="Política de cookies"
       intro="Información sobre las cookies y tecnologías similares que utiliza este sitio."
+      docMeta={legalDocs.cookies}
     >
       <h2>1. ¿Qué son las cookies?</h2>
       <p>
@@ -22,25 +25,57 @@ export default function CookiesPage() {
       </p>
 
       <h2>2. Cookies que utilizamos</h2>
-      <p>Clasificamos las cookies en las siguientes categorías:</p>
-      <ul>
-        <li>
-          <strong>Necesarias:</strong> imprescindibles para el funcionamiento del sitio y para
-          recordar tus preferencias de consentimiento. Están siempre activas.
-        </li>
-        <li>
-          <strong>Analítica:</strong> nos ayudan a entender cómo se usa el sitio. Solo se activan
-          con tu consentimiento. [Herramienta y cookies concretas pendientes de detallar, p. ej.
-          Google Analytics 4.]
-        </li>
-        <li>
-          <strong>Marketing:</strong> permiten medir campañas y la atribución de contactos. Solo se
-          activan con tu consentimiento. [Cookies de HubSpot pendientes de detallar.]
-        </li>
-      </ul>
       <p>
-        [Se recomienda incluir aquí una tabla con el nombre de cada cookie, su proveedor, finalidad
-        y duración. Contenido pendiente de completar con auditoría de cookies.]
+        Esta web es un sitio estático. En una primera visita <strong>no</strong> se cargan cookies
+        de analítica ni de marketing: solo se activan tras tu consentimiento. Relación de cookies y
+        tecnologías por categoría:
+      </p>
+      <div className="overflow-x-auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Proveedor</th>
+              <th>Finalidad</th>
+              <th>Duración</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <code>licitatis_consent</code>
+              </td>
+              <td>Necesaria</td>
+              <td>LICITATIS (1ª parte)</td>
+              <td>Recordar tu elección de cookies</td>
+              <td>180 días</td>
+            </tr>
+            <tr>
+              <td>
+                <code>hubspotutk</code>
+              </td>
+              <td>Marketing</td>
+              <td>HubSpot</td>
+              <td>Atribución de contactos (solo si aceptas marketing)</td>
+              <td>Hasta 13 meses</td>
+            </tr>
+            <tr>
+              <td>
+                <code>_ga</code>, <code>_ga_*</code>
+              </td>
+              <td>Analítica</td>
+              <td>Google Analytics 4</td>
+              <td>Medición de uso agregada (solo si se activa la analítica y aceptas)</td>
+              <td>Hasta 24 meses</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        La analítica (Google Analytics 4) está desactivada por defecto y solo se habilita si el
+        propietario la activa y tú prestas tu consentimiento. La confirmación definitiva de las
+        cookies de terceros (HubSpot/Google) queda sujeta a revisión antes de la apertura pública.
       </p>
 
       <h2>3. Gestión del consentimiento</h2>

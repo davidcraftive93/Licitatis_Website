@@ -15,10 +15,14 @@ export function WhyNotSearch() {
       <div className="mx-auto mt-12 max-w-4xl overflow-hidden rounded-3xl border border-ink-100 bg-white shadow-soft">
         <div className="grid grid-cols-1 divide-y divide-ink-100 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
           <div className="bg-ink-50/60 px-6 py-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">Un buscador</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">
+              Un buscador
+            </p>
           </div>
           <div className="bg-brand-50/60 px-6 py-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">LICITATIS</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-brand-700">
+              LICITATIS
+            </p>
           </div>
         </div>
         <ul className="divide-y divide-ink-100">

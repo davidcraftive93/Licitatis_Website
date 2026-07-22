@@ -94,10 +94,12 @@ export function ConsentBanner() {
               Configurar
             </button>
           )}
+          {/* "Rechazar" y "Aceptar" con la MISMA jerarquía visual (mismo estilo, tamaño y
+              peso): rechazar debe ser tan fácil y visible como aceptar (guía AEPD/CNIL). */}
           <button
             type="button"
             onClick={rejectAll}
-            className="inline-flex h-10 items-center justify-center rounded-full border border-ink-200 px-5 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+            className="inline-flex h-10 items-center justify-center rounded-full bg-ink-900 px-5 text-sm font-semibold text-white hover:bg-ink-800"
           >
             Rechazar
           </button>

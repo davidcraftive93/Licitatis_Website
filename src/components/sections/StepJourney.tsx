@@ -114,7 +114,9 @@ function VisualAnaliza() {
       </div>
       <div className="rounded-xl border border-ink-100 bg-white p-3.5">
         <div className="flex items-center justify-between">
-          <span className="font-display text-lg font-bold text-emerald-700">GO con condiciones</span>
+          <span className="font-display text-lg font-bold text-emerald-700">
+            GO con condiciones
+          </span>
           <span className="text-2xs text-ink-400">
             Confianza <strong className="text-ink-700">78%</strong>
           </span>
@@ -132,8 +134,8 @@ function VisualAnaliza() {
             Garantía definitiva 5% · plazo 24 meses
           </li>
           <li className="flex items-start gap-1.5">
-            <Icon name="alert-triangle" size={12} className="mt-0.5 shrink-0 text-amber-600" />
-            2 huecos marcados <span className="font-mono text-ink-400">[[FALTA: …]]</span> para
+            <Icon name="alert-triangle" size={12} className="mt-0.5 shrink-0 text-amber-600" />2
+            huecos marcados <span className="font-mono text-ink-400">[[FALTA: …]]</span> para
             completar
           </li>
         </ul>
@@ -194,7 +196,9 @@ function VisualExpediente() {
           <span
             className={cn(
               "flex items-center gap-2 text-xs",
-              item.done ? "text-ink-500 line-through decoration-ink-300" : "font-medium text-ink-800",
+              item.done
+                ? "text-ink-500 line-through decoration-ink-300"
+                : "font-medium text-ink-800",
             )}
           >
             <span
@@ -281,7 +285,9 @@ function VisualDecide() {
           key={e.label}
           className={cn(
             "rounded-lg border px-3 py-2",
-            e.star ? "border-brand-200 bg-brand-50/60 ring-1 ring-brand-100" : "border-ink-100 bg-white",
+            e.star
+              ? "border-brand-200 bg-brand-50/60 ring-1 ring-brand-100"
+              : "border-ink-100 bg-white",
           )}
         >
           <div className="flex items-center justify-between text-2xs">
@@ -360,10 +366,7 @@ export function StepJourney() {
       {/* Pasos (columna izquierda). */}
       <ol className="relative">
         {/* Raíl de progreso: se rellena hasta el paso activo. */}
-        <div
-          aria-hidden="true"
-          className="absolute bottom-8 left-6 top-2 w-px bg-ink-200/80"
-        >
+        <div aria-hidden="true" className="absolute bottom-8 left-6 top-2 w-px bg-ink-200/80">
           <div
             className="w-full bg-gradient-to-b from-brand-500 to-brand-600 transition-[height] duration-500 ease-out-expo"
             style={{ height: `${(active / (howItWorksSteps.length - 1)) * 100}%` }}
@@ -426,9 +429,7 @@ export function StepJourney() {
 
       {/* Panel sticky (escritorio): las 6 pantallas superpuestas, crossfade a la activa. */}
       <div className="relative hidden lg:sticky lg:top-24 lg:block" aria-hidden="true">
-        <div
-          className="absolute inset-6 -z-10 rounded-[2.5rem] bg-brand-400/20 blur-2xl"
-        />
+        <div className="absolute inset-6 -z-10 rounded-[2.5rem] bg-brand-400/20 blur-2xl" />
         <div className="relative min-h-[420px]">
           {VISUALS.map((Visual, i) => (
             <div

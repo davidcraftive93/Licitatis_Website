@@ -48,6 +48,9 @@ export const leadSchema = z.object({
   privacy: z.literal(true, {
     errorMap: () => ({ message: "Debes aceptar la política de privacidad." }),
   }),
+  // Consentimiento de marketing: OPCIONAL, no premarcado y no obligatorio para solicitar
+  // la demostración. Se registra por separado del consentimiento de privacidad.
+  marketing: z.boolean().optional().default(false),
   // Campo trampa antispam: debe llegar vacío. Los bots suelen rellenarlo.
   company_url: z.string().max(0).optional().default(""),
   // Metadatos de atribución (se rellenan en cliente, no son obligatorios).

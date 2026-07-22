@@ -34,6 +34,9 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Formato (Prettier)
+        run: npm run format:check
+
       - name: Lint
         run: npm run lint
 
@@ -59,3 +62,10 @@ jobs:
           test -d out || { echo "::error::El build no generó la carpeta out/"; exit 1; }
           test -f out/index.html || { echo "::error::No existe out/index.html"; exit 1; }
           echo "Build correcto: out/ generado."
+
+      # Release gate legal en modo "dev": informa de placeholders/HubSpot como aviso, pero
+      # falla si hay defectos técnicos (dominio canónico, claims prohibidos, páginas legales
+      # ausentes, sitemap con páginas noindex). NO despliega. El bloqueo duro por placeholders
+      # ocurre en el workflow de despliegue (modo production).
+      - name: Release gate legal (dev)
+        run: npm run verify:legal-launch

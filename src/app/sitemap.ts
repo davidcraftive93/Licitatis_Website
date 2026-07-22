@@ -13,31 +13,8 @@ const LAST_UPDATED = new Date("2026-07-18");
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = siteConfig.url;
-  return [
-    { url: `${base}/`, lastModified: LAST_UPDATED, changeFrequency: "weekly", priority: 1 },
-    {
-      url: `${base}/aviso-legal`,
-      lastModified: LAST_UPDATED,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${base}/privacidad`,
-      lastModified: LAST_UPDATED,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${base}/cookies`,
-      lastModified: LAST_UPDATED,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${base}/terminos`,
-      lastModified: LAST_UPDATED,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-  ];
+  // Solo se incluyen páginas indexables. Las páginas legales llevan noindex mientras
+  // tengan placeholders sin resolver (revisión legal pendiente), así que NO figuran en
+  // el sitemap. Cuando su contenido esté validado e indexable, vuelve a añadirlas aquí.
+  return [{ url: `${base}/`, lastModified: LAST_UPDATED, changeFrequency: "weekly", priority: 1 }];
 }

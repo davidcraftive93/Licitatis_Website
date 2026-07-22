@@ -2,11 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import {
-  usePrefersReducedMotion,
-  useFinePointer,
-  useRafCallback,
-} from "@/components/motion/hooks";
+import { usePrefersReducedMotion, useFinePointer, useRafCallback } from "@/components/motion/hooks";
 
 interface TiltCardProps {
   children: ReactNode;

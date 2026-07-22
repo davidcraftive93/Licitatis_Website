@@ -4,6 +4,7 @@ import { ProblemSolution } from "@/components/sections/ProblemSolution";
 import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Passport } from "@/components/sections/Passport";
 import { Features } from "@/components/sections/Features";
+import { AiTransparency } from "@/components/sections/AiTransparency";
 import { WhyNotSearch } from "@/components/sections/WhyNotSearch";
 import { DualAudience } from "@/components/sections/DualAudience";
 import { Privacy } from "@/components/sections/Privacy";
@@ -39,6 +40,7 @@ export default function HomePage() {
       <HowItWorks />
       <Passport />
       <Features />
+      <AiTransparency />
       <WhyNotSearch />
       <DualAudience />
       <Privacy />
