@@ -8,6 +8,16 @@ Estados: `PASS` · `FAIL` · `PARTIAL` · `NOT_APPLICABLE` · `BLOCKED_LEGAL_REV
 
 > Contexto importante: **el mandato de implementación legal/privacidad/transparencia previo nunca se llevó a cabo como tal.** No existía ninguna rama `legal/*`. Lo que había en `main` es una landing comercial con páginas legales de plantilla (con placeholders), sistema de consentimiento y formulario a HubSpot desde cliente. Esta auditoría corrige todos los defectos **técnicos** verificables y deja claramente marcados los bloqueantes que dependen de **datos legales/comerciales del propietario**.
 
+> **Actualización — Fase A (implementación de la base) completada.** Se ejecutó primero la implementación técnica que faltaba y después la auditoría:
+> - **Config legal central** `src/lib/legal.ts` (fuente única tipada con `[LEGAL_REVIEW_REQUIRED: …]`); las 7 páginas legales leen de ella.
+> - **Páginas nuevas** (noindex): `/seguridad-y-privacidad`, `/acuerdo-tratamiento-datos`, `/subencargados`; añadidas al footer. Versión/fecha e impresión (PDF) en todas.
+> - **Sección pública de transparencia de IA** (`/#ia`).
+> - **Marketing opcional** en el formulario: casilla separada, no premarcada, no obligatoria, registrada aparte.
+> - **Tabla de cookies real** en `/cookies`; cláusulas de aceptación automática reformuladas.
+> - **Release gate ampliado**: rutas nuevas, enlaces legales rotos, marketing premarcado, certificaciones sin acreditar. `format:check` añadido a CI.
+> - **Docs nuevos**: `DATA-PROTECTION-INVENTORY.md`, `MARKETING-CONSENT-RULES.md`.
+> Persisten como bloqueantes de apertura pública los datos legales/comerciales del propietario (identidad registral, transferencias, plazos, claims de seguridad/planes).
+
 ## Resumen por dimensión
 
 | Dimensión | Estado tras auditoría | Bloqueante apertura pública |
