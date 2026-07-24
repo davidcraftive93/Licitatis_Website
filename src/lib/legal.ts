@@ -32,7 +32,8 @@ export const company = {
   /** Aún pendiente: no se inventa. */
   registry: pendingLegalData("REGISTRO MERCANTIL: tomo, folio, hoja e inscripción"),
   legalEmail: "info@craftive.es",
-  dpo: pendingLegalData("DELEGADO DE PROTECCIÓN DE DATOS o «no procede»"),
+  /** Confirmado por el propietario: no se ha designado DPD. */
+  dpo: "No procede: no se ha designado Delegado de Protección de Datos.",
 } as const;
 
 /** Marca comercial del producto (NO es una sociedad). */
