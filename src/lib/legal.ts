@@ -29,8 +29,12 @@ export const company = {
   taxId: "B26701243",
   address: "Calle Llíria 54, 46180 Benaguasil (Valencia), España",
   phone: "685 030 281",
-  /** Aún pendiente: no se inventa. */
-  registry: pendingLegalData("REGISTRO MERCANTIL: tomo, folio, hoja e inscripción"),
+  /**
+   * Datos registrales aportados por el propietario. En su ficha registral los campos
+   * "Tomo" y "Folio" están vacíos, así que NO se inventan: la hoja identifica la
+   * sociedad de forma unívoca. Si la asesoría los facilita, se añaden aquí.
+   */
+  registry: "Inscrita en el Registro Mercantil de Valencia, sección 8, hoja V-231948",
   legalEmail: "info@craftive.es",
   /** Confirmado por el propietario: no se ha designado DPD. */
   dpo: "No procede: no se ha designado Delegado de Protección de Datos.",
