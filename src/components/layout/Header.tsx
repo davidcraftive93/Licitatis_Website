@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/layout/Logo";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Icon } from "@/components/ui/icons";
 import { navLinks, siteConfig } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -75,6 +76,7 @@ export function Header() {
           </nav>
 
           <div className="hidden shrink-0 items-center gap-3 lg:flex">
+            <ThemeToggle />
             <a
               href={siteConfig.appUrl}
               className="whitespace-nowrap text-sm font-semibold text-ink-200 transition-colors hover:text-white"
@@ -86,17 +88,20 @@ export function Header() {
             </Button>
           </div>
 
-          {/* Botón de menú móvil */}
-          <button
-            type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-white hover:bg-white/10 lg:hidden"
-            aria-expanded={open}
-            aria-controls="mobile-menu"
-            aria-label={open ? "Cerrar menú" : "Abrir menú"}
-            onClick={() => setOpen((v) => !v)}
-          >
-            <Icon name={open ? "close" : "menu"} size={24} />
-          </button>
+          {/* Tema + menú en móvil */}
+          <div className="flex items-center gap-1 lg:hidden">
+            <ThemeToggle />
+            <button
+              type="button"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-white hover:bg-white/10"
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              aria-label={open ? "Cerrar menú" : "Abrir menú"}
+              onClick={() => setOpen((v) => !v)}
+            >
+              <Icon name={open ? "close" : "menu"} size={24} />
+            </button>
+          </div>
         </div>
       </Container>
 

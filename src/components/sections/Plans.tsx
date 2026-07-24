@@ -22,7 +22,7 @@ export function Plans() {
                 "relative flex h-full flex-col rounded-3xl p-6 transition-all duration-300 sm:p-7",
                 plan.highlighted
                   ? "bg-ink-950 text-ink-100 shadow-lift ring-1 ring-brand-500/40 hover:shadow-brand-glow-lg"
-                  : "border border-ink-100 bg-white shadow-soft hover:-translate-y-1 hover:shadow-card",
+                  : "border border-hairline bg-surface-raised shadow-soft hover:-translate-y-1 hover:shadow-card",
               )}
             >
               {plan.highlighted ? (
@@ -33,12 +33,12 @@ export function Plans() {
               <h3
                 className={cn(
                   "font-display text-xl font-bold",
-                  plan.highlighted ? "text-white" : "text-ink-900",
+                  plan.highlighted ? "text-white" : "text-fg-strong",
                 )}
               >
                 {plan.name}
               </h3>
-              <p className={cn("mt-1 text-sm", plan.highlighted ? "text-ink-300" : "text-ink-500")}>
+              <p className={cn("mt-1 text-sm", plan.highlighted ? "text-ink-300" : "text-fg")}>
                 {plan.tagline}
               </p>
               <ul className="mt-5 flex-1 space-y-2.5">
@@ -52,7 +52,7 @@ export function Plans() {
                         plan.highlighted ? "text-brand-400" : "text-brand-600",
                       )}
                     />
-                    <span className={plan.highlighted ? "text-ink-200" : "text-ink-600"}>{h}</span>
+                    <span className={plan.highlighted ? "text-ink-200" : "text-fg"}>{h}</span>
                   </li>
                 ))}
               </ul>
@@ -73,33 +73,33 @@ export function Plans() {
 
       {/* Tabla de límites reales */}
       <Reveal delay={120} className="mt-12">
-        <div className="overflow-x-auto rounded-3xl border border-ink-100 bg-white shadow-soft">
+        <div className="overflow-x-auto rounded-3xl border border-hairline bg-surface-raised shadow-soft">
           <table className="w-full min-w-[640px] text-sm">
             <caption className="sr-only">Límites reales por plan</caption>
             <thead>
-              <tr className="border-b border-ink-100">
-                <th scope="col" className="px-5 py-4 text-left font-semibold text-ink-500">
+              <tr className="border-b border-hairline">
+                <th scope="col" className="px-5 py-4 text-left font-semibold text-fg">
                   Límite
                 </th>
                 {planNames.map((name) => (
                   <th
                     key={name}
                     scope="col"
-                    className="px-5 py-4 text-center font-semibold text-ink-900"
+                    className="px-5 py-4 text-center font-semibold text-fg-strong"
                   >
                     {name}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-ink-50">
+            <tbody className="divide-y divide-hairline">
               {planLimitRows.map((row) => (
                 <tr key={row.label}>
-                  <th scope="row" className="px-5 py-3 text-left font-medium text-ink-700">
+                  <th scope="row" className="px-5 py-3 text-left font-medium text-fg">
                     {row.label}
                   </th>
                   {row.values.map((v, i) => (
-                    <td key={i} className="px-5 py-3 text-center text-ink-600">
+                    <td key={i} className="px-5 py-3 text-center text-fg">
                       {v}
                     </td>
                   ))}
@@ -111,8 +111,8 @@ export function Plans() {
       </Reveal>
 
       <Reveal delay={140}>
-        <p className="mt-6 text-center text-xs text-ink-400">
-          En el plan <strong className="font-semibold text-ink-600">Free</strong> la IA es simulada
+        <p className="mt-6 text-center text-xs text-fg-muted">
+          En el plan <strong className="font-semibold text-fg">Free</strong> la IA es simulada
           (etiquetada como tal en la app); en Starter, Pro y Agency es IA real. Los precios se
           anunciarán al salir de beta.
         </p>

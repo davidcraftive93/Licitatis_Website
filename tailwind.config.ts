@@ -8,6 +8,8 @@ import type { Config } from "tailwindcss";
  */
 const config: Config = {
   content: ["./src/**/*.{ts,tsx,mdx}"],
+  // El tema oscuro se activa con la clase .dark en <html> (ThemeToggle + script anti-parpadeo).
+  darkMode: "class",
   theme: {
     container: {
       center: true,
@@ -16,6 +18,21 @@ const config: Config = {
     },
     extend: {
       colors: {
+        /* Tokens semánticos: cambian con el tema (ver :root/.dark en globals.css).
+           Úsalos en TODO lo que deba adaptarse; deja los literales (ink/paper) solo en
+           zonas deliberadamente oscuras y en los mockups de producto. */
+        surface: {
+          DEFAULT: "rgb(var(--surface) / <alpha-value>)",
+          raised: "rgb(var(--surface-raised) / <alpha-value>)",
+          sunken: "rgb(var(--surface-sunken) / <alpha-value>)",
+        },
+        fg: {
+          DEFAULT: "rgb(var(--fg) / <alpha-value>)",
+          strong: "rgb(var(--fg-strong) / <alpha-value>)",
+          muted: "rgb(var(--fg-muted) / <alpha-value>)",
+        },
+        hairline: "rgb(var(--hairline) / <alpha-value>)",
+
         paper: { DEFAULT: "#FBFAF9", muted: "#F3F4F2", contrast: "#FFFFFF" },
         ink: {
           50: "#F1F4F9",

@@ -7,6 +7,7 @@ import { ConsentBanner } from "@/components/analytics/ConsentBanner";
 import { Analytics } from "@/components/analytics/Analytics";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { THEME_COLORS, THEME_INIT_SCRIPT } from "@/lib/theme";
 import "@/app/globals.css";
 
 const title = "LICITATIS — Prepara licitaciones públicas con IA";
@@ -62,8 +63,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  colorScheme: "light",
-  themeColor: "#0B1220",
+  // El sitio soporta ambos temas; el script de arranque fija el definitivo antes del paint.
+  colorScheme: "light dark",
+  themeColor: THEME_COLORS.light,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -72,7 +74,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang={siteConfig.lang}
       className={`${inter.variable} ${poppins.variable} ${geistMono.variable}`}
     >
-      <body className="min-h-dvh bg-paper antialiased">
+      <head>
+        {/* Aplica el tema guardado ANTES del primer paint: sin parpadeo blanco al
+            cargar en modo oscuro. Debe ir en <head> y ser síncrono. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
+      <body className="min-h-dvh bg-surface antialiased">
         {/* Mejora progresiva: marca que hay JS antes del primer paint para que los
             reveals solo se oculten con JS activo (sin JS, todo permanece visible). */}
         <script

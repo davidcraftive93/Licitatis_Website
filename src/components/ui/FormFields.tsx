@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icons";
 
 const controlBase =
-  "w-full rounded-xl border border-ink-200 bg-white px-3.5 py-2.5 text-[0.95rem] text-ink-900 shadow-sm transition-colors placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15 disabled:opacity-60 aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-500/15";
+  "w-full rounded-xl border border-hairline bg-surface-raised px-3.5 py-2.5 text-[0.95rem] text-fg-strong shadow-sm transition-colors placeholder:text-fg focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15 disabled:opacity-60 aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-500/15";
 
 interface FieldWrapProps {
   id: string;
@@ -24,20 +24,20 @@ interface FieldWrapProps {
 export function Field({ id, label, hint, error, required, className, children }: FieldWrapProps) {
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={id} className="text-sm font-medium text-ink-800">
+      <label htmlFor={id} className="text-sm font-medium text-fg-strong">
         {label}
         {required ? (
-          <span className="text-brand-700" aria-hidden="true">
+          <span className="text-brand-700 dark:text-brand-300" aria-hidden="true">
             {" "}
             *
           </span>
         ) : (
-          <span className="ml-1 text-xs font-normal text-ink-400">(opcional)</span>
+          <span className="ml-1 text-xs font-normal text-fg-muted">(opcional)</span>
         )}
       </label>
       {children}
       {hint && !error ? (
-        <p id={`${id}-hint`} className="text-xs text-ink-400">
+        <p id={`${id}-hint`} className="text-xs text-fg-muted">
           {hint}
         </p>
       ) : null}
@@ -146,7 +146,7 @@ export function SelectInput({
         <Icon
           name="chevron-down"
           size={18}
-          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-400"
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-fg-muted"
         />
       </div>
     </Field>
@@ -162,7 +162,7 @@ type CheckboxProps = {
 export function Checkbox({ id, error, required, children, className, ...rest }: CheckboxProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="flex cursor-pointer items-start gap-3 text-sm text-ink-600">
+      <label htmlFor={id} className="flex cursor-pointer items-start gap-3 text-sm text-fg">
         <input
           id={id}
           type="checkbox"

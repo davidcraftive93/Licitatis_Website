@@ -4,9 +4,11 @@ import { cn } from "@/lib/utils";
 type Tone = "brand" | "amber" | "neutral" | "ink";
 
 const tones: Record<Tone, string> = {
-  brand: "bg-brand-50 text-brand-800 ring-brand-200",
-  amber: "bg-amber-50 text-amber-700 ring-amber-200",
-  neutral: "bg-ink-50 text-ink-600 ring-ink-200",
+  brand:
+    "bg-brand-50 dark:bg-brand-500/15 text-brand-800 dark:text-brand-200 ring-brand-200 dark:ring-brand-500/30",
+  amber:
+    "bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 ring-amber-200 dark:ring-amber-500/30",
+  neutral: "bg-surface-sunken text-fg ring-hairline",
   ink: "bg-white/10 text-ink-100 ring-white/15",
 };
 

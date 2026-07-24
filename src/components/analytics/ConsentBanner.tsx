@@ -33,28 +33,28 @@ export function ConsentBanner() {
       aria-label="Preferencias de cookies"
       className="fixed inset-x-0 bottom-0 z-[60] p-3 sm:p-4"
     >
-      <div className="mx-auto max-w-3xl rounded-2xl border border-ink-200 bg-white p-5 shadow-lift sm:p-6">
+      <div className="mx-auto max-w-3xl rounded-2xl border border-hairline bg-surface-raised p-5 shadow-lift sm:p-6">
         <h2
           ref={headingRef}
           tabIndex={-1}
-          className="text-base font-semibold text-ink-900 outline-none"
+          className="text-base font-semibold text-fg-strong outline-none"
         >
           Cookies y privacidad
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-ink-500">
+        <p className="mt-2 text-sm leading-relaxed text-fg">
           Usamos cookies necesarias para el funcionamiento del sitio y, con tu permiso, cookies de
           analítica y de marketing. Puedes aceptarlas, rechazarlas o configurarlas. Consulta la{" "}
           <Link
             href="/cookies"
-            className="font-medium text-brand-700 underline-offset-2 hover:underline"
+            className="font-medium text-brand-700 underline-offset-2 hover:underline dark:text-brand-300"
           >
             política de cookies
           </Link>
-          . <span className="text-ink-400">(Textos legales pendientes de revisión.)</span>
+          . <span className="text-fg-muted">(Textos legales pendientes de revisión.)</span>
         </p>
 
         {showPrefs ? (
-          <div className="mt-4 space-y-2.5 rounded-xl bg-paper p-4">
+          <div className="mt-4 space-y-2.5 rounded-xl bg-surface p-4">
             <PrefRow
               label="Necesarias"
               description="Imprescindibles para el sitio."
@@ -89,7 +89,7 @@ export function ConsentBanner() {
             <button
               type="button"
               onClick={() => setShowPrefs(true)}
-              className="inline-flex h-10 items-center justify-center rounded-full border border-ink-200 px-5 text-sm font-semibold text-ink-700 hover:bg-ink-50"
+              className="inline-flex h-10 items-center justify-center rounded-full border border-hairline px-5 text-sm font-semibold text-fg hover:bg-surface-sunken"
             >
               Configurar
             </button>
@@ -99,14 +99,14 @@ export function ConsentBanner() {
           <button
             type="button"
             onClick={rejectAll}
-            className="inline-flex h-10 items-center justify-center rounded-full bg-ink-900 px-5 text-sm font-semibold text-white hover:bg-ink-800"
+            className="inline-flex h-10 items-center justify-center rounded-full bg-ink-900 px-5 text-sm font-semibold text-white hover:bg-ink-800 dark:bg-brand-600 dark:hover:bg-brand-500"
           >
             Rechazar
           </button>
           <button
             type="button"
             onClick={acceptAll}
-            className="inline-flex h-10 items-center justify-center rounded-full bg-ink-900 px-5 text-sm font-semibold text-white hover:bg-ink-800"
+            className="inline-flex h-10 items-center justify-center rounded-full bg-ink-900 px-5 text-sm font-semibold text-white hover:bg-ink-800 dark:bg-brand-600 dark:hover:bg-brand-500"
           >
             Aceptar todo
           </button>
@@ -137,8 +137,8 @@ function PrefRow({
       )}
     >
       <span>
-        <span className="block text-sm font-medium text-ink-800">{label}</span>
-        <span className="block text-xs text-ink-400">{description}</span>
+        <span className="block text-sm font-medium text-fg-strong">{label}</span>
+        <span className="block text-xs text-fg-muted">{description}</span>
       </span>
       <input
         type="checkbox"

@@ -160,19 +160,19 @@ export function DemoForm() {
       <div
         role="status"
         aria-live="polite"
-        className="flex flex-col items-center gap-4 rounded-3xl border border-brand-200 bg-brand-50/50 p-8 text-center sm:p-10"
+        className="flex flex-col items-center gap-4 rounded-3xl border border-brand-200 bg-brand-50/50 p-8 text-center dark:border-brand-500/30 dark:bg-brand-500/10 sm:p-10"
       >
         <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-600 text-white">
           <Icon name="check" size={28} />
         </span>
-        <h3 className="text-xl font-semibold text-ink-900">Solicitud recibida</h3>
-        <p className="max-w-sm text-sm text-ink-600">
+        <h3 className="text-xl font-semibold text-fg-strong">Solicitud recibida</h3>
+        <p className="max-w-sm text-sm text-fg">
           Gracias por tu interés en el programa Beta Partner de LICITATIS. Nuestro equipo se pondrá
           en contacto contigo para la activación y para analizar tu primera licitación real.
         </p>
         <Link
           href="/"
-          className="mt-2 text-sm font-semibold text-brand-700 underline-offset-4 hover:underline"
+          className="mt-2 text-sm font-semibold text-brand-700 underline-offset-4 hover:underline dark:text-brand-300"
         >
           Volver al inicio
         </Link>
@@ -301,25 +301,25 @@ export function DemoForm() {
       {/* Información básica de protección de datos (primera capa). El detalle y la
           base jurídica definitiva están en la política de privacidad (pendiente de
           revisión legal). El consentimiento de marketing es aparte y opcional. */}
-      <div className="rounded-xl border border-ink-100 bg-paper/70 p-3.5 text-xs leading-relaxed text-ink-500">
+      <div className="rounded-xl border border-hairline bg-surface/70 p-3.5 text-xs leading-relaxed text-fg">
         <p>
-          <strong className="font-semibold text-ink-700">Responsable:</strong> LICITATIS.{" "}
-          <strong className="font-semibold text-ink-700">Finalidad:</strong> gestionar tu solicitud
-          de plaza en la beta y ponernos en contacto contigo.{" "}
-          <strong className="font-semibold text-ink-700">Destinatario:</strong> HubSpot (proveedor
-          que usamos para gestionar contactos comerciales).{" "}
-          <strong className="font-semibold text-ink-700">Derechos:</strong> acceso, rectificación y
+          <strong className="font-semibold text-fg">Responsable:</strong> LICITATIS.{" "}
+          <strong className="font-semibold text-fg">Finalidad:</strong> gestionar tu solicitud de
+          plaza en la beta y ponernos en contacto contigo.{" "}
+          <strong className="font-semibold text-fg">Destinatario:</strong> HubSpot (proveedor que
+          usamos para gestionar contactos comerciales).{" "}
+          <strong className="font-semibold text-fg">Derechos:</strong> acceso, rectificación y
           supresión, entre otros, escribiendo a{" "}
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            className="font-medium text-brand-700 underline-offset-2 hover:underline"
+            className="font-medium text-brand-700 underline-offset-2 hover:underline dark:text-brand-300"
           >
             {CONTACT_EMAIL}
           </a>
           . Más información en la{" "}
           <Link
             href="/privacidad"
-            className="font-medium text-brand-700 underline-offset-2 hover:underline"
+            className="font-medium text-brand-700 underline-offset-2 hover:underline dark:text-brand-300"
           >
             política de privacidad
           </Link>
@@ -338,11 +338,11 @@ export function DemoForm() {
         He leído y acepto la{" "}
         <Link
           href="/privacidad"
-          className="font-medium text-brand-700 underline-offset-2 hover:underline"
+          className="font-medium text-brand-700 underline-offset-2 hover:underline dark:text-brand-300"
         >
           política de privacidad
         </Link>
-        . <span className="text-ink-400">(obligatorio)</span>
+        . <span className="text-fg-muted">(obligatorio)</span>
       </Checkbox>
 
       {/* Marketing OPCIONAL: no premarcado, no obligatorio, registrado por separado. */}
@@ -353,7 +353,7 @@ export function DemoForm() {
         onChange={(e) => update("marketing", e.target.checked)}
       >
         Quiero recibir novedades y comunicaciones comerciales de LICITATIS.{" "}
-        <span className="text-ink-400">(opcional)</span>
+        <span className="text-fg-muted">(opcional)</span>
       </Checkbox>
 
       {status === "error" && serverMessage ? (
@@ -387,7 +387,7 @@ export function DemoForm() {
         >
           {status === "submitting" ? "Enviando…" : "Solicitar plaza en la beta"}
         </Button>
-        <p className="text-xs text-ink-400">Sin tarjeta · Beta gratuita.</p>
+        <p className="text-xs text-fg-muted">Sin tarjeta · Beta gratuita.</p>
       </div>
     </form>
   );

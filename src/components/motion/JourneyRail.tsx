@@ -61,8 +61,8 @@ export function JourneyRail({ stations }: JourneyRailProps) {
                     "pointer-events-none whitespace-nowrap rounded-full border px-2.5 py-0.5 text-2xs font-semibold opacity-0 transition-all duration-300",
                     "translate-x-1.5 group-focus-within:translate-x-0 group-focus-within:opacity-100 group-hover:translate-x-0 group-hover:opacity-100",
                     isActive
-                      ? "border-brand-200 bg-white/95 text-brand-800 shadow-soft"
-                      : "border-ink-100 bg-white/95 text-ink-500 shadow-soft",
+                      ? "border-brand-200 bg-surface-raised/95 text-brand-800 shadow-soft dark:border-brand-500/30 dark:text-brand-200"
+                      : "border-hairline bg-surface-raised/95 text-fg shadow-soft",
                   )}
                 >
                   {station.label}

@@ -25,7 +25,7 @@ export function Accordion({ items, className }: AccordionProps) {
   return (
     <div
       className={cn(
-        "divide-y divide-ink-100 overflow-hidden rounded-2xl border border-ink-100 bg-white",
+        "divide-y divide-hairline overflow-hidden rounded-2xl border border-hairline bg-surface-raised",
         className,
       )}
     >
@@ -34,7 +34,10 @@ export function Accordion({ items, className }: AccordionProps) {
         const panelId = `${baseId}-panel-${i}`;
         const buttonId = `${baseId}-button-${i}`;
         return (
-          <div key={item.question} className={cn("transition-colors", isOpen && "bg-brand-50/30")}>
+          <div
+            key={item.question}
+            className={cn("transition-colors", isOpen && "bg-brand-50/30 dark:bg-brand-500/10")}
+          >
             <h3>
               <button
                 id={buttonId}
@@ -42,7 +45,7 @@ export function Accordion({ items, className }: AccordionProps) {
                 aria-expanded={isOpen}
                 aria-controls={panelId}
                 onClick={() => setOpen(isOpen ? null : i)}
-                className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left font-medium text-ink-900 transition-colors hover:bg-ink-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-600 sm:px-6"
+                className="flex w-full cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left font-medium text-fg-strong transition-colors hover:bg-surface-sunken focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-600 sm:px-6"
               >
                 <span>{item.question}</span>
                 <span
@@ -50,8 +53,8 @@ export function Accordion({ items, className }: AccordionProps) {
                   className={cn(
                     "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all duration-300",
                     isOpen
-                      ? "rotate-180 border-brand-200 bg-brand-100 text-brand-700"
-                      : "border-ink-100 bg-white text-ink-400",
+                      ? "rotate-180 border-brand-200 bg-brand-100 text-brand-700 dark:border-brand-500/30 dark:bg-brand-500/15 dark:text-brand-300"
+                      : "border-hairline bg-surface-raised text-fg-muted",
                   )}
                 >
                   <Icon name="chevron-down" size={16} />
@@ -71,9 +74,7 @@ export function Accordion({ items, className }: AccordionProps) {
               )}
             >
               <div className="overflow-hidden">
-                <p className="px-5 pb-5 text-sm leading-relaxed text-ink-500 sm:px-6">
-                  {item.answer}
-                </p>
+                <p className="px-5 pb-5 text-sm leading-relaxed text-fg sm:px-6">{item.answer}</p>
               </div>
             </div>
           </div>

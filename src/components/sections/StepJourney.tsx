@@ -366,7 +366,7 @@ export function StepJourney() {
       {/* Pasos (columna izquierda). */}
       <ol className="relative">
         {/* Raíl de progreso: se rellena hasta el paso activo. */}
-        <div aria-hidden="true" className="absolute bottom-8 left-6 top-2 w-px bg-ink-200/80">
+        <div aria-hidden="true" className="absolute bottom-8 left-6 top-2 w-px bg-hairline">
           <div
             className="w-full bg-gradient-to-b from-brand-500 to-brand-600 transition-[height] duration-500 ease-out-expo"
             style={{ height: `${(active / (howItWorksSteps.length - 1)) * 100}%` }}
@@ -393,7 +393,7 @@ export function StepJourney() {
                     ? "scale-110 bg-gradient-brand text-white shadow-brand-glow"
                     : isPast
                       ? "bg-brand-100 text-brand-800"
-                      : "bg-ink-900 text-brand-400",
+                      : "bg-ink-900 text-brand-400 dark:bg-surface-raised dark:text-brand-300",
                 )}
               >
                 {step.number}
@@ -407,9 +407,9 @@ export function StepJourney() {
               >
                 <div className="flex items-center gap-2">
                   <Icon name={step.icon} size={18} className="text-brand-700" />
-                  <h3 className="text-lg font-semibold text-ink-900">{step.title}</h3>
+                  <h3 className="text-lg font-semibold text-fg-strong">{step.title}</h3>
                 </div>
-                <p className="mt-1.5 max-w-md text-sm leading-relaxed text-ink-500">{step.text}</p>
+                <p className="mt-1.5 max-w-md text-sm leading-relaxed text-fg">{step.text}</p>
 
                 {/* Pantalla del paso en móvil/tablet (en escritorio va en el panel sticky). */}
                 <div className="mt-4 lg:hidden" role="img" aria-label={VISUAL_LABELS[i]}>
@@ -422,7 +422,7 @@ export function StepJourney() {
           );
         })}
         {/* Disclaimer visible también en móvil (el del panel sticky solo existe en escritorio). */}
-        <li className="list-none pt-2 text-center text-xs text-ink-400 lg:hidden">
+        <li className="list-none pt-2 text-center text-xs text-fg-muted lg:hidden">
           Expediente de demostración: datos ficticios.
         </li>
       </ol>
@@ -447,7 +447,7 @@ export function StepJourney() {
             </div>
           ))}
         </div>
-        <p className="mt-4 text-center text-xs text-ink-400">
+        <p className="mt-4 text-center text-xs text-fg-muted">
           Seguimos un expediente de demostración (EXP-2024-0142) por todo el proceso. Datos
           ficticios.
         </p>

@@ -39,7 +39,7 @@ export function LegalShell({
       <div className="no-print flex items-center justify-between gap-4">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-500 hover:text-ink-800"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-fg hover:text-fg-strong"
         >
           <Icon name="arrow-right" size={16} className="rotate-180" />
           Volver al inicio
@@ -47,11 +47,11 @@ export function LegalShell({
         <PrintButton />
       </div>
 
-      <h1 className="mt-6 text-3xl font-semibold text-ink-900 sm:text-4xl">{title}</h1>
-      {intro ? <p className="mt-3 text-lg text-ink-500">{intro}</p> : null}
+      <h1 className="mt-6 text-3xl font-semibold text-fg-strong sm:text-4xl">{title}</h1>
+      {intro ? <p className="mt-3 text-lg text-fg">{intro}</p> : null}
 
       {docMeta ? (
-        <p className="mt-3 text-xs text-ink-400">
+        <p className="mt-3 text-xs text-fg-muted">
           Versión: {docMeta.version} · Última actualización: {docMeta.updated}
         </p>
       ) : null}
@@ -59,7 +59,7 @@ export function LegalShell({
       {draft ? (
         <div
           role="note"
-          className="mt-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"
+          className="mt-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-500/15"
         >
           <Icon name="alert-triangle" size={18} className="mt-0.5 shrink-0" />
           <p>
@@ -74,9 +74,9 @@ export function LegalShell({
       {toc && toc.length > 1 ? (
         <nav
           aria-label="Índice de la página"
-          className="mt-6 rounded-xl border border-ink-100 bg-paper p-4"
+          className="mt-6 rounded-xl border border-hairline bg-surface p-4"
         >
-          <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">
+          <p className="text-xs font-semibold uppercase tracking-wide text-fg-muted">
             En esta página
           </p>
           <ol className="mt-2 grid gap-1 sm:grid-cols-2">
@@ -84,7 +84,7 @@ export function LegalShell({
               <li key={item.id}>
                 <a
                   href={`#${item.id}`}
-                  className="text-sm text-brand-700 underline-offset-2 hover:underline"
+                  className="text-sm text-brand-700 underline-offset-2 hover:underline dark:text-brand-300"
                 >
                   {i + 1}. {item.label}
                 </a>
@@ -96,7 +96,7 @@ export function LegalShell({
 
       <div className="legal-prose mt-8">{children}</div>
 
-      <p className="mt-12 text-xs text-ink-400">
+      <p className="mt-12 text-xs text-fg-muted">
         Documento generado como borrador; no constituye asesoramiento jurídico.
       </p>
     </Container>

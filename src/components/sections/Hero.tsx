@@ -212,7 +212,7 @@ export function Hero() {
 
       {/* Puente hacia la sección clara: la "hoja" del siguiente tramo asoma. */}
       <div aria-hidden="true" className="mt-10">
-        <div className="h-8 rounded-t-[2.5rem] bg-paper sm:h-10" />
+        <div className="h-8 rounded-t-[2.5rem] bg-surface sm:h-10" />
       </div>
     </section>
   );

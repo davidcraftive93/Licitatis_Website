@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <Container className="flex min-h-[60vh] flex-col items-center justify-center py-24 text-center">
-      <p className="font-display text-6xl font-bold text-brand-700">404</p>
-      <h1 className="mt-4 text-2xl font-semibold text-ink-900">No encontramos esta página</h1>
-      <p className="mt-2 max-w-md text-ink-500">
+      <p className="font-display text-6xl font-bold text-brand-700 dark:text-brand-300">404</p>
+      <h1 className="mt-4 text-2xl font-semibold text-fg-strong">No encontramos esta página</h1>
+      <p className="mt-2 max-w-md text-fg">
         Es posible que el enlace haya cambiado o que la página ya no exista.
       </p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
