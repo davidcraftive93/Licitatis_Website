@@ -41,7 +41,7 @@ export function BrowserFrame({
           <span className="h-2.5 w-2.5 rounded-full bg-ink-200" />
           <span className="h-2.5 w-2.5 rounded-full bg-ink-200" />
         </div>
-        <div className="mx-auto flex w-full max-w-[240px] items-center justify-center gap-1.5 rounded-md bg-white px-3 py-1 text-2xs text-ink-400 ring-1 ring-ink-100">
+        <div className="mx-auto flex w-full max-w-[15rem] items-center justify-center gap-1.5 rounded-md bg-white px-3 py-1 text-2xs text-ink-400 ring-1 ring-ink-100">
           <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
           {url}
         </div>

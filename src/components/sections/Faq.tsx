@@ -18,10 +18,10 @@ export function Faq() {
           <Accordion items={faqs.map(({ question, answer }) => ({ question, answer }))} />
         </Reveal>
 
-        <Reveal className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-ink-100 bg-white p-6 text-center sm:flex-row sm:justify-between sm:text-left">
-          <p className="text-sm text-ink-600">
-            <span className="font-semibold text-ink-900">¿Tienes otra pregunta?</span> Cuéntanoslo y
-            te respondemos.
+        <Reveal className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-hairline bg-surface-raised p-6 text-center sm:flex-row sm:justify-between sm:text-left">
+          <p className="text-sm text-fg">
+            <span className="font-semibold text-fg-strong">¿Tienes otra pregunta?</span> Cuéntanoslo
+            y te respondemos.
           </p>
           <Button href="#beta" size="sm" withArrow>
             Solicitar demostración

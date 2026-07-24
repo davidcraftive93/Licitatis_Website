@@ -8,14 +8,40 @@ import type { Config } from "tailwindcss";
  */
 const config: Config = {
   content: ["./src/**/*.{ts,tsx,mdx}"],
+  // El tema oscuro se activa con la clase .dark en <html> (ThemeToggle + script anti-parpadeo).
+  darkMode: "class",
   theme: {
     container: {
       center: true,
       padding: { DEFAULT: "1.25rem", sm: "1.5rem", lg: "2rem" },
-      screens: { "2xl": "1200px" },
+      // En rem (no px): al escalar la raíz en pantallas grandes, el contenedor crece con
+      // ella y el diseño se mantiene proporcionado en 2K, 4K o una TV de 85".
+      screens: { "2xl": "75rem" },
     },
     extend: {
+      // Puntos de corte extra para pantallas muy grandes (Full HD → 8K / TV).
+      screens: {
+        "3xl": "1920px",
+        "4xl": "2560px",
+        "5xl": "3840px",
+        "6xl": "5120px",
+      },
       colors: {
+        /* Tokens semánticos: cambian con el tema (ver :root/.dark en globals.css).
+           Úsalos en TODO lo que deba adaptarse; deja los literales (ink/paper) solo en
+           zonas deliberadamente oscuras y en los mockups de producto. */
+        surface: {
+          DEFAULT: "rgb(var(--surface) / <alpha-value>)",
+          raised: "rgb(var(--surface-raised) / <alpha-value>)",
+          sunken: "rgb(var(--surface-sunken) / <alpha-value>)",
+        },
+        fg: {
+          DEFAULT: "rgb(var(--fg) / <alpha-value>)",
+          strong: "rgb(var(--fg-strong) / <alpha-value>)",
+          muted: "rgb(var(--fg-muted) / <alpha-value>)",
+        },
+        hairline: "rgb(var(--hairline) / <alpha-value>)",
+
         paper: { DEFAULT: "#FBFAF9", muted: "#F3F4F2", contrast: "#FFFFFF" },
         ink: {
           50: "#F1F4F9",
@@ -61,7 +87,8 @@ const config: Config = {
       },
       fontSize: { "2xs": ["0.6875rem", { lineHeight: "1rem" }] },
       letterSpacing: { tightest: "-0.04em" },
-      maxWidth: { content: "1200px", prose: "68ch" },
+      // En rem para que acompañen al escalado de la raíz en pantallas grandes.
+      maxWidth: { content: "75rem", prose: "68ch" },
       borderRadius: { "4xl": "2rem", "5xl": "2.5rem" },
       boxShadow: {
         soft: "0 1px 2px rgba(11, 18, 32, 0.04), 0 4px 16px rgba(11, 18, 32, 0.06)",

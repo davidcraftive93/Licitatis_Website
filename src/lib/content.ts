@@ -7,7 +7,7 @@ import type { IconName } from "@/components/ui/icons";
  * métricas, premios). Disclaimers obligatorios (§18).
  */
 
-export const CONTACT_EMAIL = "david@craftive.es";
+export const CONTACT_EMAIL = "info@licitatis.es";
 export const BETA_MAILTO = `mailto:${CONTACT_EMAIL}?subject=Beta%20Partner%20LICITATIS`;
 
 /* Disclaimers obligatorios (§18) */
@@ -15,7 +15,7 @@ export const disclaimers = {
   noGuarantee: "LICITATIS no garantiza la adjudicación: asiste la preparación con revisión humana.",
   dataSources:
     "Las licitaciones proceden de la PLACSP (Plataforma de Contratación del Sector Público). Las convocatorias de ayudas y subvenciones proceden de la BDNS (Base de Datos Nacional de Subvenciones).",
-  beta: "Beta gratuita mientras dure el programa. Sin tarjeta. Los precios se anunciarán al salir de beta.",
+  beta: "Plan gratuito disponible, sin tarjeta. Los planes de pago se muestran con su precio final, IVA incluido.",
 };
 
 /* --------------------------------------------------------------- Banda de valor */
@@ -361,6 +361,12 @@ export const betaPartner = {
 export interface Plan {
   name: string;
   tagline: string;
+  /** Importe mostrado. Los precios YA INCLUYEN el IVA aplicable. */
+  price: string;
+  /** Periodicidad ("/mes"). Vacío en el plan gratuito. */
+  period: string;
+  /** true en los planes de pago: muestran el aviso "IVA incluido". */
+  paid: boolean;
   highlights: string[];
   highlighted: boolean;
 }
@@ -368,24 +374,36 @@ export const plans: Plan[] = [
   {
     name: "Free",
     tagline: "Para evaluar el producto",
+    price: "0 €",
+    period: "",
+    paid: false,
     highlights: ["3 análisis/mes (IA simulada)", "1 candidatura activa", "1 perfil de búsqueda"],
     highlighted: false,
   },
   {
     name: "Starter",
     tagline: "Para empresas que licitan cada mes",
+    price: "99 €",
+    period: "/mes",
+    paid: true,
     highlights: ["50 análisis/mes (IA real)", "10 candidaturas", "3 perfiles de búsqueda"],
     highlighted: false,
   },
   {
     name: "Pro",
     tagline: "Para preparar y defender más ofertas",
+    price: "249 €",
+    period: "/mes",
+    paid: true,
     highlights: ["250 análisis/mes", "Candidaturas y documentos ∞", "10 perfiles de búsqueda"],
     highlighted: true,
   },
   {
     name: "Agency",
     tagline: "Para consultoras multi-cliente",
+    price: "399 €",
+    period: "/mes",
+    paid: true,
     highlights: ["500 análisis/mes", "Perfiles ∞ · 30 miembros", "Espacios de cliente separados"],
     highlighted: false,
   },
@@ -437,7 +455,7 @@ export const faqs: Faq[] = [
   {
     question: "¿Cuánto cuesta?",
     answer:
-      "Ahora estamos en beta gratuita. Los planes están definidos; el precio se anunciará al salir de beta.",
+      "Hay un plan gratuito para empezar sin tarjeta. Los planes de pago son 99 €/mes (Starter), 249 €/mes (Pro) y 399 €/mes (Agency), IVA incluido. El servicio lo factura ZSE INNOVATION STUDIO SL, titular de la marca LICITATIS; en tu extracto el cargo figurará a nombre de la sociedad, no como «LICITATIS».",
   },
   {
     question: "¿Sirve para consultoras?",

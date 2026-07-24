@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LegalShell } from "@/components/layout/LegalShell";
-import { legalContact, legalDocs, legalReviewRequired } from "@/lib/legal";
+import { legalContact, legalDocs, pendingLegalData, company, brand } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Acuerdo de tratamiento de datos (DPA)",
@@ -19,9 +19,9 @@ export default function DpaPage() {
       <h2>1. Cuándo aplica</h2>
       <p>
         Un acuerdo de tratamiento de datos (DPA) regula el tratamiento de datos personales cuando
-        LICITATIS actúa como <strong>encargado</strong> por cuenta de un cliente que es responsable
-        del tratamiento. Esto es propio del uso de la <strong>aplicación</strong>{" "}
-        (app.licitatis.es), no de esta web comercial.
+        {company.name} (titular de la marca {brand.name}) actúa como <strong>encargado</strong> por
+        cuenta de un cliente que es responsable del tratamiento. Esto es propio del uso de la{" "}
+        <strong>aplicación</strong> (app.licitatis.es), no de esta web comercial.
       </p>
 
       <h2>2. Estado</h2>
@@ -30,7 +30,7 @@ export default function DpaPage() {
         subencargados, asistencia, supresión, auditoría) debe redactarse y revisarse por un
         profesional antes de contratar el servicio.
       </p>
-      <p>{legalReviewRequired("texto completo del DPA conforme al art. 28 RGPD")}</p>
+      <p>{pendingLegalData("TEXTO COMPLETO DEL DPA conforme al art. 28 RGPD")}</p>
 
       <h2>3. Subencargados</h2>
       <p>

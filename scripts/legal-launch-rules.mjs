@@ -23,6 +23,22 @@ export const REQUIRED_LEGAL_ROUTES = [
 /** Rutas legales que llevan noindex mientras tengan placeholders: NO deben ir al sitemap. */
 export const NOINDEX_WHILE_PLACEHOLDER = [...REQUIRED_LEGAL_ROUTES];
 
+/**
+ * Coherencia de marca (transversal): LICITATIS es una MARCA COMERCIAL, no una sociedad.
+ * La sociedad titular es ZSE INNOVATION STUDIO SL. Escribir "LICITATIS S.L." induciría a
+ * error sobre quién presta el servicio, factura y responde: es bloqueante.
+ */
+export const BRAND_MISUSE_PATTERNS = [
+  {
+    name: '"LICITATIS S.L./SL" (la marca no es una sociedad)',
+    re: /LICITATIS[,\s]+S\.?\s?L\.?(?![a-z])/i,
+  },
+  {
+    name: '"LICITATIS S.A./SA" (la marca no es una sociedad)',
+    re: /LICITATIS[,\s]+S\.?\s?A\.?(?![a-z])/i,
+  },
+];
+
 /** Certificaciones que no deben afirmarse sin acreditación (fuera de un mock etiquetado). */
 export const CERTIFICATION_PATTERNS = [
   { name: "ISO 27001", re: /ISO\s*27001/i },
@@ -36,6 +52,8 @@ export const CERTIFICATION_PATTERNS = [
  */
 export const PLACEHOLDER_PATTERNS = [
   { name: "marcador LEGAL_REVIEW_REQUIRED", re: /\[LEGAL_REVIEW_REQUIRED/i },
+  // Datos fiscales/registrales pendientes de aportar: [[CIF]], [[DOMICILIO SOCIAL]]…
+  { name: "dato fiscal/registral pendiente [[…]]", re: /\[\[[^\]]{2,80}\]\]/ },
   { name: "razón social sin resolver", re: /\[\s*Razón social\s*\]/i },
   { name: "NIF/CIF sin resolver", re: /\[\s*(NIF|CIF)[^\]]*\]/i },
   { name: "domicilio/dirección sin resolver", re: /\[\s*(Dirección|Domicilio)[^\]]*\]/i },

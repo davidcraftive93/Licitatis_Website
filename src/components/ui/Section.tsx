@@ -13,8 +13,8 @@ interface SectionProps {
 }
 
 const toneClasses: Record<NonNullable<SectionProps["tone"]>, string> = {
-  paper: "bg-paper text-ink-800",
-  white: "bg-white text-ink-800",
+  paper: "bg-surface text-fg-strong",
+  white: "bg-surface-raised text-fg-strong",
   ink: "bg-ink-950 text-ink-100",
 };
 
@@ -62,7 +62,7 @@ export function SectionHeader({
         <span
           className={cn(
             "inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em]",
-            tone === "dark" ? "text-brand-300" : "text-brand-700",
+            tone === "dark" ? "text-brand-300" : "text-brand-700 dark:text-brand-300",
           )}
         >
           <span
@@ -78,7 +78,7 @@ export function SectionHeader({
       <h2
         className={cn(
           "text-balance text-3xl font-semibold leading-tight sm:text-4xl lg:text-[2.6rem]",
-          tone === "dark" ? "text-white" : "text-ink-900",
+          tone === "dark" ? "text-white" : "text-fg-strong",
         )}
       >
         {title}
@@ -87,7 +87,7 @@ export function SectionHeader({
         <p
           className={cn(
             "text-pretty text-base leading-relaxed sm:text-lg",
-            tone === "dark" ? "text-ink-200" : "text-ink-500",
+            tone === "dark" ? "text-ink-200" : "text-fg",
           )}
         >
           {description}

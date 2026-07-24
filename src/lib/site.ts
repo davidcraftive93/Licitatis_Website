@@ -2,7 +2,8 @@
  * Configuración central del sitio. Los valores sensibles o específicos de entorno
  * se leen de variables de entorno con valores por defecto seguros.
  *
- * Nota: `contactEmail` es un PLACEHOLDER pendiente de confirmación (ver docs/CONTENT-PENDING.md).
+ * Nota: la titularidad legal/fiscal vive en src/lib/legal.ts (LICITATIS es una MARCA de
+ * ZSE INNOVATION STUDIO SL, no una sociedad).
  */
 
 // Se usa "||" (no "??") para que una variable vacía ("") también use el valor por
@@ -24,7 +25,7 @@ export const siteConfig = {
   /** URL de la aplicación privada (fuera de este repositorio/despliegue). */
   appUrl: process.env.NEXT_PUBLIC_APP_URL || "https://app.licitatis.es",
   /** Correo de contacto y de captación (Beta Partner). */
-  contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "david@craftive.es",
+  contactEmail: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "info@licitatis.es",
   locale: "es_ES",
   lang: "es",
 } as const;

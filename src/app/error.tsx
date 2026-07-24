@@ -18,8 +18,8 @@ export default function Error({
 
   return (
     <Container className="flex min-h-[60vh] flex-col items-center justify-center py-24 text-center">
-      <h1 className="text-2xl font-semibold text-ink-900">Algo no ha ido bien</h1>
-      <p className="mt-2 max-w-md text-ink-500">
+      <h1 className="text-2xl font-semibold text-fg-strong">Algo no ha ido bien</h1>
+      <p className="mt-2 max-w-md text-fg">
         Ha ocurrido un error inesperado. Puedes reintentar o volver al inicio.
       </p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">

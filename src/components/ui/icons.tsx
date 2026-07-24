@@ -52,7 +52,10 @@ export type IconName =
   | "gauge"
   | "euro"
   | "radar"
-  | "id-card";
+  | "id-card"
+  | "sun"
+  | "moon"
+  | "monitor";
 
 type PathContent = React.ReactNode;
 
@@ -358,6 +361,19 @@ const PATHS: Record<IconName, PathContent> = {
       <circle cx="8.5" cy="11" r="2" />
       <path d="M5 16.2a3.5 3.5 0 0 1 7 0" />
       <path d="M14 9.5h4M14 12.5h4M14 15.5h2.5" />
+    </>
+  ),
+  sun: (
+    <>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2.5v2M12 19.5v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2.5 12h2M19.5 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+    </>
+  ),
+  moon: <path d="M20 13.4A8.2 8.2 0 1 1 10.6 4a6.6 6.6 0 0 0 9.4 9.4Z" />,
+  monitor: (
+    <>
+      <rect x="2.5" y="4" width="19" height="12.5" rx="2" />
+      <path d="M9 20.5h6M12 16.5v4" />
     </>
   ),
 };

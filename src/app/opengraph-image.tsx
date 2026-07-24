@@ -80,7 +80,7 @@ export default function OpengraphImage() {
         <div
           style={{ width: "40px", height: "4px", borderRadius: "2px", backgroundColor: "#059669" }}
         />
-        El Pasaporte del Licitador · Beta gratuita
+        El Pasaporte del Licitador · Plan gratuito
       </div>
     </div>,
     { ...size },

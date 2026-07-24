@@ -3,6 +3,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
 import { plans, planLimitRows, planNames } from "@/lib/content";
+import { billingNotice, vatLabel } from "@/lib/legal";
 import { cn } from "@/lib/utils";
 
 export function Plans() {
@@ -11,7 +12,7 @@ export function Plans() {
       <SectionHeader
         eyebrow="Planes"
         title="Cuatro planes, límites reales"
-        description="Lo que ves es lo que hay: estos límites son los que aplica el servidor, sin letra pequeña. Y ahora mismo, todo en beta gratuita."
+        description="Lo que ves es lo que hay: estos límites son los que aplica el servidor, sin letra pequeña. Precios finales con IVA incluido, y un plan gratuito para empezar sin tarjeta."
       />
 
       <div className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -22,7 +23,7 @@ export function Plans() {
                 "relative flex h-full flex-col rounded-3xl p-6 transition-all duration-300 sm:p-7",
                 plan.highlighted
                   ? "bg-ink-950 text-ink-100 shadow-lift ring-1 ring-brand-500/40 hover:shadow-brand-glow-lg"
-                  : "border border-ink-100 bg-white shadow-soft hover:-translate-y-1 hover:shadow-card",
+                  : "border border-hairline bg-surface-raised shadow-soft hover:-translate-y-1 hover:shadow-card",
               )}
             >
               {plan.highlighted ? (
@@ -33,14 +34,44 @@ export function Plans() {
               <h3
                 className={cn(
                   "font-display text-xl font-bold",
-                  plan.highlighted ? "text-white" : "text-ink-900",
+                  plan.highlighted ? "text-white" : "text-fg-strong",
                 )}
               >
                 {plan.name}
               </h3>
-              <p className={cn("mt-1 text-sm", plan.highlighted ? "text-ink-300" : "text-ink-500")}>
+              <p className={cn("mt-1 text-sm", plan.highlighted ? "text-ink-300" : "text-fg")}>
                 {plan.tagline}
               </p>
+
+              {/* Precio final: los planes de pago llevan siempre "IVA incluido" a la vista. */}
+              <div className="mt-4">
+                <p
+                  className={cn(
+                    "font-display text-3xl font-bold leading-none",
+                    plan.highlighted ? "text-white" : "text-fg-strong",
+                  )}
+                >
+                  {plan.price}
+                  {plan.period ? (
+                    <span
+                      className={cn(
+                        "text-base font-semibold",
+                        plan.highlighted ? "text-ink-300" : "text-fg-muted",
+                      )}
+                    >
+                      {plan.period}
+                    </span>
+                  ) : null}
+                </p>
+                <p
+                  className={cn(
+                    "mt-1 text-xs",
+                    plan.highlighted ? "text-ink-300" : "text-fg-muted",
+                  )}
+                >
+                  {plan.paid ? vatLabel : "Gratis, sin tarjeta"}
+                </p>
+              </div>
               <ul className="mt-5 flex-1 space-y-2.5">
                 {plan.highlights.map((h) => (
                   <li key={h} className="flex items-start gap-2.5 text-sm">
@@ -52,7 +83,7 @@ export function Plans() {
                         plan.highlighted ? "text-brand-400" : "text-brand-600",
                       )}
                     />
-                    <span className={plan.highlighted ? "text-ink-200" : "text-ink-600"}>{h}</span>
+                    <span className={plan.highlighted ? "text-ink-200" : "text-fg"}>{h}</span>
                   </li>
                 ))}
               </ul>
@@ -73,33 +104,33 @@ export function Plans() {
 
       {/* Tabla de límites reales */}
       <Reveal delay={120} className="mt-12">
-        <div className="overflow-x-auto rounded-3xl border border-ink-100 bg-white shadow-soft">
-          <table className="w-full min-w-[640px] text-sm">
+        <div className="overflow-x-auto rounded-3xl border border-hairline bg-surface-raised shadow-soft">
+          <table className="w-full min-w-[40rem] text-sm">
             <caption className="sr-only">Límites reales por plan</caption>
             <thead>
-              <tr className="border-b border-ink-100">
-                <th scope="col" className="px-5 py-4 text-left font-semibold text-ink-500">
+              <tr className="border-b border-hairline">
+                <th scope="col" className="px-5 py-4 text-left font-semibold text-fg">
                   Límite
                 </th>
                 {planNames.map((name) => (
                   <th
                     key={name}
                     scope="col"
-                    className="px-5 py-4 text-center font-semibold text-ink-900"
+                    className="px-5 py-4 text-center font-semibold text-fg-strong"
                   >
                     {name}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-ink-50">
+            <tbody className="divide-y divide-hairline">
               {planLimitRows.map((row) => (
                 <tr key={row.label}>
-                  <th scope="row" className="px-5 py-3 text-left font-medium text-ink-700">
+                  <th scope="row" className="px-5 py-3 text-left font-medium text-fg">
                     {row.label}
                   </th>
                   {row.values.map((v, i) => (
-                    <td key={i} className="px-5 py-3 text-center text-ink-600">
+                    <td key={i} className="px-5 py-3 text-center text-fg">
                       {v}
                     </td>
                   ))}
@@ -110,11 +141,17 @@ export function Plans() {
         </div>
       </Reveal>
 
+      {/* Aviso de facturación: UNA sola vez, bajo la tabla completa. Va siempre en el HTML
+          servido (nunca tras hover, tooltip ni acordeón: en móvil no hay hover y es justo
+          donde más falta hace). Es la defensa principal frente a disputas bancarias: quien
+          paga debe poder asociar el cargo de su extracto con la sociedad que factura. */}
       <Reveal delay={140}>
-        <p className="mt-6 text-center text-xs text-ink-400">
-          En el plan <strong className="font-semibold text-ink-600">Free</strong> la IA es simulada
-          (etiquetada como tal en la app); en Starter, Pro y Agency es IA real. Los precios se
-          anunciarán al salir de beta.
+        <p className="mx-auto mt-8 max-w-2xl text-center text-xs leading-relaxed text-fg-muted">
+          {billingNotice}
+        </p>
+        <p className="mx-auto mt-3 max-w-2xl text-center text-xs leading-relaxed text-fg-muted">
+          En el plan <strong className="font-semibold text-fg">Free</strong> la IA es simulada
+          (etiquetada como tal en la app); en Starter, Pro y Agency es IA real.
         </p>
       </Reveal>
     </Section>

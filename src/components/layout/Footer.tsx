@@ -6,6 +6,7 @@ import { Icon } from "@/components/ui/icons";
 import { CookiePreferencesButton } from "@/components/analytics/CookiePreferencesButton";
 import { legalLinks, siteConfig } from "@/lib/site";
 import { disclaimers } from "@/lib/content";
+import { ownershipLine, company } from "@/lib/legal";
 import { currentYear } from "@/lib/utils";
 
 const productLinks = [
@@ -18,6 +19,9 @@ const productLinks = [
 ];
 
 const companyPending = ["Sobre nosotros", "Blog", "Recursos"];
+
+/** Nota de marca del copyright: LICITATIS es marca registrada del titular, no una sociedad. */
+const brandNote = "LICITATIS es una marca comercial de la sociedad titular.";
 
 export function Footer() {
   return (
@@ -103,14 +107,16 @@ export function Footer() {
         </div>
 
         <div className="mt-12 space-y-3 border-t border-white/10 pt-6">
+          {/* Titularidad: LICITATIS es una MARCA; la sociedad es ZSE INNOVATION STUDIO SL.
+              Discreta pero legible (ink-200 sobre ink-950: contraste holgado). */}
+          <p className="text-xs leading-relaxed text-ink-200">{ownershipLine}</p>
           <p className="text-2xs leading-relaxed text-ink-300">
             <strong className="font-semibold text-ink-200">{disclaimers.noGuarantee}</strong>
           </p>
           <p className="text-2xs leading-relaxed text-ink-400">{disclaimers.dataSources}</p>
           <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-2xs text-ink-400">
-              © {currentYear()} LICITATIS · Beta gratuita. Razón social, NIF y domicilio pendientes
-              de datos legales definitivos.
+              © {currentYear()} {company.name}. {brandNote}
             </p>
           </div>
         </div>

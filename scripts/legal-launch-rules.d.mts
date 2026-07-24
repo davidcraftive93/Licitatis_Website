@@ -10,5 +10,6 @@ export const NOINDEX_WHILE_PLACEHOLDER: string[];
 export const PLACEHOLDER_PATTERNS: LegalPattern[];
 export const PROHIBITED_CLAIM_PATTERNS: LegalPattern[];
 export const CERTIFICATION_PATTERNS: LegalPattern[];
+export const BRAND_MISUSE_PATTERNS: LegalPattern[];
 export function scanText(text: string, patterns: LegalPattern[]): string[];
 export function isCanonicalUrlOk(url: unknown): boolean;

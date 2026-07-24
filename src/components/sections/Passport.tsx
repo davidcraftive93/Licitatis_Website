@@ -13,24 +13,24 @@ export function Passport() {
       <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16">
         {/* Texto + highlights */}
         <Reveal>
-          <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-brand-700">
+          <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-brand-700 dark:text-brand-300">
             <span className="h-1.5 w-1.5 rounded-full bg-brand-600" aria-hidden="true" />
             {passport.eyebrow}
           </span>
-          <h2 className="mt-4 text-balance text-3xl font-semibold leading-tight text-ink-900 sm:text-4xl">
+          <h2 className="mt-4 text-balance text-3xl font-semibold leading-tight text-fg-strong sm:text-4xl">
             {passport.title}
           </h2>
-          <p className="mt-4 text-pretty text-lg leading-relaxed text-ink-500">{passport.lead}</p>
+          <p className="mt-4 text-pretty text-lg leading-relaxed text-fg">{passport.lead}</p>
 
           <ul className="mt-7 space-y-4">
             {passport.highlights.map((h) => (
               <li key={h.title} className="flex gap-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
                   <Icon name={h.icon} size={20} />
                 </span>
                 <div>
-                  <h3 className="text-sm font-semibold text-ink-900">{h.title}</h3>
-                  <p className="mt-0.5 text-sm leading-relaxed text-ink-500">{h.text}</p>
+                  <h3 className="text-sm font-semibold text-fg-strong">{h.title}</h3>
+                  <p className="mt-0.5 text-sm leading-relaxed text-fg">{h.text}</p>
                 </div>
               </li>
             ))}
@@ -40,7 +40,7 @@ export function Passport() {
             {passport.contains.map((c) => (
               <span
                 key={c.title}
-                className="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-paper px-3 py-1 text-xs font-medium text-ink-600"
+                className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface px-3 py-1 text-xs font-medium text-fg"
               >
                 <Icon name={c.icon} size={13} className="text-brand-600" />
                 {c.title}

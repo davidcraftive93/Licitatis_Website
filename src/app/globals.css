@@ -3,8 +3,33 @@
 @tailwind utilities;
 
 @layer base {
+  /* ------------------------------------------------------------------ Tokens de tema
+     El tema NO se hace invirtiendo colores (eso fundiría el hero oscuro con el resto y
+     destruiría la alternancia que da ritmo a la página). Se hace por ELEVACIÓN: tres
+     niveles de superficie que en claro van de papel a blanco y en oscuro de tinta a
+     tinta elevada. Las zonas deliberadamente oscuras (hero, Confianza, header, footer)
+     mantienen su color literal en ambos temas: son parte de la identidad.
+     Valores en canales RGB para que Tailwind pueda aplicar opacidad. */
   :root {
     --header-h: 4rem;
+
+    --surface: 251 250 249; /* paper  #FBFAF9 — fondo base */
+    --surface-raised: 255 255 255; /* white         — tarjetas y bloques elevados */
+    --surface-sunken: 243 244 242; /* paper-muted   — rebajes sutiles */
+    --fg-strong: 11 18 32; /* ink-900       — titulares */
+    --fg: 39 57 91; /* ink-600       — texto corrido */
+    --fg-muted: 94 116 154; /* ink-400       — texto secundario */
+    --hairline: 220 227 238; /* ink-100       — bordes finos */
+  }
+
+  .dark {
+    --surface: 11 18 32; /* ink-900 */
+    --surface-raised: 16 26 46; /* ink-800 */
+    --surface-sunken: 7 11 20; /* ink-950 */
+    --fg-strong: 241 244 249; /* ink-50  */
+    --fg: 185 197 217; /* ink-200 */
+    --fg-muted: 138 156 187; /* ink-300 */
+    --hairline: 30 43 68; /* tinta elevada, no blanco translúcido */
   }
 
   html {
@@ -13,15 +38,48 @@
     text-rendering: optimizeLegibility;
   }
 
+  /* ------------------------------------------------ Escalado por tamaño de pantalla
+     Casi todo el diseño está en rem (Tailwind), así que basta con escalar la raíz para
+     que TODO —tipografía, espaciados, contenedor, tarjetas— crezca en proporción. Así la
+     web se ve "a tamaño grande" en 2K, 4K o una TV de 85" en vez de quedar en una isla
+     de 1200 px perdida en el centro. Por debajo de 1920 px no se toca nada.
+     Se usa % (no px) para no romper el zoom del navegador ni la preferencia de tamaño
+     de fuente del usuario. */
+  @media (min-width: 1920px) {
+    html {
+      font-size: 106.25%; /* ~17px */
+    }
+  }
+  @media (min-width: 2560px) {
+    html {
+      font-size: 118.75%; /* ~19px — 2K/QHD ultrapanorámico */
+    }
+  }
+  @media (min-width: 3200px) {
+    html {
+      font-size: 137.5%; /* ~22px — 4K */
+    }
+  }
+  @media (min-width: 4200px) {
+    html {
+      font-size: 162.5%; /* ~26px — 5K */
+    }
+  }
+  @media (min-width: 5600px) {
+    html {
+      font-size: 187.5%; /* ~30px — 8K y TV grandes vistas a distancia */
+    }
+  }
+
   body {
-    @apply bg-paper font-sans text-ink-800 antialiased;
+    @apply bg-surface font-sans text-fg antialiased;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    @apply font-display text-ink-900;
+    @apply font-display text-fg-strong;
     text-wrap: balance;
   }
 
@@ -42,6 +100,9 @@
     outline: 2px solid theme("colors.brand.600");
     outline-offset: 2px;
     border-radius: 3px;
+  }
+  .dark :focus-visible {
+    outline-color: theme("colors.brand.400");
   }
 }
 
@@ -232,15 +293,15 @@
     transition-delay: 150ms;
   }
 
-  /* Tipografía para páginas legales. */
+  /* Tipografía para páginas legales (usa tokens: se adapta al tema). */
   .legal-prose {
-    @apply leading-relaxed text-ink-600;
+    @apply leading-relaxed text-fg;
   }
   .legal-prose h2 {
-    @apply mb-3 mt-10 text-xl font-semibold text-ink-900;
+    @apply mb-3 mt-10 text-xl font-semibold text-fg-strong;
   }
   .legal-prose h3 {
-    @apply mb-2 mt-6 text-base font-semibold text-ink-900;
+    @apply mb-2 mt-6 text-base font-semibold text-fg-strong;
   }
   .legal-prose p {
     @apply mb-4;
@@ -249,23 +310,23 @@
     @apply mb-4 ml-5 list-disc space-y-1.5;
   }
   .legal-prose a {
-    @apply text-brand-700 underline underline-offset-2;
+    @apply text-brand-700 underline underline-offset-2 dark:text-brand-300;
   }
   .legal-prose strong {
-    @apply font-semibold text-ink-800;
+    @apply font-semibold text-fg-strong;
   }
   .legal-prose table {
-    @apply mb-4 w-full min-w-[560px] border-collapse text-sm;
+    @apply mb-4 w-full min-w-[35rem] border-collapse text-sm;
   }
   .legal-prose th,
   .legal-prose td {
-    @apply border border-ink-100 px-3 py-2 text-left align-top;
+    @apply border border-hairline px-3 py-2 text-left align-top;
   }
   .legal-prose th {
-    @apply bg-paper font-semibold text-ink-800;
+    @apply bg-surface-sunken font-semibold text-fg-strong;
   }
   .legal-prose code {
-    @apply rounded bg-ink-50 px-1 py-0.5 font-mono text-[0.85em] text-ink-700;
+    @apply rounded bg-surface-sunken px-1 py-0.5 font-mono text-[0.85em] text-fg;
   }
 }
 

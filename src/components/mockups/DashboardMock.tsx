@@ -92,7 +92,7 @@ function Avatar({ initials, i }: { initials: string; i: number }) {
 
 export function DashboardMock() {
   return (
-    <div className="flex min-h-[420px] text-left">
+    <div className="flex min-h-[26rem] text-left">
       {/* Barra lateral */}
       <aside className="hidden w-48 shrink-0 flex-col gap-1 border-r border-ink-100 bg-white/60 p-3 md:flex">
         <div className="mb-3 flex items-center gap-2 px-2">

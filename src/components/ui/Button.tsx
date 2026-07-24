@@ -15,8 +15,9 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-brand-700 text-white shadow-brand-glow hover:bg-brand-800 hover:-translate-y-0.5 active:translate-y-0",
   secondary:
-    "bg-white text-ink-900 ring-1 ring-inset ring-ink-200 hover:bg-ink-50 hover:ring-ink-300",
-  ghost: "text-ink-700 hover:bg-ink-100",
+    "bg-surface-raised text-fg-strong ring-1 ring-inset ring-hairline hover:bg-surface-sunken hover:ring-fg-muted/40",
+  ghost: "text-fg hover:bg-surface-sunken",
+  // "inverse" vive siempre sobre fondos OSCUROS (hero): blanco literal en ambos temas.
   inverse: "bg-white text-ink-900 hover:-translate-y-0.5 hover:bg-ink-100 active:translate-y-0",
 };
 
