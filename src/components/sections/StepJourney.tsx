@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon } from "@/components/ui/icons";
 import { howItWorksSteps } from "@/lib/content";
 import { cn } from "@/lib/utils";
+import { usePrefersReducedMotion, useRafCallback } from "@/components/motion/hooks";
 
 /**
  * Scrollytelling de "Cómo funciona": el MISMO expediente de demostración
@@ -341,6 +342,86 @@ export function StepJourney() {
   const [active, setActive] = useState(0);
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
 
+  // --- Ruta del expediente: un trazado SVG que se dibuja conforme bajas -------------
+  // Las estaciones se MIDEN del DOM (los pasos tienen alturas distintas y en móvil
+  // llevan la pantalla del mock incrustada), así que la curva se genera a medida.
+  const listRef = useRef<HTMLOListElement>(null);
+  const pathRef = useRef<SVGPathElement>(null);
+  const reducedMotion = usePrefersReducedMotion();
+  const [route, setRoute] = useState<{
+    d: string;
+    height: number;
+    stations: { x: number; y: number }[];
+  } | null>(null);
+  const [drawn, setDrawn] = useState(0); // 0..1 del trazado dibujado
+  const [pathLength, setPathLength] = useState(0);
+
+  // Mide las estaciones y compone una curva suave que serpentea entre ellas.
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+
+    const measure = () => {
+      const listBox = list.getBoundingClientRect();
+      const stations = stepRefs.current
+        .filter((li): li is HTMLLIElement => li !== null)
+        .map((li) => {
+          const marker = li.querySelector<HTMLElement>("[data-station]") ?? li;
+          const b = marker.getBoundingClientRect();
+          return { x: 24, y: b.top - listBox.top + b.height / 2 };
+        });
+      if (stations.length < 2) return;
+
+      let d = `M ${stations[0].x} ${stations[0].y}`;
+      for (let i = 1; i < stations.length; i++) {
+        const from = stations[i - 1];
+        const to = stations[i];
+        const dy = to.y - from.y;
+        // Desvío lateral alternado: da sensación de ruta, no de raíl recto.
+        const bend = i % 2 === 1 ? 13 : -13;
+        d += ` C ${from.x + bend} ${from.y + dy * 0.42}, ${to.x - bend} ${to.y - dy * 0.42}, ${to.x} ${to.y}`;
+      }
+      setRoute({ d, height: listBox.height, stations });
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(list);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
+  // Longitud real del trazado (para stroke-dasharray).
+  useEffect(() => {
+    if (pathRef.current) setPathLength(pathRef.current.getTotalLength());
+  }, [route]);
+
+  // Progreso de dibujo ligado al scroll (rAF). Con reduced-motion queda dibujada entera.
+  const updateDrawn = useRafCallback(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const box = list.getBoundingClientRect();
+    const line = window.innerHeight * 0.62; // línea de "avance" del viaje
+    setDrawn(Math.max(0, Math.min(1, (line - box.top) / box.height)));
+  });
+
+  useEffect(() => {
+    if (reducedMotion) {
+      setDrawn(1);
+      return;
+    }
+    updateDrawn();
+    window.addEventListener("scroll", updateDrawn, { passive: true });
+    window.addEventListener("resize", updateDrawn, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", updateDrawn);
+      window.removeEventListener("resize", updateDrawn);
+    };
+  }, [reducedMotion, updateDrawn]);
+
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
 
@@ -364,14 +445,64 @@ export function StepJourney() {
   return (
     <div className="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14">
       {/* Pasos (columna izquierda). */}
-      <ol className="relative">
-        {/* Raíl de progreso: se rellena hasta el paso activo. */}
-        <div aria-hidden="true" className="absolute bottom-8 left-6 top-2 w-px bg-hairline">
-          <div
-            className="w-full bg-gradient-to-b from-brand-500 to-brand-600 transition-[height] duration-500 ease-out-expo"
-            style={{ height: `${(active / (howItWorksSteps.length - 1)) * 100}%` }}
-          />
-        </div>
+      <ol ref={listRef} className="relative">
+        {/* Ruta del expediente: se dibuja conforme bajas (stroke-dashoffset). El trazado
+            se genera midiendo las estaciones reales, así que encaja con cualquier alto. */}
+        {route ? (
+          <svg
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 top-0 z-0 overflow-visible"
+            width="48"
+            height={route.height}
+            viewBox={`0 0 48 ${route.height}`}
+            fill="none"
+          >
+            <defs>
+              <linearGradient id="ruta-expediente" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#34D399" />
+                <stop offset="60%" stopColor="#10B981" />
+                <stop offset="100%" stopColor="#F59E0B" />
+              </linearGradient>
+            </defs>
+
+            {/* Traza completa, muy tenue: el camino que queda por recorrer. */}
+            <path
+              ref={pathRef}
+              d={route.d}
+              stroke="currentColor"
+              className="text-hairline"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+
+            {/* Traza recorrida. */}
+            {pathLength > 0 ? (
+              <path
+                d={route.d}
+                stroke="url(#ruta-expediente)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeDasharray={pathLength}
+                strokeDashoffset={pathLength * (1 - drawn)}
+                style={{ transition: reducedMotion ? undefined : "stroke-dashoffset 120ms linear" }}
+              />
+            ) : null}
+
+            {/* Estaciones: se encienden al pasar por ellas. */}
+            {route.stations.map((s, i) => (
+              <circle
+                key={i}
+                cx={s.x}
+                cy={s.y}
+                r={i <= active ? 4 : 3}
+                className={cn(
+                  "transition-all duration-500",
+                  i <= active ? "fill-brand-500" : "fill-hairline",
+                )}
+              />
+            ))}
+          </svg>
+        ) : null}
 
         {howItWorksSteps.map((step, i) => {
           const isActive = i === active;
@@ -387,8 +518,9 @@ export function StepJourney() {
             >
               <span
                 aria-hidden="true"
+                data-station
                 className={cn(
-                  "absolute left-0 top-0 flex h-12 w-12 items-center justify-center rounded-2xl font-display text-sm font-bold transition-all duration-500",
+                  "absolute left-0 top-0 z-10 flex h-12 w-12 items-center justify-center rounded-2xl font-display text-sm font-bold transition-all duration-500",
                   isActive
                     ? "scale-110 bg-gradient-brand text-white shadow-brand-glow"
                     : isPast

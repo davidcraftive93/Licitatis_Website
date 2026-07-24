@@ -15,7 +15,7 @@ export const disclaimers = {
   noGuarantee: "LICITATIS no garantiza la adjudicación: asiste la preparación con revisión humana.",
   dataSources:
     "Las licitaciones proceden de la PLACSP (Plataforma de Contratación del Sector Público). Las convocatorias de ayudas y subvenciones proceden de la BDNS (Base de Datos Nacional de Subvenciones).",
-  beta: "Plan gratuito disponible, sin tarjeta. Los planes de pago se muestran con su precio (IVA no incluido).",
+  beta: "Plan gratuito disponible, sin tarjeta. Los planes de pago se muestran con su precio final, IVA incluido.",
 };
 
 /* --------------------------------------------------------------- Banda de valor */
@@ -361,11 +361,11 @@ export const betaPartner = {
 export interface Plan {
   name: string;
   tagline: string;
-  /** Importe mostrado. Precios de BASE IMPONIBLE (IVA no incluido). */
+  /** Importe mostrado. Los precios YA INCLUYEN el IVA aplicable. */
   price: string;
   /** Periodicidad ("/mes"). Vacío en el plan gratuito. */
   period: string;
-  /** true en los planes de pago: muestran el aviso "IVA no incluido". */
+  /** true en los planes de pago: muestran el aviso "IVA incluido". */
   paid: boolean;
   highlights: string[];
   highlighted: boolean;
@@ -455,7 +455,7 @@ export const faqs: Faq[] = [
   {
     question: "¿Cuánto cuesta?",
     answer:
-      "Hay un plan gratuito para empezar sin tarjeta. Los planes de pago son 99 €/mes (Starter), 249 €/mes (Pro) y 399 €/mes (Agency), IVA no incluido. El servicio lo factura ZSE INNOVATION STUDIO SL, titular de la marca LICITATIS.",
+      "Hay un plan gratuito para empezar sin tarjeta. Los planes de pago son 99 €/mes (Starter), 249 €/mes (Pro) y 399 €/mes (Agency), IVA incluido. El servicio lo factura ZSE INNOVATION STUDIO SL, titular de la marca LICITATIS; en tu extracto el cargo figurará a nombre de la sociedad, no como «LICITATIS».",
   },
   {
     question: "¿Sirve para consultoras?",

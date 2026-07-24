@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LegalShell } from "@/components/layout/LegalShell";
 import { siteConfig } from "@/lib/site";
-import { company, brand, legalContact, legalDocs } from "@/lib/legal";
+import { company, brand, legalContact, legalDocs, vatLabel } from "@/lib/legal";
 import { plans } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -36,12 +36,12 @@ export default function TerminosPage() {
       </p>
 
       <h2>3. Precio y facturación</h2>
-      <p>Planes de pago vigentes (importes de base imponible, IVA no incluido):</p>
+      <p>Planes de pago vigentes (importes finales, IVA incluido):</p>
       <ul>
         {paidPlans.map((p) => (
           <li key={p.name}>
             <strong>{p.name}:</strong> {p.price}
-            {p.period} (IVA no incluido)
+            {p.period} ({vatLabel})
           </li>
         ))}
         <li>
@@ -50,8 +50,10 @@ export default function TerminosPage() {
       </ul>
       <p>
         La factura se emite a nombre de <strong>{company.name}</strong>. En el extracto bancario del
-        cliente, el cargo puede aparecer como «{brand.statementDescriptor}». Los impuestos
-        aplicables se añadirán según la normativa vigente y los datos fiscales del cliente.
+        cliente, el cargo figura a nombre de la sociedad —como «{brand.statementDescriptors[0]}» o «
+        {brand.statementDescriptors[1]}»—, <strong>no</strong> como «{brand.name}». Los importes
+        indicados son finales e incluyen el IVA aplicable según la normativa vigente y los datos
+        fiscales del cliente.
       </p>
 
       <h2>4. Periodo de suscripción y renovación</h2>

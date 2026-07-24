@@ -3,7 +3,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
 import { plans, planLimitRows, planNames } from "@/lib/content";
-import { billingNotice } from "@/lib/legal";
+import { billingNotice, vatLabel } from "@/lib/legal";
 import { cn } from "@/lib/utils";
 
 export function Plans() {
@@ -12,7 +12,7 @@ export function Plans() {
       <SectionHeader
         eyebrow="Planes"
         title="Cuatro planes, límites reales"
-        description="Lo que ves es lo que hay: estos límites son los que aplica el servidor, sin letra pequeña. Precios sin IVA, y un plan gratuito para empezar sin tarjeta."
+        description="Lo que ves es lo que hay: estos límites son los que aplica el servidor, sin letra pequeña. Precios finales con IVA incluido, y un plan gratuito para empezar sin tarjeta."
       />
 
       <div className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -43,8 +43,7 @@ export function Plans() {
                 {plan.tagline}
               </p>
 
-              {/* Precio. Los planes de pago llevan siempre "IVA no incluido" a la vista:
-                  el importe mostrado es base imponible. */}
+              {/* Precio final: los planes de pago llevan siempre "IVA incluido" a la vista. */}
               <div className="mt-4">
                 <p
                   className={cn(
@@ -70,7 +69,7 @@ export function Plans() {
                     plan.highlighted ? "text-ink-300" : "text-fg-muted",
                   )}
                 >
-                  {plan.paid ? "IVA no incluido" : "Gratis, sin tarjeta"}
+                  {plan.paid ? vatLabel : "Gratis, sin tarjeta"}
                 </p>
               </div>
               <ul className="mt-5 flex-1 space-y-2.5">

@@ -57,8 +57,9 @@ export default function AvisoLegalPage() {
       </p>
       <p>
         A efectos de facturación y de cargos: el servicio se factura a nombre de {company.name} y,
-        en el extracto bancario del cliente, el cargo puede figurar como «
-        {brand.statementDescriptor}».
+        en el extracto bancario del cliente, el cargo figura a nombre de la sociedad —como «
+        {brand.statementDescriptors[0]}» o «{brand.statementDescriptors[1]}»—, <strong>no</strong>{" "}
+        como «{brand.name}».
       </p>
 
       <h2>3. Objeto</h2>

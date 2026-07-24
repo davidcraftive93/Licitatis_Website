@@ -36,19 +36,29 @@ export const company = {
 /** Marca comercial del producto (NO es una sociedad). */
 export const brand = {
   name: siteConfig.name, // "LICITATIS"
-  /** Cómo aparece el cargo en el extracto bancario del cliente. */
-  statementDescriptor: "LICITATIS",
+  /**
+   * Cómo aparece el cargo en el extracto bancario del cliente. NO es "LICITATIS":
+   * el descriptor corresponde a la sociedad. Se citan las dos formas posibles porque
+   * el propietario aún debe confirmar cuál usa la pasarela de pago.
+   */
+  statementDescriptors: ["ZSE", "CRAFTIVE BY ZSE"] as const,
 } as const;
 
 /** Frase corta de titularidad, reutilizable (footer, tabla de precios, legales). */
 export const ownershipLine = `${brand.name} es un producto de ${company.brand} — ${company.name}`;
 
+/** Los importes publicados YA INCLUYEN el IVA aplicable. */
+export const VAT_INCLUDED = true;
+export const vatLabel = VAT_INCLUDED ? "IVA incluido" : "IVA no incluido";
+
 /**
  * Aviso de facturación bajo la tabla de precios. Es la principal defensa frente a
- * disputas bancarias: quien paga debe poder asociar el cargo con la sociedad que factura.
+ * disputas bancarias: quien paga debe poder reconocer el cargo de su extracto. Por eso
+ * se dice explícitamente que NO aparecerá como «LICITATIS», que es justo la confusión
+ * que provoca las reclamaciones al banco.
  * Debe ir SIEMPRE visible en el HTML (nunca tras hover, tooltip o acordeón).
  */
-export const billingNotice = `Servicio prestado y facturado por ${company.name} (CIF ${company.taxId}), titular de la marca ${brand.name}. El cargo aparecerá en tu extracto como «${brand.statementDescriptor}».`;
+export const billingNotice = `Servicio prestado y facturado por ${company.name} (CIF ${company.taxId}), titular de la marca ${brand.name}. En tu extracto bancario el cargo figurará a nombre de la sociedad —como «${brand.statementDescriptors[0]}» o «${brand.statementDescriptors[1]}»—, no como «${brand.name}».`;
 
 /** Canales de contacto. */
 export const legalContact = {
