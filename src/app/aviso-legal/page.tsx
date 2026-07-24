@@ -43,6 +43,9 @@ export default function AvisoLegalPage() {
           <strong>Correo de contacto legal:</strong> {company.legalEmail}
         </li>
         <li>
+          <strong>Teléfono:</strong> {company.phone}
+        </li>
+        <li>
           <strong>Sitio web:</strong> {siteConfig.url}
         </li>
       </ul>

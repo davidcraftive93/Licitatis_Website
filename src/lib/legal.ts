@@ -22,14 +22,16 @@ export function pendingLegalData(what: string): string {
 
 /** Sociedad titular: quien presta el servicio, factura y responde. */
 export const company = {
-  /** Denominación social (pendiente confirmar la forma jurídica exacta: "SL" / "S.L."). */
+  /** Denominación social. */
   name: "ZSE INNOVATION STUDIO SL",
-  /** Marca corporativa del grupo. */
+  /** Nombre comercial / marca corporativa. */
   brand: "Craftive",
-  taxId: pendingLegalData("CIF"),
-  address: pendingLegalData("DOMICILIO SOCIAL"),
+  taxId: "B26701243",
+  address: "Calle Llíria 54, 46180 Benaguasil (Valencia), España",
+  phone: "685 030 281",
+  /** Aún pendiente: no se inventa. */
   registry: pendingLegalData("REGISTRO MERCANTIL: tomo, folio, hoja e inscripción"),
-  legalEmail: pendingLegalData("EMAIL DE CONTACTO LEGAL"),
+  legalEmail: "info@craftive.es",
   dpo: pendingLegalData("DELEGADO DE PROTECCIÓN DE DATOS o «no procede»"),
 } as const;
 

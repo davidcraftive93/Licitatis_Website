@@ -562,7 +562,7 @@ export function StepJourney() {
       {/* Panel sticky (escritorio): las 6 pantallas superpuestas, crossfade a la activa. */}
       <div className="relative hidden lg:sticky lg:top-24 lg:block" aria-hidden="true">
         <div className="absolute inset-6 -z-10 rounded-[2.5rem] bg-brand-400/20 blur-2xl" />
-        <div className="relative min-h-[420px]">
+        <div className="relative min-h-[26rem]">
           {VISUALS.map((Visual, i) => (
             <div
               key={i}

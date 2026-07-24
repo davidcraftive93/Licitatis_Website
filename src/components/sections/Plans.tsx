@@ -105,7 +105,7 @@ export function Plans() {
       {/* Tabla de límites reales */}
       <Reveal delay={120} className="mt-12">
         <div className="overflow-x-auto rounded-3xl border border-hairline bg-surface-raised shadow-soft">
-          <table className="w-full min-w-[640px] text-sm">
+          <table className="w-full min-w-[40rem] text-sm">
             <caption className="sr-only">Límites reales por plan</caption>
             <thead>
               <tr className="border-b border-hairline">
