@@ -9,6 +9,7 @@ import { leadSchema, tendersPerYearOptions, challengeOptions } from "@/lib/valid
 import { readUtmParams, readHubspotUtk } from "@/lib/utm";
 import { submitLeadToHubspot } from "@/lib/hubspot";
 import { CONTACT_EMAIL } from "@/lib/content";
+import { company } from "@/lib/legal";
 
 /** Enlace de correo alternativo con los datos ya escritos, para no perder el lead. */
 function buildMailtoFallback(values: FormValues): string {
@@ -303,9 +304,9 @@ export function DemoForm() {
           revisión legal). El consentimiento de marketing es aparte y opcional. */}
       <div className="rounded-xl border border-hairline bg-surface/70 p-3.5 text-xs leading-relaxed text-fg">
         <p>
-          <strong className="font-semibold text-fg">Responsable:</strong> LICITATIS.{" "}
-          <strong className="font-semibold text-fg">Finalidad:</strong> gestionar tu solicitud de
-          plaza en la beta y ponernos en contacto contigo.{" "}
+          <strong className="font-semibold text-fg">Responsable:</strong> {company.name} (titular de
+          la marca LICITATIS). <strong className="font-semibold text-fg">Finalidad:</strong>{" "}
+          gestionar tu solicitud de plaza en la beta y ponernos en contacto contigo.{" "}
           <strong className="font-semibold text-fg">Destinatario:</strong> HubSpot (proveedor que
           usamos para gestionar contactos comerciales).{" "}
           <strong className="font-semibold text-fg">Derechos:</strong> acceso, rectificación y
@@ -387,7 +388,7 @@ export function DemoForm() {
         >
           {status === "submitting" ? "Enviando…" : "Solicitar plaza en la beta"}
         </Button>
-        <p className="text-xs text-fg-muted">Sin tarjeta · Beta gratuita.</p>
+        <p className="text-xs text-fg-muted">Sin tarjeta para empezar.</p>
       </div>
     </form>
   );

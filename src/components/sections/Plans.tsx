@@ -3,6 +3,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/icons";
 import { plans, planLimitRows, planNames } from "@/lib/content";
+import { billingNotice } from "@/lib/legal";
 import { cn } from "@/lib/utils";
 
 export function Plans() {
@@ -11,7 +12,7 @@ export function Plans() {
       <SectionHeader
         eyebrow="Planes"
         title="Cuatro planes, límites reales"
-        description="Lo que ves es lo que hay: estos límites son los que aplica el servidor, sin letra pequeña. Y ahora mismo, todo en beta gratuita."
+        description="Lo que ves es lo que hay: estos límites son los que aplica el servidor, sin letra pequeña. Precios sin IVA, y un plan gratuito para empezar sin tarjeta."
       />
 
       <div className="mt-12 grid items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -41,6 +42,37 @@ export function Plans() {
               <p className={cn("mt-1 text-sm", plan.highlighted ? "text-ink-300" : "text-fg")}>
                 {plan.tagline}
               </p>
+
+              {/* Precio. Los planes de pago llevan siempre "IVA no incluido" a la vista:
+                  el importe mostrado es base imponible. */}
+              <div className="mt-4">
+                <p
+                  className={cn(
+                    "font-display text-3xl font-bold leading-none",
+                    plan.highlighted ? "text-white" : "text-fg-strong",
+                  )}
+                >
+                  {plan.price}
+                  {plan.period ? (
+                    <span
+                      className={cn(
+                        "text-base font-semibold",
+                        plan.highlighted ? "text-ink-300" : "text-fg-muted",
+                      )}
+                    >
+                      {plan.period}
+                    </span>
+                  ) : null}
+                </p>
+                <p
+                  className={cn(
+                    "mt-1 text-xs",
+                    plan.highlighted ? "text-ink-300" : "text-fg-muted",
+                  )}
+                >
+                  {plan.paid ? "IVA no incluido" : "Gratis, sin tarjeta"}
+                </p>
+              </div>
               <ul className="mt-5 flex-1 space-y-2.5">
                 {plan.highlights.map((h) => (
                   <li key={h} className="flex items-start gap-2.5 text-sm">
@@ -110,11 +142,17 @@ export function Plans() {
         </div>
       </Reveal>
 
+      {/* Aviso de facturación: UNA sola vez, bajo la tabla completa. Va siempre en el HTML
+          servido (nunca tras hover, tooltip ni acordeón: en móvil no hay hover y es justo
+          donde más falta hace). Es la defensa principal frente a disputas bancarias: quien
+          paga debe poder asociar el cargo de su extracto con la sociedad que factura. */}
       <Reveal delay={140}>
-        <p className="mt-6 text-center text-xs text-fg-muted">
+        <p className="mx-auto mt-8 max-w-2xl text-center text-xs leading-relaxed text-fg-muted">
+          {billingNotice}
+        </p>
+        <p className="mx-auto mt-3 max-w-2xl text-center text-xs leading-relaxed text-fg-muted">
           En el plan <strong className="font-semibold text-fg">Free</strong> la IA es simulada
-          (etiquetada como tal en la app); en Starter, Pro y Agency es IA real. Los precios se
-          anunciarán al salir de beta.
+          (etiquetada como tal en la app); en Starter, Pro y Agency es IA real.
         </p>
       </Reveal>
     </Section>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LegalShell } from "@/components/layout/LegalShell";
 import { siteConfig } from "@/lib/site";
-import { legalEntity, legalContact, legalRefs, legalDocs } from "@/lib/legal";
+import { company, brand, legalContact, legalRefs, legalDocs } from "@/lib/legal";
 
 export const metadata: Metadata = {
   title: "Política de privacidad",
@@ -21,17 +21,17 @@ export default function PrivacidadPage() {
       <h2>1. Responsable del tratamiento</h2>
       <ul>
         <li>
-          <strong>Responsable:</strong> {legalEntity.commercialName} — {legalEntity.legalName} (
-          {legalEntity.taxId})
+          <strong>Responsable del tratamiento:</strong> {company.name} (CIF {company.taxId}),
+          titular de la marca {brand.name}
         </li>
         <li>
-          <strong>Domicilio:</strong> {legalEntity.address}
+          <strong>Domicilio:</strong> {company.address}
         </li>
         <li>
           <strong>Contacto de privacidad:</strong> {legalContact.privacy}
         </li>
         <li>
-          <strong>Delegado de Protección de Datos:</strong> {legalEntity.dpo}
+          <strong>Delegado de Protección de Datos:</strong> {company.dpo}
         </li>
       </ul>
 

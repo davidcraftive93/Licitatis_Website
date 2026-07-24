@@ -27,6 +27,7 @@ import {
   PLACEHOLDER_PATTERNS,
   PROHIBITED_CLAIM_PATTERNS,
   CERTIFICATION_PATTERNS,
+  BRAND_MISUSE_PATTERNS,
   scanText,
   isCanonicalUrlOk,
 } from "./legal-launch-rules.mjs";
@@ -186,6 +187,18 @@ if (/marketing:\s*true/.test(demoForm) || /name="marketing"[^>]*checked=\{true\}
     "MARKETING_PREMARCADO",
     "El consentimiento de marketing no debe estar premarcado en el formulario.",
   );
+}
+
+// ------------------------------------------------- 8bis) Coherencia de marca (bloqueante)
+// LICITATIS es una marca; la sociedad es ZSE INNOVATION STUDIO SL. Tratar la marca como
+// sociedad induce a error sobre quién presta el servicio y factura.
+const brandScanFiles = [...contentFiles, ...(hasBuild ? walk(OUT, [".html"]) : [])];
+for (const file of brandScanFiles) {
+  const text = readFileSync(file, "utf8");
+  // Se ignora el propio fichero de reglas y la config legal, que citan el antipatrón.
+  if (/legal-launch-rules|src[\\/]lib[\\/]legal\.ts/.test(file)) continue;
+  const hits = scanText(text, BRAND_MISUSE_PATTERNS);
+  if (hits.length) block("MARCA_COMO_SOCIEDAD", `${rel(file)}: ${[...new Set(hits)].join(", ")}`);
 }
 
 // ---------------------------------------------------------------- 9) Certificaciones sin acreditar (aviso)

@@ -19,7 +19,7 @@ export function FinalCta() {
             <div className="relative mx-auto max-w-2xl">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-ink-100 ring-1 ring-white/15">
                 <AiBadge>IA</AiBadge>
-                Beta gratuita
+                Plan gratuito
               </span>
               <h2 className="mt-5 text-balance font-display text-3xl font-semibold leading-tight text-white sm:text-4xl lg:text-[2.9rem]">
                 La próxima licitación se prepara mejor con LICITATIS

@@ -13,7 +13,7 @@ import "@/app/globals.css";
 const title = "LICITATIS — Prepara licitaciones públicas con IA";
 // Descripción concisa (~155 caracteres) para que quepa en el snippet de Google sin truncarse.
 const description =
-  "LICITATIS convierte pliegos en expedientes de candidatura: elegibilidad, documentación, memoria técnica, riesgos e informe para dirección. Beta gratuita.";
+  "LICITATIS convierte pliegos en expedientes de candidatura: elegibilidad, documentación, memoria técnica, riesgos e informe para dirección. Plan gratuito disponible.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),

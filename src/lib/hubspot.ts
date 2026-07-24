@@ -18,6 +18,7 @@
  */
 
 import type { LeadInput } from "@/lib/validation";
+import { company } from "@/lib/legal";
 
 const HUBSPOT_SUBMIT_BASE = "https://api.hsforms.com/submissions/v3/integration/submit";
 
@@ -89,7 +90,7 @@ export async function submitLeadToHubspot(input: LeadInput): Promise<HubspotSubm
     legalConsentOptions: {
       consent: {
         consentToProcess: true,
-        text: "Acepto que LICITATIS trate mis datos para gestionar mi solicitud de demostración. El consentimiento de comunicaciones comerciales es opcional y se recoge por separado.",
+        text: `Acepto que ${company.name} (titular de la marca LICITATIS) trate mis datos para gestionar mi solicitud. El consentimiento de comunicaciones comerciales es opcional y se recoge por separado.`,
       },
     },
   };

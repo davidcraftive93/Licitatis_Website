@@ -3,6 +3,7 @@ import {
   PLACEHOLDER_PATTERNS,
   PROHIBITED_CLAIM_PATTERNS,
   CERTIFICATION_PATTERNS,
+  BRAND_MISUSE_PATTERNS,
   REQUIRED_LEGAL_ROUTES,
   scanText,
   isCanonicalUrlOk,
@@ -54,6 +55,29 @@ describe("release gate legal — claims prohibidos", () => {
     const disclaimer =
       "LICITATIS no garantiza la adjudicación: asiste la preparación con revisión humana.";
     expect(scanText(disclaimer, PROHIBITED_CLAIM_PATTERNS)).toHaveLength(0);
+  });
+});
+
+describe("release gate legal — coherencia de marca", () => {
+  it("marca a LICITATIS escrito como sociedad", () => {
+    expect(scanText("© LICITATIS S.L.", BRAND_MISUSE_PATTERNS).length).toBeGreaterThan(0);
+    expect(scanText("Contrata con LICITATIS SL", BRAND_MISUSE_PATTERNS).length).toBeGreaterThan(0);
+    expect(scanText("LICITATIS S.A. informa", BRAND_MISUSE_PATTERNS).length).toBeGreaterThan(0);
+  });
+
+  it("NO marca el uso correcto (marca + sociedad titular)", () => {
+    const ok =
+      "LICITATIS es un producto de Craftive — ZSE INNOVATION STUDIO SL. Servicio facturado por ZSE INNOVATION STUDIO SL.";
+    expect(scanText(ok, BRAND_MISUSE_PATTERNS)).toHaveLength(0);
+  });
+});
+
+describe("release gate legal — datos fiscales pendientes", () => {
+  it("detecta marcadores [[DATO]]", () => {
+    expect(scanText("CIF [[CIF]]", PLACEHOLDER_PATTERNS).length).toBeGreaterThan(0);
+    expect(
+      scanText("Domicilio: [[DOMICILIO SOCIAL]]", PLACEHOLDER_PATTERNS).length,
+    ).toBeGreaterThan(0);
   });
 });
 
