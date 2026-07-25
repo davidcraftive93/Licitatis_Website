@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Icon } from "@/components/ui/icons";
 import { howItWorksSteps } from "@/lib/content";
+import { demoExpediente, checklistFraction } from "@/lib/demo-expediente";
 import { cn } from "@/lib/utils";
 import { usePrefersReducedMotion, useRafCallback } from "@/components/motion/hooks";
 
@@ -22,7 +23,7 @@ function PanelFrame({ step, children }: { step: number; children: ReactNode }) {
       <div className="flex items-center justify-between border-b border-ink-100 bg-ink-50/70 px-4 py-2.5">
         <span className="flex items-center gap-2 font-mono text-2xs text-ink-400">
           <span className="h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true" />
-          EXP-2024-0142
+          {demoExpediente.code}
         </span>
         <span className="rounded-full bg-white px-2 py-0.5 text-2xs font-semibold text-ink-500 ring-1 ring-ink-100">
           Paso {step} de 6 · Demo
@@ -78,12 +79,13 @@ function VisualDetecta() {
       <div className="rounded-lg border border-brand-200 bg-brand-50/60 px-3 py-2.5 ring-1 ring-brand-100">
         <div className="flex items-center justify-between gap-2">
           <span className="truncate text-xs font-semibold text-ink-900">
-            Servicios de mantenimiento de instalaciones
+            {demoExpediente.title}
           </span>
-          <Chip tone="ok">Encaje 87%</Chip>
+          <Chip tone="ok">Encaje {demoExpediente.fitScore}%</Chip>
         </div>
         <p className="mt-1 flex items-center gap-2 text-2xs text-ink-500">
-          <span className="font-mono">EXP-2024-0142</span> · CPV 50700000 · 214.000 €
+          <span className="font-mono">{demoExpediente.code}</span> · CPV {demoExpediente.cpv} ·{" "}
+          {demoExpediente.amountLabel}
         </p>
         <div className="mt-1.5 flex flex-wrap gap-1">
           <Chip tone="neutral">CPV favorito</Chip>
@@ -119,11 +121,14 @@ function VisualAnaliza() {
             GO con condiciones
           </span>
           <span className="text-2xs text-ink-400">
-            Confianza <strong className="text-ink-700">78%</strong>
+            Confianza <strong className="text-ink-700">{demoExpediente.aiConfidence}%</strong>
           </span>
         </div>
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-ink-100">
-          <div className="h-full w-[78%] rounded-full bg-gradient-brand" />
+          <div
+            className="h-full rounded-full bg-gradient-brand"
+            style={{ width: `${demoExpediente.aiConfidence}%` }}
+          />
         </div>
         <ul className="mt-3 space-y-1.5 text-2xs text-ink-600">
           <li className="flex items-start gap-1.5">
@@ -185,7 +190,7 @@ function VisualExpediente() {
         <p className="text-2xs font-semibold uppercase tracking-wide text-ink-400">
           Checklist documental
         </p>
-        <span className="font-display text-sm font-bold text-brand-700">2/4</span>
+        <span className="font-display text-sm font-bold text-brand-700">{checklistFraction()}</span>
       </div>
       {[
         { label: "Declaración responsable (DEUC)", done: true },
@@ -218,10 +223,13 @@ function VisualExpediente() {
       <div className="rounded-lg border border-ink-100 bg-white px-3 py-2">
         <div className="flex items-center justify-between text-2xs">
           <span className="font-medium text-ink-700">Memoria técnica (borrador IA)</span>
-          <span className="text-ink-400">62%</span>
+          <span className="text-ink-400">{demoExpediente.memoriaProgress}%</span>
         </div>
         <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ink-100">
-          <div className="h-full w-[62%] rounded-full bg-gradient-brand" />
+          <div
+            className="h-full rounded-full bg-gradient-brand"
+            style={{ width: `${demoExpediente.memoriaProgress}%` }}
+          />
         </div>
       </div>
     </div>
@@ -241,7 +249,7 @@ function VisualRiesgo() {
       <div className="rounded-lg border border-red-100 bg-red-50/60 px-3 py-2.5">
         <p className="flex items-center gap-1.5 text-xs font-semibold text-red-700">
           <Icon name="alert-triangle" size={13} />
-          Certificado AEAT no vigente
+          {demoExpediente.blocker.label}
         </p>
         <p className="mt-0.5 text-2xs text-ink-500">
           Motivo de exclusión directa. Detectado en tu Pasaporte; renuévalo antes de presentar.
@@ -250,7 +258,7 @@ function VisualRiesgo() {
       <div className="rounded-lg border border-amber-100 bg-amber-50/60 px-3 py-2.5">
         <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-700">
           <Icon name="key" size={13} />
-          Firma electrónica del apoderado caduca en 4 días
+          {demoExpediente.secondRisk.label}
         </p>
         <p className="mt-0.5 text-2xs text-ink-500">
           Antes del fin del plazo de presentación (quedan 6 días).
@@ -259,10 +267,15 @@ function VisualRiesgo() {
       <div className="rounded-lg border border-ink-100 bg-white px-3 py-2">
         <div className="flex items-center justify-between text-2xs">
           <span className="font-medium text-ink-700">Índice de preparación</span>
-          <span className="font-display text-sm font-bold text-ink-900">74%</span>
+          <span className="font-display text-sm font-bold text-ink-900">
+            {demoExpediente.readiness}%
+          </span>
         </div>
         <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ink-100">
-          <div className="h-full w-[74%] rounded-full bg-gradient-brand" />
+          <div
+            className="h-full rounded-full bg-gradient-brand"
+            style={{ width: `${demoExpediente.readiness}%` }}
+          />
         </div>
       </div>
     </div>
@@ -347,14 +360,18 @@ export function StepJourney() {
   // llevan la pantalla del mock incrustada), así que la curva se genera a medida.
   const listRef = useRef<HTMLOListElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const reducedMotion = usePrefersReducedMotion();
   const [route, setRoute] = useState<{
     d: string;
     height: number;
     stations: { x: number; y: number }[];
   } | null>(null);
-  const [drawn, setDrawn] = useState(0); // 0..1 del trazado dibujado
+  // La longitud del trazado es un valor DISCRETO (cambia al medir), así que sí vive en
+  // estado. El progreso del dibujado NO: se escribe como variable CSS (--journey-offset)
+  // directamente en el <svg>, para no re-renderizar la sección en cada frame de scroll.
   const [pathLength, setPathLength] = useState(0);
+  const pathLengthRef = useRef(0);
 
   // Mide las estaciones y compone una curva suave que serpentea entre ellas.
   useEffect(() => {
@@ -396,23 +413,33 @@ export function StepJourney() {
 
   // Longitud real del trazado (para stroke-dasharray).
   useEffect(() => {
-    if (pathRef.current) setPathLength(pathRef.current.getTotalLength());
+    if (!pathRef.current) return;
+    const length = pathRef.current.getTotalLength();
+    pathLengthRef.current = length;
+    setPathLength(length);
   }, [route]);
 
-  // Progreso de dibujo ligado al scroll (rAF). Con reduced-motion queda dibujada entera.
+  /**
+   * Progreso de dibujo ligado al scroll. Escribe el desplazamiento del trazo como
+   * variable CSS en el <svg>: sin `setState`, así que el scroll no provoca ni un render
+   * de React. Con reduced-motion la ruta queda dibujada entera.
+   */
   const updateDrawn = useRafCallback(() => {
     const list = listRef.current;
-    if (!list) return;
+    const svg = svgRef.current;
+    if (!list || !svg) return;
+
     const box = list.getBoundingClientRect();
     const line = window.innerHeight * 0.62; // línea de "avance" del viaje
-    setDrawn(Math.max(0, Math.min(1, (line - box.top) / box.height)));
+    const progress = Math.max(0, Math.min(1, (line - box.top) / box.height));
+    svg.style.setProperty("--journey-offset", String(pathLengthRef.current * (1 - progress)));
   });
 
   useEffect(() => {
-    if (reducedMotion) {
-      setDrawn(1);
-      return;
-    }
+    // Con reduced-motion la ruta ya nace dibujada por estilo (offset 0): sin listeners.
+    if (reducedMotion) return;
+    // `pathLength` en las dependencias: al remedir, el <svg> ya existe y hay que
+    // repintar el progreso con la longitud nueva.
     updateDrawn();
     window.addEventListener("scroll", updateDrawn, { passive: true });
     window.addEventListener("resize", updateDrawn, { passive: true });
@@ -420,7 +447,7 @@ export function StepJourney() {
       window.removeEventListener("scroll", updateDrawn);
       window.removeEventListener("resize", updateDrawn);
     };
-  }, [reducedMotion, updateDrawn]);
+  }, [reducedMotion, updateDrawn, pathLength]);
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
@@ -450,12 +477,17 @@ export function StepJourney() {
             se genera midiendo las estaciones reales, así que encaja con cualquier alto. */}
         {route ? (
           <svg
+            ref={svgRef}
             aria-hidden="true"
             className="pointer-events-none absolute left-0 top-0 z-0 overflow-visible"
             width="48"
             height={route.height}
             viewBox={`0 0 48 ${route.height}`}
             fill="none"
+            // El progreso vive en esta variable: el scroll la reescribe sin re-renderizar.
+            // Sin recorrer al empezar (offset = longitud completa); con reduced-motion,
+            // dibujada del todo (offset 0) sin depender de ningún listener.
+            style={{ "--journey-offset": reducedMotion ? 0 : pathLength } as CSSProperties}
           >
             <defs>
               <linearGradient id="ruta-expediente" x1="0" y1="0" x2="0" y2="1">
@@ -483,8 +515,10 @@ export function StepJourney() {
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeDasharray={pathLength}
-                strokeDashoffset={pathLength * (1 - drawn)}
-                style={{ transition: reducedMotion ? undefined : "stroke-dashoffset 120ms linear" }}
+                style={{
+                  strokeDashoffset: "var(--journey-offset)",
+                  transition: reducedMotion ? undefined : "stroke-dashoffset 120ms linear",
+                }}
               />
             ) : null}
 
@@ -580,7 +614,7 @@ export function StepJourney() {
           ))}
         </div>
         <p className="mt-4 text-center text-xs text-fg-muted">
-          Seguimos un expediente de demostración (EXP-2024-0142) por todo el proceso. Datos
+          Seguimos un expediente de demostración ({demoExpediente.code}) por todo el proceso. Datos
           ficticios.
         </p>
       </div>

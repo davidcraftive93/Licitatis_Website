@@ -7,6 +7,7 @@ import { HeroBackdrop } from "@/components/sections/HeroBackdrop";
 import { TiltCard } from "@/components/motion/TiltCard";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { RotatingWord } from "@/components/motion/RotatingWord";
+import { demoExpediente } from "@/lib/demo-expediente";
 
 /** Términos del sector para la marquesina inferior del hero. */
 const MARQUEE_TERMS = [
@@ -199,7 +200,11 @@ export function Hero() {
             href="#como-funciona"
             className="group flex flex-col items-center gap-2 text-xs font-medium text-ink-300 transition-colors hover:text-brand-300"
           >
-            <span>Entra en el proceso</span>
+            {/* Nombra el caso: es el arranque explícito del hilo que recorre la página. */}
+            <span>
+              Sigue el expediente{" "}
+              <span className="font-mono text-brand-300">{demoExpediente.code}</span>
+            </span>
             <span
               aria-hidden="true"
               className="flex h-9 w-6 items-start justify-center rounded-full border border-white/20 p-1.5 transition-colors group-hover:border-brand-400/60"

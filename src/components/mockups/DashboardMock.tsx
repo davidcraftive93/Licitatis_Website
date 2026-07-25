@@ -1,4 +1,5 @@
 import { Icon, type IconName } from "@/components/ui/icons";
+import { demoExpediente } from "@/lib/demo-expediente";
 import { cn } from "@/lib/utils";
 
 /** Datos de ejemplo, ficticios y neutrales. Solo con fines de demostración visual. */
@@ -27,15 +28,20 @@ const TENDERS: {
   progress: number;
   days: number;
   team: string[];
+  /** true en el expediente protagonista de la narrativa. */
+  focus?: boolean;
 }[] = [
   {
-    exp: "EXP-2024-0142",
-    title: "Servicios de mantenimiento de instalaciones",
-    entity: "Administración local (ejemplo)",
+    // El expediente que hila toda la página: sale de la fuente única y va marcado
+    // como foco para que se lea como "el caso que vamos a seguir", no como una fila más.
+    exp: demoExpediente.code,
+    title: demoExpediente.title,
+    entity: demoExpediente.body,
     estado: "En preparación",
-    progress: 64,
-    days: 6,
+    progress: demoExpediente.readiness,
+    days: demoExpediente.daysLeft,
     team: ["MR", "JL"],
+    focus: true,
   },
   {
     exp: "EXP-2024-0138",
@@ -156,12 +162,24 @@ export function DashboardMock() {
           {TENDERS.map((t) => (
             <div
               key={t.exp}
-              className="rounded-xl bg-white p-3 ring-1 ring-ink-100 transition-shadow hover:shadow-soft"
+              className={cn(
+                "rounded-xl bg-white p-3 transition-shadow hover:shadow-soft",
+                // El expediente protagonista se destaca: es el caso que el visitante
+                // va a seguir el resto de la página.
+                t.focus ? "shadow-soft ring-2 ring-brand-400" : "ring-1 ring-ink-100",
+              )}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-2xs text-ink-400">{t.exp}</span>
+                    <span
+                      className={cn(
+                        "font-mono text-2xs",
+                        t.focus ? "font-semibold text-brand-700" : "text-ink-400",
+                      )}
+                    >
+                      {t.exp}
+                    </span>
                     <span
                       className={cn(
                         "rounded-full px-2 py-0.5 text-2xs font-semibold ring-1 ring-inset",
@@ -170,6 +188,11 @@ export function DashboardMock() {
                     >
                       {t.estado}
                     </span>
+                    {t.focus ? (
+                      <span className="rounded-full bg-brand-600 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-white">
+                        Lo seguimos
+                      </span>
+                    ) : null}
                   </div>
                   <p className="mt-1 truncate text-sm font-medium text-ink-900">{t.title}</p>
                   <p className="truncate text-xs text-ink-400">{t.entity}</p>
