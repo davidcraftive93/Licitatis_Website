@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import { Icon } from "@/components/ui/icons";
 import { howItWorksSteps } from "@/lib/content";
 import { demoExpediente, checklistFraction } from "@/lib/demo-expediente";
+import { journeyProgress, dashOffset, pickActiveStep } from "@/lib/journey";
 import { cn } from "@/lib/utils";
 import { usePrefersReducedMotion, useRafCallback } from "@/components/motion/hooks";
 
@@ -430,9 +431,8 @@ export function StepJourney() {
     if (!list || !svg) return;
 
     const box = list.getBoundingClientRect();
-    const line = window.innerHeight * 0.62; // línea de "avance" del viaje
-    const progress = Math.max(0, Math.min(1, (line - box.top) / box.height));
-    svg.style.setProperty("--journey-offset", String(pathLengthRef.current * (1 - progress)));
+    const progress = journeyProgress(box.top, box.height, window.innerHeight);
+    svg.style.setProperty("--journey-offset", String(dashOffset(pathLengthRef.current, progress)));
   });
 
   useEffect(() => {
@@ -453,14 +453,16 @@ export function StepJourney() {
     if (typeof IntersectionObserver === "undefined") return;
 
     // El paso que cruza la banda central del viewport pasa a ser el activo.
+    // Si cruzan dos (viewport alto, pasos cortos), decide `pickActiveStep`: gana
+    // el más avanzado. Antes ganaba el último del lote del observador, y ese
+    // orden no está garantizado, así que el paso activo podía retroceder.
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = stepRefs.current.indexOf(entry.target as HTMLLIElement);
-            if (idx !== -1) setActive(idx);
-          }
-        });
+        const intersecting = entries
+          .filter((entry) => entry.isIntersecting)
+          .map((entry) => stepRefs.current.indexOf(entry.target as HTMLLIElement))
+          .filter((index) => index !== -1);
+        if (intersecting.length) setActive((current) => pickActiveStep(intersecting, current));
       },
       { rootMargin: "-38% 0px -52% 0px", threshold: 0 },
     );

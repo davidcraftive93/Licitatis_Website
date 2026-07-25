@@ -2,6 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { useFinePointer, usePrefersReducedMotion } from "@/components/motion/hooks";
+import {
+  readQualitySignals,
+  resolveQualityTier,
+  animatesContinuously,
+  particleBudget,
+} from "@/lib/quality-tier";
 
 interface Particle {
   x: number;
@@ -10,10 +16,6 @@ interface Particle {
   vy: number;
   r: number;
   warm: boolean; // algunas partículas en ámbar
-}
-
-interface NetworkInformationLike {
-  saveData?: boolean;
 }
 
 const LINK_DIST = 120;
@@ -41,12 +43,12 @@ export function ConstellationCanvas({ className }: { className?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const connection = (navigator as Navigator & { connection?: NetworkInformationLike })
-      .connection;
-    const saveData = connection?.saveData === true;
-    const cores = navigator.hardwareConcurrency || 4;
-    const maxParticles = saveData ? 18 : cores <= 4 ? 32 : 55;
-    const moving = finePointer && !reduced && !saveData;
+    // Nivel de calidad y presupuesto de nodos: la decisión vive en
+    // `src/lib/quality-tier.ts`, pura y con pruebas. El contenido no cambia
+    // entre niveles; solo cuánto se mueve.
+    const signals = readQualitySignals({ reducedMotion: reduced, finePointer });
+    const maxParticles = particleBudget(signals);
+    const moving = animatesContinuously(resolveQualityTier(signals));
 
     let raf = 0;
     let running = false;
