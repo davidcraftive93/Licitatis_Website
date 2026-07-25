@@ -142,14 +142,14 @@ export function ConstellationCanvas({ className }: { className?: string }) {
     };
     const addPointerListeners = () => {
       if (pointerListening || !moving) return;
-      window.addEventListener("pointermove", onPointer, { passive: true });
-      window.addEventListener("pointerout", onLeave, { passive: true });
+      canvas.addEventListener("pointermove", onPointer, { passive: true });
+      canvas.addEventListener("pointerleave", onLeave, { passive: true });
       pointerListening = true;
     };
     const removePointerListeners = () => {
       if (!pointerListening) return;
-      window.removeEventListener("pointermove", onPointer);
-      window.removeEventListener("pointerout", onLeave);
+      canvas.removeEventListener("pointermove", onPointer);
+      canvas.removeEventListener("pointerleave", onLeave);
       pointerListening = false;
       onLeave();
     };
