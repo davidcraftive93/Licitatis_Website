@@ -23,7 +23,7 @@ Tipos de estado: `Verificada` · `Parcial` · `Prevista` · `No verificable (app
 | «Acceso por roles… comprobados en el servidor» | No verificable (app) | Medio | Confirmar implementación en la app |
 | «Sin entrenar con tus datos» | No verificable (contrato con proveedores IA) | **Alto** | Debe respaldarse contractualmente (acuerdos con proveedores de IA) antes de afirmarlo |
 | «RGPD y 2FA (TOTP)» | No verificable (app) | Medio | Confirmar que 2FA está operativo en la app |
-| «Datos alojados en la UE» | No verificable | **Alto** | Depende de HubSpot y de la infraestructura del SaaS; confirmar región y transferencias |
+| ~~«Datos alojados en la UE»~~ | No verificable | **Alto** | **RETIRADO de la landing** (rama `feature/expediente-vivo`): contradecía a `/seguridad-y-privacidad`, que dice que la localización debe confirmarse antes de la apertura pública. La tarjeta pasa a llamarse «Alojamiento y localización de datos» y remite a esa página y a la lista de subencargados. Puede volver cuando el propietario confirme proveedor y región |
 | «Protección de sesión reforzada» | No verificable | Bajo | Redacción prudente; mantener |
 
 > Ninguna de estas afirmaciones usa fórmulas absolutas prohibidas («100%», «completamente seguro», «cumplimiento asegurado»): el release gate (`PROHIBITED_CLAIM_PATTERNS`) lo verifica automáticamente y bloquea si se introdujeran.

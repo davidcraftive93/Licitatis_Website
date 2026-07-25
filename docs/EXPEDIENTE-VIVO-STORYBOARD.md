@@ -68,7 +68,7 @@ Nivel de motion según `EXPEDIENTE-VIVO-MOTION-SYSTEM.md` (N0 estático → N4 l
 **Duración** | Trazo ligado al scroll; crossfade 500 ms entre módulos
 **Móvil** | Panel bajo cada paso (ya implementado)
 **Reduced motion** | Ruta completa, sin dibujado progresivo
-**Coste** | **Reduce** JS: el progreso pasa de estado de React a **variable CSS** (elimina el último `setState` por frame)
+**Coste** | **Hecho**: el progreso pasa de estado de React a la variable CSS `--journey-offset` y desaparece el último `setState` por frame. La geometría vive en `src/lib/journey.ts`, pura y con 13 pruebas
 **Nivel** | N4 (el único N4 de la página)
 
 ---
@@ -95,13 +95,13 @@ Nivel de motion según `EXPEDIENTE-VIVO-MOTION-SYSTEM.md` (N0 estático → N4 l
 |---|---|
 **Mensaje** | Qué contiene un expediente preparado
 **Problema actual** | 8 de 9 tarjetas reformulan lo que el Acto 4 acaba de **demostrar** con UI viva
-**Estado final** | `4. Expediente organizado` — capas seleccionables sobre el mismo expediente
-**Visual** | Anatomía por capas (Análisis · Elegibilidad · Documentos · Memoria · Riesgos · Economía · Tareas · Chat · Dirección)
-**Interacción** | Clic **y** teclado (patrón tabs nativo, `aria-selected`, flechas)
-**Móvil** | Lista desplegable / acordeón, sin hover
-**Reduced motion** | Cambio instantáneo
-**Restricción** | `#funcionalidades` está en la nav, el footer y el rail → **se transforma, no se borra**; el texto de las 9 funcionalidades sigue en el HTML (SEO)
-**Nivel** | N2
+**Estado final** | `4. Expediente organizado` — cuatro capas en orden sobre el mismo expediente
+**Visual** | Lectura del pliego · ¿Podemos presentarnos? · Preparación de la oferta · Control del avance. Cada capa declara qué queda hecho al terminarla, con costura visible hacia la siguiente
+**Interacción** | **Ninguna: implementado SIN pestañas ni acordeón.** Se planteó el patrón tabs, y se descartó al programarlo: habría escondido ocho de las nueve tarjetas tras un gesto previo, contra la propia restricción de esta fila. La jerarquía la da el número de capa y el resultado, que no esconden nada
+**Móvil** | Una columna; nada que desplegar
+**Reduced motion** | Sin diferencia: la sección no se mueve
+**Restricción** | `#funcionalidades` está en la nav, el footer y el rail → **se transforma, no se borra**; el texto de las 9 funcionalidades sigue en el HTML (SEO). **Cumplido y con prueba**: `demo-expediente.test.ts` falla si una capa queda vacía o si el total deja de ser 9
+**Nivel** | N1 (bajó de N2 al no haber cambio de estado que animar). Componente de servidor: 0 kB de JS
 
 ---
 
@@ -110,10 +110,11 @@ Nivel de motion según `EXPEDIENTE-VIVO-MOTION-SYSTEM.md` (N0 estático → N4 l
 | | |
 |---|---|
 **Mensaje** | La IA propone; la persona decide
-**Estado final** | Panel de procedencia: **texto del pliego → extracción → clasificación → recomendación → validación humana**
-**Visual** | Cadena con etiquetas Hecho / Inferencia / Recomendación / Hueco / Fuente
+**Estado final** | Panel de procedencia sobre el bloqueante REAL del caso: **Hecho → Inferencia → Recomendación → Decisión**
+**Visual** | Cadena de cuatro niveles, cada uno con su fuente. La cadena se corta en la decisión, el único nivel sin fuente que citar («aquí no hay fuente: hay una persona responsable»)
+**Implementado** | Cuatro niveles en vez de cinco: «Hueco» no era un nivel de procedencia sino un estado del análisis, y ya se muestra como `[[FALTA: …]]` en el paso 02. `demo-expediente.test.ts` fija el orden y comprueba que el último nivel no tiene fuente
 **Restricción** | **Todas** las advertencias legales se mantienen visibles; nada en tooltips
-**Nivel** | N1
+**Nivel** | N1 · componente de servidor
 
 ---
 
@@ -123,7 +124,7 @@ Se conserva. El mismo sistema en dos configuraciones (un Pasaporte / varios espa
 
 ## ACTO 9 — Seguridad (Privacy)
 
-Se conserva la estructura. Se corrige la **contradicción interna** sobre la localización de los datos. Sin escudos gigantes, sin candados flotantes, sin claims absolutos. **N1**.
+Se conserva la estructura. **Corregida** la contradicción interna sobre la localización de los datos: se retiró la afirmación «Datos alojados en la UE» de la landing, que chocaba con `/seguridad-y-privacidad`. La tarjeta remite ahora a esa página y a la lista de subencargados; la afirmación puede volver cuando el propietario confirme proveedor y región. Sin escudos gigantes, sin candados flotantes, sin claims absolutos. **N1**.
 
 ## ACTO 10 — Planes
 
@@ -131,7 +132,7 @@ Se conserva la estructura. Se corrige la **contradicción interna** sobre la loc
 
 ## ACTO 11 — Beta Partner (conversión)
 
-Zona estable y predecible: **sin canvas, sin parallax, sin cursor effects, sin animación continua**. El expediente llega como «tu primera licitación real». Se registra la **intención del CTA** de origen sin volver a pedir datos. HubSpot y el fallback por correo intactos. **N0/N1**.
+Zona estable y predecible: **sin canvas, sin parallax, sin cursor effects, sin animación continua**. El expediente llega como «tu primera licitación real». Se registra la **intención del CTA** de origen sin volver a pedir datos: `data-cta` en los 10 botones y un único listener delegado; el valor viaja dentro del mensaje del lead, nunca como propiedad nueva de HubSpot. HubSpot y el fallback por correo intactos. **N0/N1**.
 
 ## ACTO 12 — Cierre (FinalCta)
 

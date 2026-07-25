@@ -115,3 +115,37 @@ El trabajo no consiste en añadir animaciones, sino en **hacer que el expediente
 1. **Fuente única del expediente** (`src/lib/demo-expediente.ts`): elimina la incoherencia 64/50/74, no cambia un píxel y **habilita** el hilo hero→CTA.
 2. **Progreso de la ruta por variable CSS**: quita el último `setState` por frame.
 3. **Reanclar las secciones huérfanas** (ValueStats como hoja de ruta, Features como anatomía, FinalCta como cierre del arco) usando material que ya existe.
+
+---
+
+## 7. Estado de los hallazgos al cerrar la rama
+
+Este documento es el **diagnóstico previo** y se conserva tal cual: sirve de registro de por qué se
+hizo cada cosa. Esta tabla dice qué pasó con cada hallazgo. Commits en `feature/expediente-vivo`.
+
+| Hallazgo (§) | Estado | Dónde |
+|---|---|---|
+§1 El expediente falta en el 64 % de la página | **Resuelto** | Fuente única + chip de estado en 4 puntos; 18 apariciones del código en la página (`85d8076`, `4b2ab61`) |
+§1.1 Tres avances distintos (64 / 50 / 74) | **Resuelto** | `src/lib/demo-expediente.ts`: una sola métrica y la fracción del checklist **derivada** (`85d8076`) |
+§2 ValueStats contaba el final antes del principio | **Resuelto** | Hoja de ruta del caso: importe, CPV, plazo, 1 bloqueante (`85d8076`) |
+§2 Features: 9 tarjetas planas | **Resuelto** | 4 capas en orden, sin esconder ninguna de las 9 (`4b2ab61`) |
+§2 AiTransparency afirmaba sin mostrar | **Resuelto** | Cadena de procedencia del bloqueante real (`4b2ab61`) |
+§2 FinalCta no cerraba el arco | **Resuelto** | Llega como «Candidatura preparada» (`85d8076`) |
+§3 Último `setState` por frame de scroll | **Resuelto** | Variable CSS `--journey-offset`; geometría pura en `src/lib/journey.ts` con 13 pruebas (`85d8076`, `4283b5c`) |
+§3 Rail que se salta 3 secciones | **Resuelto** | `covers` en `RailStation` + ids nuevos (`27eb68e`) |
+§3 9 auroras animadas en bucle | **Resuelto** | Reducidas a 2 (hero + cierre) (`65ecb70`) |
+§3 Código muerto (3 mocks, 196 líneas) | **Resuelto** | Borrados; dos llevaban el código del expediente a mano (`65ecb70`) |
+§4 Contradicción del claim «Datos alojados en la UE» | **Resuelto** | Afirmación retirada; la tarjeta remite a seguridad y subencargados (`5c135f9`) |
+§4 Claims sin verificar que no deben ganar peso | **Respetado** | Ninguno se refuerza en este diff |
+§5 Docs contra código (10 filas) | **Resuelto** | README, DEPLOYMENT, SECURITY, CONTENT-PENDING, `package.json` (`5c135f9`) |
+§5 Clave SSH privada generada dentro del repo | **Mitigado** | Instrucción a `~/.ssh` y claves ignoradas. **Los ficheros siguen en disco: borrarlos es decisión del propietario** (`5c135f9`) |
+| Fuera del diagnóstico: 76 px de scroll horizontal por debajo de ~430 px | **Resuelto** | `min-w-0` en la columna de pasos; barrido en 9 anchos (`d75260e`) |
+| Fuera del diagnóstico: `dark:bg-amber-500/150/15` inválida | **Resuelto** | (`85d8076`) |
+| Fuera del diagnóstico: aviso de hidratación en cada carga | **Resuelto** | `suppressHydrationWarning` en `<html>` (`017cd93`) |
+| Fuera del diagnóstico: el paso activo podía retroceder al bajar | **Resuelto** | `pickActiveStep`: gana el más avanzado, sin depender del orden del lote del observador (`4283b5c`) |
+
+**Sigue abierto y es del propietario**: plazos de conservación, región de datos de HubSpot y base
+jurídica de transferencia, localización de los datos de la aplicación, tabla de cookies, fuero,
+versión y fecha de cada documento legal, descriptor del extracto de la pasarela, y borrar
+`id_licitatis_deploy` / `.pub` de la raíz. El lanzamiento sigue en `BLOCKED_LEGAL_REVIEW`, que es
+el estado correcto.
