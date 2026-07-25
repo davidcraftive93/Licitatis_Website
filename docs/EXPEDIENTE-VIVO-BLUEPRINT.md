@@ -61,8 +61,8 @@ El movimiento nunca es el primer nivel. Si una escena funciona sin movimiento, e
 |---|---|
 `src/lib/demo-expediente.ts` | Fuente única del caso (código, objeto, CPV, importe, plazo, índice, bloqueante, credenciales)
 `ExpedienteChip` | Etiqueta reutilizable «EXP-2024-0142 · Demo» — la firma visual del hilo
-`JourneyProvider` (evaluado) | Progreso y escena activa **sin renders por frame**
-`ExpedienteAnatomy` | Sustituye la cuadrícula de 9 tarjetas por capas seleccionables
+`JourneyProvider` (evaluado) | **Descartado**: no hacía falta un contexto. El progreso se escribe como variable CSS en el propio `<svg>` y el paso activo ya lo resuelve un `IntersectionObserver` local. Un proveedor global habría añadido indirección sin quitar ni un render
+`ExpedienteAnatomy` | Sustituye la cuadrícula de 9 tarjetas por capas. **Implementado sin selección**: unas pestañas o un acordeón habrían escondido ocho de las nueve tarjetas tras un gesto, y el mandato exige que los nueve textos sigan indexables y legibles sin JavaScript. La jerarquía se resolvió visualmente (número de capa, resultado, costura entre capas) y la sección sigue siendo componente de servidor: 0 kB de JS
 `ProvenanceTrail` | Hecho → inferencia → recomendación → revisión humana
 
 ## 7. Estrategia responsive

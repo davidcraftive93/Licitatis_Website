@@ -32,17 +32,17 @@ Constelación (canvas) | N3 | **CONSERVAR** (ya aligerada en móvil/low tier) | 
 Radar / haz | N1 loop | **CONSERVAR** sutil | Metáfora de detección
 Foco al puntero | N3 | **CONSERVAR** | Sensación de panel
 Pliegos suspendidos | N3 | **CONSERVAR** (`hidden md:block`) | Documentos = tema
-Auroras | N1 loop | **REDUCIR** a las del hero y el cierre | Competían con el mensaje
+Auroras | N1 loop | **REDUCIDO ✔** de 9 a 2 (atmósfera del hero + cierre); el resto conserva el halo, sin animación | Competían con el mensaje
 Marquesina | N1 loop | **CONSERVAR** con pausa en hover/focus | Léxico del sector
 Degradado del H1 | — | **EJECUTAR_UNA_VEZ** (ya: 2 ciclos) | `background-position` no compone
 Indicador de scroll | N1 loop | **CONSERVAR** | Invitación al descenso
 Tilt | N3 | **CONSERVAR** (ya fuera del estado) | —
 Magnetic | N3 | **CONSERVAR** (ya fuera del estado) | —
 Reveals | N1 | **CONSERVAR** (observador compartido) | —
-**Ruta SVG** | N4 | **MEJORAR → variable CSS** | Último `setState` por frame
+**Ruta SVG** | N4 | **HECHO ✔** → `--journey-offset` escrito en el `<svg>` | Era el último `setState` por frame
 Count-up | N1 | **EJECUTAR_UNA_VEZ** | —
 Gauge / barras / credenciales | N2 | **CONSERVAR** | Cambio de estado real
-JourneyRail | N2 | **MEJORAR** (estaciones coherentes con las secciones) | Hoy salta 3 secciones
+JourneyRail | N2 | **HECHO ✔** (`covers` mapea cada sección a su parada) | Antes se quedaba clavado 3 secciones
 Acordeones | N2 | **CONSERVAR** | —
 
 ## 4. Quality tiers
