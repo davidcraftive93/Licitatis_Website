@@ -203,7 +203,17 @@ export function DemoForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-5">
+    /**
+     * `method="post"`: el sitio es un export estático y el HTML del formulario se
+     * sirve completo, así que parece funcional antes de hidratar y sin JavaScript.
+     * Sin `method`, un envío en esa ventana (o con el chunk bloqueado por un proxy)
+     * se convertía en un GET a la propia página: el lead se perdía Y el correo, el
+     * teléfono y el mensaje acababan en la barra de direcciones, en el historial y
+     * en los registros del servidor. Con POST no viaja nada por la URL.
+     *
+     * El `<noscript>` de más abajo da la salida real a quien no tenga JavaScript.
+     */
+    <form onSubmit={onSubmit} method="post" noValidate className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <TextInput
           id="firstName"
@@ -398,6 +408,21 @@ export function DemoForm() {
           ) : null}
         </div>
       ) : null}
+
+      {/* Sin JavaScript el envío es imposible (el sitio es estático y HubSpot se llama
+          desde el cliente). Antes no se decía en ninguna parte: el botón parecía
+          funcionar y el lead se perdía. Aquí hay un camino real. */}
+      <noscript>
+        <div className="rounded-xl bg-amber-50 px-3.5 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
+          <p>
+            Este formulario necesita JavaScript para enviarse. Escríbenos a{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold underline">
+              {CONTACT_EMAIL}
+            </a>{" "}
+            con tu nombre, empresa y teléfono y te damos plaza igualmente.
+          </p>
+        </div>
+      </noscript>
 
       <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
         <Button

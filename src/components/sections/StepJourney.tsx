@@ -193,12 +193,11 @@ function VisualExpediente() {
         </p>
         <span className="font-display text-sm font-bold text-brand-700">{checklistFraction()}</span>
       </div>
-      {[
-        { label: "Declaración responsable (DEUC)", done: true },
-        { label: "Acreditación de solvencia", done: true },
-        { label: "Certificado AEAT", done: false },
-        { label: "Memoria técnica", done: false },
-      ].map((item) => (
+      {/* Las filas salen de la fuente única, igual que la fracción de arriba. Con el
+          array escrito a mano había dos fuentes para el mismo dato en el MISMO panel:
+          marcar el AEAT como vigente en `demo-expediente.ts` habría dejado «3/4» sobre
+          una lista que seguía mostrándolo pendiente. */}
+      {demoExpediente.checklist.map((item) => (
         <Row key={item.label}>
           <span
             className={cn(
@@ -373,6 +372,9 @@ export function StepJourney() {
   // directamente en el <svg>, para no re-renderizar la sección en cada frame de scroll.
   const [pathLength, setPathLength] = useState(0);
   const pathLengthRef = useRef(0);
+  // Espejo de `reducedMotion` legible desde el callback de rAF ya agendado.
+  const reducedRef = useRef(reducedMotion);
+  reducedRef.current = reducedMotion;
 
   // Mide las estaciones y compone una curva suave que serpentea entre ellas.
   useEffect(() => {
@@ -429,6 +431,10 @@ export function StepJourney() {
     const list = listRef.current;
     const svg = svgRef.current;
     if (!list || !svg) return;
+    // Si el usuario activa «reducir movimiento» con la página abierta, puede quedar
+    // un frame ya agendado que escribiría el progreso justo después de que React
+    // dejara la ruta dibujada. Este `ref` lo corta.
+    if (reducedRef.current) return;
 
     const box = list.getBoundingClientRect();
     const progress = journeyProgress(box.top, box.height, window.innerHeight);
@@ -490,10 +496,25 @@ export function StepJourney() {
             height={route.height}
             viewBox={`0 0 48 ${route.height}`}
             fill="none"
-            // El progreso vive en esta variable: el scroll la reescribe sin re-renderizar.
-            // Sin recorrer al empezar (offset = longitud completa); con reduced-motion,
-            // dibujada del todo (offset 0) sin depender de ningún listener.
-            style={{ "--journey-offset": reducedMotion ? 0 : pathLength } as CSSProperties}
+            /**
+             * Cada variable tiene UN dueño.
+             *
+             * React solo escribe `--journey-length` (cambia al medir, valor discreto) y,
+             * en reduced-motion, el offset —porque ahí nadie más lo escribe—. El scroll
+             * escribe `--journey-offset` imperativamente. Cuando React también ponía el
+             * offset en el `style`, al remedir (resize, rotación, carga de la fuente) lo
+             * reescribía con la longitud completa: la ruta se borraba y se volvía a
+             * dibujar durante un frame.
+             *
+             * El trazo cae en `var(--journey-length)` mientras el offset no exista, así
+             * que el HTML servido nace con la ruta sin recorrer.
+             */
+            style={
+              {
+                "--journey-length": pathLength,
+                ...(reducedMotion ? { "--journey-offset": 0 } : {}),
+              } as CSSProperties
+            }
           >
             <defs>
               <linearGradient id="ruta-expediente" x1="0" y1="0" x2="0" y2="1">
@@ -522,7 +543,7 @@ export function StepJourney() {
                 strokeLinecap="round"
                 strokeDasharray={pathLength}
                 style={{
-                  strokeDashoffset: "var(--journey-offset)",
+                  strokeDashoffset: "var(--journey-offset, var(--journey-length))",
                   transition: reducedMotion ? undefined : "stroke-dashoffset 120ms linear",
                 }}
               />
@@ -593,9 +614,18 @@ export function StepJourney() {
             </li>
           );
         })}
-        {/* Disclaimer visible también en móvil (el del panel sticky solo existe en escritorio). */}
-        <li className="list-none pt-2 text-center text-xs text-fg-muted lg:hidden">
-          Expediente de demostración: datos ficticios.
+        {/**
+         * Descargo de demostración: SIEMPRE presente y siempre accesible.
+         *
+         * Antes existía en dos copias y en escritorio no llegaba a ningún lector de
+         * pantalla: esta iba con `lg:hidden` (fuera del árbol de accesibilidad) y la
+         * del panel sticky vive dentro de un contenedor `aria-hidden`. Que un aviso
+         * de «datos ficticios» desaparezca para quien no ve la pantalla es
+         * precisamente al revés de lo que debe pasar.
+         */}
+        <li className="list-none pt-3 text-center text-xs text-fg-muted">
+          Seguimos un expediente de demostración ({demoExpediente.code}) por todo el proceso. Datos
+          ficticios.
         </li>
       </ol>
 
@@ -619,10 +649,6 @@ export function StepJourney() {
             </div>
           ))}
         </div>
-        <p className="mt-4 text-center text-xs text-fg-muted">
-          Seguimos un expediente de demostración ({demoExpediente.code}) por todo el proceso. Datos
-          ficticios.
-        </p>
       </div>
     </div>
   );

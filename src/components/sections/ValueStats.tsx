@@ -57,11 +57,16 @@ export function ValueStats() {
                   <Icon name={item.icon} size={18} />
                 </span>
                 <div className="min-w-0">
+                  {/* Color plano, no degradado. `text-gradient-brand` pinta el texto
+                      con `bg-clip-text`, y las paradas media y final del degradado
+                      (#10B981 y #14B8A6) dan 2,54:1 y 2,49:1 contra el blanco de la
+                      tarjeta: por debajo del 4,5:1 exigido. Aquí hay datos que hay
+                      que poder leer (importe y plazo), no decoración. */}
                   <div
                     className={
                       item.mono
                         ? "font-mono text-lg font-semibold leading-tight text-fg-strong"
-                        : "text-gradient-brand font-display text-2xl font-bold leading-none"
+                        : "font-display text-2xl font-bold leading-none text-brand-800 dark:text-brand-300"
                     }
                   >
                     {item.countable ? <CountUp value={item.value} /> : item.value}
