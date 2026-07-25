@@ -17,7 +17,7 @@ export function FinalCta() {
               <div className="absolute -top-24 left-1/2 h-72 w-[38rem] -translate-x-1/2 animate-aurora rounded-full bg-brand-500/30 blur-3xl" />
               {/* (Antes: `dark:bg-amber-500/150/15` — clase inválida que Tailwind
                   descartaba, dejando un halo `bg-amber-50` casi blanco sobre tinta.) */}
-              <div className="absolute -bottom-24 left-1/4 h-56 w-72 animate-aurora rounded-full bg-amber-500/15 blur-3xl [animation-delay:-5s]" />
+              <div className="absolute -bottom-24 left-1/4 h-56 w-72 rounded-full bg-amber-500/15 blur-3xl" />
             </div>
             <div className="relative mx-auto max-w-2xl">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-ink-100 ring-1 ring-white/15">

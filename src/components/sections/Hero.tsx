@@ -121,8 +121,8 @@ export function Hero() {
             style={{ "--enter-delay": "200ms" } as React.CSSProperties}
           >
             <div aria-hidden="true" className="absolute inset-6 -z-10">
-              <div className="absolute inset-0 animate-aurora rounded-[2.5rem] bg-brand-500/30 blur-3xl" />
-              <div className="absolute inset-x-10 bottom-0 top-1/2 animate-aurora rounded-[2.5rem] bg-amber-400/20 blur-3xl [animation-delay:-5s]" />
+              <div className="absolute inset-0 rounded-[2.5rem] bg-brand-500/30 blur-3xl" />
+              <div className="absolute inset-x-10 bottom-0 top-1/2 rounded-[2.5rem] bg-amber-400/20 blur-3xl" />
             </div>
             <TiltCard maxTilt={6} idlePose="rotateX(3deg) rotateY(-7deg)">
               <div className="animate-float-slow">
