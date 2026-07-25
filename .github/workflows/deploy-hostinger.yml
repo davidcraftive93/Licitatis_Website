@@ -148,53 +148,33 @@ jobs:
             echo "::error::El ref desplegado no incluye scripts/normalize-deploy-path.sh. Despliega un commit que lo tenga."
             exit 1
           fi
-          DEPLOY_PATH="$(sh scripts/normalize-deploy-path.sh)"
           SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
           SSH_PORT="$(printf '%s' "$SSH_PORT" | tr -d '\r\n')"
           SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '\r\n')"
 
-          if [ -z "$DEPLOY_PATH" ] || [ -z "$SSH_HOST" ] || [ -z "$SSH_PORT" ] || [ -z "$SSH_USER" ]; then
-            echo "::error::Falta al menos un secreto obligatorio de Hostinger."
+          # Obligatorios: sin estos no hay forma de conectarse.
+          if [ -z "$SSH_HOST" ] || [ -z "$SSH_PORT" ] || [ -z "$SSH_USER" ]; then
+            echo "::error::Falta HOSTINGER_HOST, HOSTINGER_PORT o HOSTINGER_USERNAME."
             exit 1
           fi
           case "$SSH_PORT" in
             *[!0-9]*) echo "::error::HOSTINGER_PORT debe ser numérico."; exit 1 ;;
           esac
-          # `normalize-deploy-path.sh` ya quitó comillas envolventes, espacios,
-          # tabuladores y la barra final: eso es el mismo valor mal pegado, no otro
-          # valor, y ha costado dos despliegues en rojo.
-          #
-          # Se admite la virgulilla: la documentación de este repositorio dice que el
-          # docroot es `~/public_html`, así que rechazar esa forma era tropezar con
-          # nuestra propia instrucción. El `~` se expande contra el HOME real del
-          # servidor en el paso «Detectar el docroot servido», y a partir de ahí todo
-          # usa la ruta absoluta ya resuelta ($TARGET).
-          #
-          # Si aun así falla, el error dice QUÉ CLASE de carácter sobra. Decir solo
-          # «caracteres no permitidos» obliga a adivinar, y adivinar cuesta otra
-          # ejecución en rojo. No se imprime el valor: solo la categoría y su longitud.
-          case "$DEPLOY_PATH" in
-            *[!A-Za-z0-9_./~-]*)
-              HINT=""
-              case "$DEPLOY_PATH" in *[[:space:]]*) HINT="$HINT espacios o tabuladores;" ;; esac
-              case "$DEPLOY_PATH" in *'"'* | *"'"*) HINT="$HINT comillas;" ;; esac
-              case "$DEPLOY_PATH" in *'$'*) HINT="$HINT el símbolo \$ (no uses \$HOME);" ;; esac
-              case "$DEPLOY_PATH" in *'\'*) HINT="$HINT barras invertidas;" ;; esac
-              case "$DEPLOY_PATH" in *:*) HINT="$HINT dos puntos;" ;; esac
-              if [ -z "$HINT" ]; then
-                HINT=" algún carácter no ASCII (guion largo, espacio duro o comilla tipográfica, típicos de pegar desde un documento);"
-              fi
-              echo "::error::HOSTINGER_DEPLOY_PATH tiene caracteres no permitidos:$HINT longitud del valor tras limpiarlo: ${#DEPLOY_PATH}. Solo se aceptan letras, números y _ . / - ~ . Escríbelo A MANO como '~/public_html' (14 caracteres) o '/home/USUARIO/public_html'."
-              exit 1
-              ;;
-          esac
-          case "$DEPLOY_PATH" in
-            /*/public_html | "~/public_html" | "~/domains/licitatis.es/public_html") : ;;
-            *)
-              echo "::error::HOSTINGER_DEPLOY_PATH debe terminar exactamente en /public_html. Formas válidas: '~/public_html' (recomendada) o '/home/USUARIO/public_html'."
-              exit 1
-              ;;
-          esac
+
+          # HOSTINGER_DEPLOY_PATH es una PISTA, no un requisito: el docroot real lo
+          # decide la sonda HTTP contra el propio servidor, y la lista de destinos
+          # autorizados se calcula con el $HOME remoto, no con este secreto. Cuando
+          # bloqueaba, cuatro despliegues murieron aquí sin que el valor aportara
+          # ninguna garantía que la sonda no diera ya.
+          HINT="$(sh scripts/normalize-deploy-path.sh 2>"$RUNNER_TEMP/hint_why.txt")"
+          WHY="$(cat "$RUNNER_TEMP/hint_why.txt" 2>/dev/null || true)"
+          if [ -n "$HINT" ]; then
+            echo "Pista de docroot válida; la sonda mandará igualmente."
+          elif [ -n "$WHY" ]; then
+            echo "::warning::HOSTINGER_DEPLOY_PATH se ignora porque $WHY El docroot se detectará sondeando el servidor. Para quitar este aviso, escribe el secreto A MANO como '~/public_html'."
+          else
+            echo "HOSTINGER_DEPLOY_PATH vacío: el docroot se detectará sondeando el servidor."
+          fi
           echo "Configuración básica de Hostinger validada."
 
       - name: Preparar clave SSH y comprobar conexión
@@ -257,39 +237,60 @@ jobs:
           REMOTE_HOME="$(ssh $SSHO "$SSH_USER@$SSH_HOST" 'printf "%s" "$HOME"')"
           test -n "$REMOTE_HOME" || { echo "::error::No se pudo obtener el HOME remoto."; exit 1; }
 
-          # `~/...` se expande AQUÍ, con el HOME real del servidor, y nunca viaja como
-          # virgulilla a rsync ni a ningún otro comando: a partir de este punto la ruta
-          # es absoluta y sigue teniendo que coincidir con un docroot autorizado.
-          # El patrón va entre comillas ('~/'): sin ellas, el shell expande la
-          # virgulilla DENTRO del patrón, no recorta nada y la ruta acaba siendo
-          # «/home/USUARIO/~/public_html», que no coincide con ningún docroot.
+          # Los DOS únicos destinos que LICITATIS puede escribir. Se calculan con el
+          # $HOME real del servidor, no con el secreto: esa es la garantía de verdad,
+          # y por eso el secreto puede fallar sin comprometer nada.
+          ALLOWED_PRIMARY="$REMOTE_HOME/public_html"
+          ALLOWED_DOMAIN="$REMOTE_HOME/domains/licitatis.es/public_html"
+
+          # La pista, si la hay. `~/...` se expande AQUÍ y nunca viaja como virgulilla
+          # a rsync. El patrón va entre comillas ('~/'): sin ellas el shell expande la
+          # virgulilla DENTRO del patrón y la ruta acabaría en «…/~/public_html».
           case "$DEPLOY_PATH" in
             "~/"*) DEPLOY_PATH="$REMOTE_HOME/${DEPLOY_PATH#'~/'}" ;;
           esac
-
-          ALLOWED_PRIMARY="$REMOTE_HOME/public_html"
-          ALLOWED_DOMAIN="$REMOTE_HOME/domains/licitatis.es/public_html"
           case "$DEPLOY_PATH" in
-            "$ALLOWED_PRIMARY"|"$ALLOWED_DOMAIN") : ;;
-            *) echo "::error::HOSTINGER_DEPLOY_PATH no coincide con un docroot autorizado de LICITATIS."; exit 1 ;;
+            "$ALLOWED_PRIMARY" | "$ALLOWED_DOMAIN") : ;;
+            "") : ;;
+            *)
+              echo "::warning::HOSTINGER_DEPLOY_PATH apunta a un directorio que no es un docroot autorizado; se ignora."
+              DEPLOY_PATH=""
+              ;;
           esac
 
+          # Sonda: se deja un fichero en cada candidato y se pide por HTTPS. El que
+          # conteste ES el que sirve el dominio. Esto es empírico y se corrige solo.
           PROBE="__docroot_probe_${DEPLOY_SHA}.txt"
           ssh $SSHO "$SSH_USER@$SSH_HOST" 'PB="'"$PROBE"'"; for d in "$HOME/public_html" "$HOME/domains/licitatis.es/public_html"; do if [ -d "$d" ]; then printf "%s" "$d" > "$d/$PB"; fi; done'
-
           SERVED="$(curl -fsS "https://licitatis.es/$PROBE?cb=${DEPLOY_SHA}" 2>/dev/null | tr -d '\r\n' || true)"
-
           ssh $SSHO "$SSH_USER@$SSH_HOST" 'PB="'"$PROBE"'"; for d in "$HOME/public_html" "$HOME/domains/licitatis.es/public_html"; do rm -f "$d/$PB" 2>/dev/null || true; done'
 
+          # Resolución por escalones, de más fiable a menos. Nunca se adivina.
+          TARGET_DIR=""
           case "$SERVED" in
-            "$ALLOWED_PRIMARY"|"$ALLOWED_DOMAIN") : ;;
+            "$ALLOWED_PRIMARY" | "$ALLOWED_DOMAIN")
+              TARGET_DIR="$SERVED"
+              echo "Docroot identificado por la sonda HTTP."
+              if [ -n "$DEPLOY_PATH" ] && [ "$DEPLOY_PATH" != "$SERVED" ]; then
+                echo "::warning::HOSTINGER_DEPLOY_PATH no coincide con el docroot que sirve el dominio. Manda la sonda; revisa el secreto."
+              fi
+              ;;
             "")
-              echo "::warning::La sonda HTTP no identificó el docroot; se comprobará la ruta configurada."
-              if ssh $SSHO "$SSH_USER@$SSH_HOST" "test -d '$DEPLOY_PATH'"; then
-                SERVED="$DEPLOY_PATH"
+              echo "::warning::La sonda HTTP no identificó el docroot (¿dominio caído o caché?)."
+              if [ -n "$DEPLOY_PATH" ] && ssh $SSHO "$SSH_USER@$SSH_HOST" "test -d '$DEPLOY_PATH'"; then
+                TARGET_DIR="$DEPLOY_PATH"
+                echo "Se usa la ruta configurada, que existe en el servidor."
               else
-                echo "::error::Ni la sonda ni HOSTINGER_DEPLOY_PATH identifican un directorio existente."
-                exit 1
+                # Sin sonda y sin pista: solo vale si UNO de los dos candidatos existe.
+                EXISTS="$(ssh $SSHO "$SSH_USER@$SSH_HOST" 'for d in "$HOME/public_html" "$HOME/domains/licitatis.es/public_html"; do [ -d "$d" ] && printf "%s\n" "$d"; done')"
+                COUNT="$(printf '%s\n' "$EXISTS" | grep -c . || true)"
+                if [ "$COUNT" = "1" ]; then
+                  TARGET_DIR="$(printf '%s' "$EXISTS" | tr -d '\r\n')"
+                  echo "Un único docroot candidato existe en el servidor; se usa ese."
+                else
+                  echo "::error::No se puede determinar el docroot: la sonda no respondió y hay $COUNT candidatos. Define HOSTINGER_DEPLOY_PATH como '~/public_html' o revisa que el dominio responda."
+                  exit 1
+                fi
               fi
               ;;
             *)
@@ -298,8 +299,9 @@ jobs:
               ;;
           esac
 
+          test -n "$TARGET_DIR" || { echo "::error::No se resolvió ningún docroot."; exit 1; }
           echo "Docroot servido validado."
-          echo "TARGET=$SERVED" >> "$GITHUB_ENV"
+          echo "TARGET=$TARGET_DIR" >> "$GITHUB_ENV"
 
       - name: Crear copia de seguridad remota
         env:
