@@ -20,30 +20,42 @@ interface RotatingWordProps {
 export function RotatingWord({ words, interval = 2400, className }: RotatingWordProps) {
   const reduced = usePrefersReducedMotion();
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [manualPaused, setManualPaused] = useState(false);
+  const [interacting, setInteracting] = useState(false);
+  const canRotate = !reduced && words.length > 1;
+  const paused = !canRotate || manualPaused || interacting;
 
   useEffect(() => {
-    if (reduced || paused || words.length < 2) return;
+    if (paused) return;
     const id = setInterval(() => setIndex((i) => (i + 1) % words.length), interval);
     return () => clearInterval(id);
-  }, [reduced, paused, words.length, interval]);
+  }, [paused, words.length, interval]);
 
   return (
     <button
       type="button"
       className={cn(
-        "relative inline-grid appearance-none overflow-hidden border-0 bg-transparent p-0 text-left align-bottom font-inherit",
+        "relative inline-grid appearance-none overflow-hidden border-0 bg-transparent p-0 text-left align-bottom",
         className,
       )}
-      aria-pressed={paused}
-      aria-label={`${paused ? "Reanudar" : "Pausar"} rotación. Funciones: ${words.join(", ")}`}
-      onClick={() => setPaused((value) => !value)}
-      onPointerEnter={() => setPaused(true)}
-      onPointerLeave={(event) => {
-        if (document.activeElement !== event.currentTarget) setPaused(false);
+      aria-disabled={!canRotate}
+      aria-pressed={canRotate ? manualPaused : undefined}
+      aria-label={
+        canRotate
+          ? `${manualPaused ? "Reanudar" : "Pausar"} rotación. Funciones: ${words.join(", ")}`
+          : `Funciones: ${words.join(", ")}. La animación está desactivada.`
+      }
+      onClick={() => {
+        if (canRotate) setManualPaused((value) => !value);
       }}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+      onPointerEnter={() => {
+        if (canRotate) setInteracting(true);
+      }}
+      onPointerLeave={() => setInteracting(false)}
+      onFocus={() => {
+        if (canRotate) setInteracting(true);
+      }}
+      onBlur={() => setInteracting(false)}
     >
       {/* Fantasma que fija el ancho al de la frase más larga. */}
       <span aria-hidden="true" className="invisible col-start-1 row-start-1 whitespace-nowrap">
