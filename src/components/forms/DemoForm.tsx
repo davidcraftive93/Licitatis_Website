@@ -116,8 +116,8 @@ export function DemoForm() {
       }
       setErrors(mapped);
       setStatus("error");
-      setServerMessage("Revisa los campos marcados e inténtalo de nuevo.");
-      // Mueve el foco al primer campo inválido para lectores de pantalla y teclado.
+
+      // Campos con interfaz, en el orden en que se leen.
       const fieldOrder = [
         "firstName",
         "lastName",
@@ -131,11 +131,27 @@ export function DemoForm() {
         "privacy",
       ];
       const firstInvalid = fieldOrder.find((key) => mapped[key]);
+
       if (firstInvalid) {
+        setServerMessage("Revisa los campos marcados e inténtalo de nuevo.");
+        // Mueve el foco al primer campo inválido para lectores de pantalla y teclado.
         window.requestAnimationFrame(() => {
           document.getElementById(firstInvalid)?.focus();
         });
+        return;
       }
+
+      /**
+       * Nada que la persona pueda corregir: lo que falló es un campo sin interfaz
+       * (el campo trampa antispam, que algún gestor de contraseñas puede rellenar
+       * solo). Decir «revisa los campos marcados» sin marcar ninguno dejaba el
+       * formulario en un callejón sin salida y el lead se perdía en silencio.
+       * No se finge éxito ni se envía: se ofrece el canal de correo.
+       */
+      setShowFallback(true);
+      setServerMessage(
+        "No hemos podido validar el formulario automáticamente. Escríbenos por correo con estos datos y te damos plaza igualmente.",
+      );
       return;
     }
 
