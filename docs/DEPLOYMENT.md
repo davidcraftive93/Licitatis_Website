@@ -40,34 +40,29 @@ este entorno, nunca en el código ni en variables públicas.
 | `HOSTINGER_SSH_PRIVATE_KEY` | Clave privada SSH (contenido completo) | Genera un par de claves y añade la pública en hPanel |
 | `HOSTINGER_DEPLOY_PATH` | Ruta absoluta del directorio público | Ver más abajo — **no la inventes** |
 
-**`HOSTINGER_DEPLOY_PATH`**: en esta cuenta, `licitatis.es` se sirve desde **`~/public_html`**, no
-desde `~/domains/licitatis.es/public_html`. Esa confusión ya costó un despliegue «correcto» que no
-cambiaba nada de la web: rsync escribía en una carpeta que nadie servía.
+**`HOSTINGER_DEPLOY_PATH` es OPCIONAL.** El docroot lo decide el propio servidor: el workflow deja
+un fichero sonda en cada candidato, lo pide por `https://licitatis.es` y **el que contesta es el que
+sirve el dominio**. Los dos únicos destinos autorizados se calculan con el `$HOME` remoto, no con
+este secreto, así que el secreto no aporta ninguna garantía que la sonda no dé ya.
 
-Valores admitidos (cualquiera de los dos):
+Si lo defines, vale como pista y como red de seguridad cuando la sonda no responde. Formas válidas:
+`~/public_html` (recomendada) o `/home/USUARIO/public_html`. El valor se limpia antes de usarse
+(comillas envolventes, espacios, tabuladores, barra final); si aun así no encaja, se **ignora con un
+aviso** que dice qué clase de carácter sobra — no tumba el despliegue.
 
-| Valor | Nota |
+En esta cuenta el dominio se sirve desde `~/public_html`, no desde
+`~/domains/licitatis.es/public_html`. Esa confusión ya costó un despliegue «correcto» que no cambiaba
+nada de la web: rsync escribía en una carpeta que nadie servía. Por eso manda la sonda.
+
+Cómo se resuelve, de más fiable a menos —**nunca adivina**:
+
+| Situación | Qué hace |
 |---|---|
-| `~/public_html` | Recomendado. La virgulilla se expande contra el HOME real del servidor |
-| `/home/USUARIO/public_html` | Ruta absoluta, si prefieres fijarla |
-
-El workflow **limpia** el valor antes de validarlo (`scripts/normalize-deploy-path.sh`): tolera
-comillas envolventes, espacios o tabuladores alrededor, retornos de carro y una barra final de más,
-porque todo eso es el mismo valor mal pegado. Lo que **no** admite, porque sí sería otro valor:
-`$HOME`, barras invertidas, dos puntos, punto y coma, y caracteres no ASCII —el guion largo, el
-espacio duro o las comillas tipográficas que aparecen al copiar desde un documento o desde el chat—.
-
-Si aun así falla, el error dice **qué clase de carácter sobra** y la longitud del valor ya limpio;
-si esa longitud no coincide con lo que ves escrito, hay un carácter invisible. La cura segura es
-**escribirlo a mano** en el campo del secreto: `~/public_html` son 14 caracteres.
-
-Este chequeo ya rechazó dos despliegues seguidos, y en ninguno llegó a tocarse el servidor: los
-pasos de SSH, copia de seguridad y sincronización quedan en *skipped*.
-
-El workflow **autodetecta** el docroot entre los candidatos habituales, comprueba por HTTP que el
-sitio publicado corresponde al commit desplegado (`__build_sha.txt`) y **falla en rojo** si no
-coincide. Si defines la variable a mano, confírmala primero por SSH (`ls -d ~/public_html
-~/domains/*/public_html`) — un valor inventado aquí produce despliegues silenciosamente inútiles.
+| La sonda responde | Usa ese docroot. Si la pista discrepa, avisa y manda la sonda |
+| La sonda calla y hay pista válida que existe en el servidor | Usa la pista |
+| La sonda calla, sin pista, y solo existe **uno** de los dos candidatos | Usa ese |
+| La sonda calla y hay 0 o 2 candidatos | **Aborta** pidiendo que definas el secreto |
+| La sonda devuelve un directorio no autorizado | **Aborta** |
 
 ### 2b. Variables públicas del build (no secretas)
 
