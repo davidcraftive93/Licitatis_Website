@@ -55,7 +55,7 @@ jobs:
 
       - name: Verificar que el commit pertenece a main
         run: |
-          git fetch origin main --tags --force
+          git fetch origin +refs/heads/main:refs/remotes/origin/main --tags --force
           if ! git merge-base --is-ancestor HEAD origin/main; then
             echo "::error::El commit seleccionado no pertenece al historial de main. Una etiqueta no puede eludir esta regla."
             exit 1
@@ -130,8 +130,8 @@ jobs:
           esac
           case "$DEPLOY_PATH" in
             *[!A-Za-z0-9_./-]*) echo "::error::HOSTINGER_DEPLOY_PATH contiene caracteres no permitidos."; exit 1 ;;
-            */public_html) : ;;
-            *) echo "::error::HOSTINGER_DEPLOY_PATH no termina exactamente en /public_html."; exit 1 ;;
+            /*/public_html) : ;;
+            *) echo "::error::HOSTINGER_DEPLOY_PATH debe ser una ruta absoluta que termine exactamente en /public_html."; exit 1 ;;
           esac
           echo "Configuración básica de Hostinger validada."
 
@@ -194,15 +194,22 @@ jobs:
           REMOTE_HOME="$(ssh $SSHO "$SSH_USER@$SSH_HOST" 'printf "%s" "$HOME"')"
           test -n "$REMOTE_HOME" || { echo "::error::No se pudo obtener el HOME remoto."; exit 1; }
 
+          ALLOWED_PRIMARY="$REMOTE_HOME/public_html"
+          ALLOWED_DOMAIN="$REMOTE_HOME/domains/licitatis.es/public_html"
+          case "$DEPLOY_PATH" in
+            "$ALLOWED_PRIMARY"|"$ALLOWED_DOMAIN") : ;;
+            *) echo "::error::HOSTINGER_DEPLOY_PATH no coincide con un docroot autorizado de LICITATIS."; exit 1 ;;
+          esac
+
           PROBE="__docroot_probe_${DEPLOY_SHA}.txt"
-          ssh $SSHO "$SSH_USER@$SSH_HOST" 'PB="'"$PROBE"'"; for d in "$HOME/public_html" "$HOME/domains/licitatis.es/public_html"; do [ -d "$d" ] && printf "%s" "$d" > "$d/$PB"; done'
+          ssh $SSHO "$SSH_USER@$SSH_HOST" 'PB="'"$PROBE"'"; for d in "$HOME/public_html" "$HOME/domains/licitatis.es/public_html"; do if [ -d "$d" ]; then printf "%s" "$d" > "$d/$PB"; fi; done'
 
           SERVED="$(curl -fsS "https://licitatis.es/$PROBE?cb=${DEPLOY_SHA}" 2>/dev/null | tr -d '\r\n' || true)"
 
           ssh $SSHO "$SSH_USER@$SSH_HOST" 'PB="'"$PROBE"'"; for d in "$HOME/public_html" "$HOME/domains/licitatis.es/public_html"; do rm -f "$d/$PB" 2>/dev/null || true; done'
 
           case "$SERVED" in
-            "$REMOTE_HOME/public_html"|"$REMOTE_HOME/domains/licitatis.es/public_html") : ;;
+            "$ALLOWED_PRIMARY"|"$ALLOWED_DOMAIN") : ;;
             "")
               echo "::warning::La sonda HTTP no identificó el docroot; se comprobará la ruta configurada."
               if ssh $SSHO "$SSH_USER@$SSH_HOST" "test -d '$DEPLOY_PATH'"; then
@@ -216,11 +223,6 @@ jobs:
               echo "::error::La sonda devolvió un docroot no autorizado."
               exit 1
               ;;
-          esac
-
-          case "$SERVED" in
-            */public_html) : ;;
-            *) echo "::error::El destino final no termina exactamente en /public_html."; exit 1 ;;
           esac
 
           echo "Docroot servido validado."
