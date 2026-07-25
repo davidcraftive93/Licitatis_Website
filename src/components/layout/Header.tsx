@@ -105,7 +105,6 @@ export function Header() {
               className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-white hover:bg-white/10"
               aria-expanded={open}
               aria-controls="mobile-menu"
-              aria-haspopup="menu"
               aria-label={open ? "Cerrar menú" : "Abrir menú"}
               onClick={() => setOpen((value) => !value)}
             >
