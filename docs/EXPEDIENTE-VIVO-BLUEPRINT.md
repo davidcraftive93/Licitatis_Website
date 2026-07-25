@@ -60,10 +60,10 @@ El movimiento nunca es el primer nivel. Si una escena funciona sin movimiento, e
 | Componente | Papel |
 |---|---|
 `src/lib/demo-expediente.ts` | Fuente única del caso (código, objeto, CPV, importe, plazo, índice, bloqueante, credenciales)
-`ExpedienteChip` | Etiqueta reutilizable «EXP-2024-0142 · Demo» — la firma visual del hilo
+`ExpedienteChip` | **Implementado** en `src/components/ui/ExpedienteChip.tsx`. Además del código lleva el **estado** del expediente en ese tramo, que es lo que convierte la firma en narración
 `JourneyProvider` (evaluado) | **Descartado**: no hacía falta un contexto. El progreso se escribe como variable CSS en el propio `<svg>` y el paso activo ya lo resuelve un `IntersectionObserver` local. Un proveedor global habría añadido indirección sin quitar ni un render
-`ExpedienteAnatomy` | Sustituye la cuadrícula de 9 tarjetas por capas. **Implementado sin selección**: unas pestañas o un acordeón habrían escondido ocho de las nueve tarjetas tras un gesto, y el mandato exige que los nueve textos sigan indexables y legibles sin JavaScript. La jerarquía se resolvió visualmente (número de capa, resultado, costura entre capas) y la sección sigue siendo componente de servidor: 0 kB de JS
-`ProvenanceTrail` | Hecho → inferencia → recomendación → revisión humana
+`ExpedienteAnatomy` | **Implementado dentro de `src/components/sections/Features.tsx`**, sin componente aparte: se usa una sola vez y extraerlo solo habría añadido un salto de fichero. Sustituye la cuadrícula de 9 tarjetas por capas. **Implementado sin selección**: unas pestañas o un acordeón habrían escondido ocho de las nueve tarjetas tras un gesto, y el mandato exige que los nueve textos sigan indexables y legibles sin JavaScript. La jerarquía se resolvió visualmente (número de capa, resultado, costura entre capas) y la sección sigue siendo componente de servidor: 0 kB de JS
+`ProvenanceTrail` | Hecho → inferencia → recomendación → decisión humana. **Implementado** en `src/components/ui/ProvenanceTrail.tsx`, con los datos en la fuente única (`demoProvenance`)
 
 ## 7. Estrategia responsive
 
