@@ -8,11 +8,13 @@ import { TextInput, TextArea, SelectInput, Checkbox } from "@/components/ui/Form
 import { leadSchema, tendersPerYearOptions, challengeOptions } from "@/lib/validation";
 import { readUtmParams, readHubspotUtk } from "@/lib/utm";
 import { submitLeadToHubspot } from "@/lib/hubspot";
+import { outcomeForValidationErrors, outcomeForSubmit } from "@/lib/lead-outcome";
+import { startCtaOriginCapture, getCtaOrigin } from "@/lib/cta-origin";
 import { CONTACT_EMAIL } from "@/lib/content";
 import { company } from "@/lib/legal";
 
 /** Enlace de correo alternativo con los datos ya escritos, para no perder el lead. */
-function buildMailtoFallback(values: FormValues): string {
+function buildMailtoFallback(values: FormValues, ctaOrigin?: string): string {
   const subject = "Solicitud de plaza — Beta Partner LICITATIS";
   const lines = [
     `Nombre: ${values.firstName} ${values.lastName}`.trim(),
@@ -21,6 +23,7 @@ function buildMailtoFallback(values: FormValues): string {
     `Correo: ${values.email}`,
     values.phone ? `Teléfono: ${values.phone}` : "",
     values.message ? `\nMensaje:\n${values.message}` : "",
+    ctaOrigin ? `\nEntró por: ${ctaOrigin}` : "",
   ].filter(Boolean);
   return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
     lines.join("\n"),
@@ -79,6 +82,8 @@ export function DemoForm() {
       hutk: readHubspotUtk(),
       pageUri: window.location.href,
     });
+    // Un único listener delegado registra qué CTA trajo a la persona hasta aquí.
+    return startCtaOriginCapture();
   }, []);
 
   function update<K extends keyof FormValues>(key: K, value: FormValues[K]) {
@@ -100,6 +105,7 @@ export function DemoForm() {
       utm: attribution.utm,
       hutk: attribution.hutk,
       pageUri: attribution.pageUri,
+      ctaOrigin: getCtaOrigin(),
     };
 
     const parsed = leadSchema.safeParse(payload);
@@ -110,26 +116,18 @@ export function DemoForm() {
         if (messages && messages.length) mapped[key] = messages[0];
       }
       setErrors(mapped);
-      setStatus("error");
-      setServerMessage("Revisa los campos marcados e inténtalo de nuevo.");
-      // Mueve el foco al primer campo inválido para lectores de pantalla y teclado.
-      const fieldOrder = [
-        "firstName",
-        "lastName",
-        "email",
-        "company",
-        "jobTitle",
-        "phone",
-        "tendersPerYear",
-        "challenge",
-        "message",
-        "privacy",
-      ];
-      const firstInvalid = fieldOrder.find((key) => mapped[key]);
-      if (firstInvalid) {
-        window.requestAnimationFrame(() => {
-          document.getElementById(firstInvalid)?.focus();
-        });
+
+      // La decisión (qué mensaje, si se ofrece el correo, dónde va el foco) vive en
+      // `src/lib/lead-outcome.ts`, pura y con pruebas: es la regla crítica del
+      // proyecto y no puede depender de que alguien lea bien este componente.
+      const outcome = outcomeForValidationErrors(mapped);
+      setStatus(outcome.status);
+      setServerMessage(outcome.message);
+      setShowFallback(outcome.offerMailFallback);
+      if (outcome.focusField) {
+        // Mueve el foco al primer campo inválido para lectores de pantalla y teclado.
+        const field = outcome.focusField;
+        window.requestAnimationFrame(() => document.getElementById(field)?.focus());
       }
       return;
     }
@@ -141,19 +139,11 @@ export function DemoForm() {
     // REGLA CRÍTICA: solo mostramos "éxito" si el lead se ENTREGÓ de verdad.
     // Si HubSpot no está configurado o falla, NO simulamos éxito (evita perder leads
     // silenciosamente): mostramos un mensaje veraz y un canal de correo alternativo.
-    const result = await submitLeadToHubspot(parsed.data);
-    if (result.delivered) {
-      setStatus("success");
-      return;
-    }
-
-    setStatus("error");
-    setShowFallback(true);
-    setServerMessage(
-      result.reason === "not_configured"
-        ? "El envío automático del formulario no está disponible ahora mismo. Escríbenos directamente por correo con estos datos y te damos plaza igualmente."
-        : "No hemos podido enviar tu solicitud en este momento. Inténtalo de nuevo en unos minutos o escríbenos directamente por correo.",
-    );
+    // La decisión está en `lead-outcome.ts`, con pruebas que lo fijan.
+    const outcome = outcomeForSubmit(await submitLeadToHubspot(parsed.data));
+    setStatus(outcome.status);
+    setServerMessage(outcome.message);
+    setShowFallback(outcome.offerMailFallback);
   }
 
   if (status === "success") {
@@ -182,7 +172,17 @@ export function DemoForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-5">
+    /**
+     * `method="post"`: el sitio es un export estático y el HTML del formulario se
+     * sirve completo, así que parece funcional antes de hidratar y sin JavaScript.
+     * Sin `method`, un envío en esa ventana (o con el chunk bloqueado por un proxy)
+     * se convertía en un GET a la propia página: el lead se perdía Y el correo, el
+     * teléfono y el mensaje acababan en la barra de direcciones, en el historial y
+     * en los registros del servidor. Con POST no viaja nada por la URL.
+     *
+     * El `<noscript>` de más abajo da la salida real a quien no tenga JavaScript.
+     */
+    <form onSubmit={onSubmit} method="post" noValidate className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <TextInput
           id="firstName"
@@ -368,7 +368,7 @@ export function DemoForm() {
           </p>
           {showFallback ? (
             <a
-              href={buildMailtoFallback(values)}
+              href={buildMailtoFallback(values, getCtaOrigin())}
               className="mt-2 inline-flex items-center gap-1.5 pl-6 font-semibold text-red-800 underline underline-offset-2"
             >
               <Icon name="mail" size={14} />
@@ -377,6 +377,21 @@ export function DemoForm() {
           ) : null}
         </div>
       ) : null}
+
+      {/* Sin JavaScript el envío es imposible (el sitio es estático y HubSpot se llama
+          desde el cliente). Antes no se decía en ninguna parte: el botón parecía
+          funcionar y el lead se perdía. Aquí hay un camino real. */}
+      <noscript>
+        <div className="rounded-xl bg-amber-50 px-3.5 py-3 text-sm text-amber-900 ring-1 ring-amber-200">
+          <p>
+            Este formulario necesita JavaScript para enviarse. Escríbenos a{" "}
+            <a href={`mailto:${CONTACT_EMAIL}`} className="font-semibold underline">
+              {CONTACT_EMAIL}
+            </a>{" "}
+            con tu nombre, empresa y teléfono y te damos plaza igualmente.
+          </p>
+        </div>
+      </noscript>
 
       <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
         <Button

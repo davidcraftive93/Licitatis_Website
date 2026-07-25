@@ -53,7 +53,7 @@ export function Passport() {
         <Reveal delay={100} className="relative">
           <div
             aria-hidden="true"
-            className="absolute inset-8 -z-10 animate-aurora rounded-[2.5rem] bg-brand-400/25 blur-2xl"
+            className="absolute inset-8 -z-10 rounded-[2.5rem] bg-brand-400/25 blur-2xl"
           />
           <TiltCard maxTilt={4} idlePose="rotateX(1.5deg) rotateY(5deg)">
             <BrowserFrame

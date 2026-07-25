@@ -6,6 +6,12 @@ import { cn } from "@/lib/utils";
 export interface RailStation {
   id: string;
   label: string;
+  /**
+   * Secciones que pertenecen a esta estación pero no merecen punto propio.
+   * Sin esto el rail se quedaba clavado en una parada mientras el visitante
+   * atravesaba tres secciones: parecía roto justo cuando más se mira.
+   */
+  covers?: string[];
 }
 
 interface JourneyRailProps {
@@ -14,7 +20,7 @@ interface JourneyRailProps {
 
 /**
  * Rail de viaje: navegación vertical fija (escritorio ancho) con scroll-spy.
- * Cada estación es una sección del "descenso"; el punto activo se ilumina y
+ * Cada estación es un tramo del "descenso"; el punto activo se ilumina y
  * al pasar el ratón se muestra la etiqueta. Es un <nav> accesible.
  */
 export function JourneyRail({ stations }: JourneyRailProps) {
@@ -23,18 +29,26 @@ export function JourneyRail({ stations }: JourneyRailProps) {
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
 
-    // Banda central del viewport: la sección que la cruza es la activa.
+    // Cada id observado (parada o sección cubierta) apunta a su estación.
+    const owner = new Map<string, string>();
+    stations.forEach((s) => {
+      owner.set(s.id, s.id);
+      s.covers?.forEach((id) => owner.set(id, s.id));
+    });
+
+    // Banda central del viewport: la sección que la cruza manda.
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id);
+          const station = owner.get(entry.target.id);
+          if (entry.isIntersecting && station) setActive(station);
         });
       },
       { rootMargin: "-45% 0px -45% 0px", threshold: 0 },
     );
 
-    const nodes = stations
-      .map((s) => document.getElementById(s.id))
+    const nodes = [...owner.keys()]
+      .map((id) => document.getElementById(id))
       .filter((n): n is HTMLElement => n !== null);
     nodes.forEach((n) => observer.observe(n));
     return () => observer.disconnect();

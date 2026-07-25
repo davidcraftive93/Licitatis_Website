@@ -1,9 +1,16 @@
 import { Section, SectionHeader } from "@/components/ui/Section";
+import { ProvenanceTrail } from "@/components/ui/ProvenanceTrail";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/icons";
 import { aiTransparency } from "@/lib/content";
 
-/** Sección pública de transparencia de IA (§14 del mandato legal). */
+/**
+ * Sección pública de transparencia de IA (§14 del mandato legal).
+ *
+ * Encabeza con la cadena de procedencia del caso: la sección afirmaba seis veces
+ * que la IA no decide por ti sin mostrarlo ni una. Primero se demuestra sobre el
+ * expediente que el visitante ya conoce, después vienen los compromisos.
+ */
 export function AiTransparency() {
   return (
     <Section id="ia" tone="paper">
@@ -13,7 +20,11 @@ export function AiTransparency() {
         description={aiTransparency.lead}
       />
 
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <Reveal className="mx-auto mt-12 max-w-3xl">
+        <ProvenanceTrail />
+      </Reveal>
+
+      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {aiTransparency.points.map((point, i) => (
           <Reveal key={point.title} delay={(i % 3) * 60}>
             <article className="flex h-full flex-col rounded-2xl border border-hairline bg-surface-raised p-6 shadow-soft">

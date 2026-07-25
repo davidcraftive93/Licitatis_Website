@@ -34,6 +34,11 @@ interface CommonProps {
   children: ReactNode;
   withArrow?: boolean;
   "aria-label"?: string;
+  /**
+   * Intención de entrada al formulario (p. ej. "hero-analizar"). La lee un
+   * listener delegado; ver `src/lib/cta-origin.ts`.
+   */
+  "data-cta"?: string;
 }
 
 interface ButtonAsButton extends CommonProps {
@@ -72,6 +77,7 @@ export function Button(props: ButtonProps) {
   const { variant = "primary", size = "md", className, children, withArrow } = props;
   const classes = cn(base, sizes[size], variants[variant], className);
   const label = props["aria-label"];
+  const cta = props["data-cta"];
 
   if (props.href !== undefined) {
     const { href, external, onClick } = props;
@@ -85,6 +91,7 @@ export function Button(props: ButtonProps) {
           rel="noopener noreferrer"
           className={classes}
           aria-label={label}
+          data-cta={cta}
           onClick={onClick}
         >
           <Content withArrow={withArrow}>{children}</Content>
@@ -94,14 +101,14 @@ export function Button(props: ButtonProps) {
 
     if (href.startsWith("#")) {
       return (
-        <a href={href} className={classes} aria-label={label} onClick={onClick}>
+        <a href={href} className={classes} aria-label={label} data-cta={cta} onClick={onClick}>
           <Content withArrow={withArrow}>{children}</Content>
         </a>
       );
     }
 
     return (
-      <Link href={href} className={classes} aria-label={label} onClick={onClick}>
+      <Link href={href} className={classes} aria-label={label} data-cta={cta} onClick={onClick}>
         <Content withArrow={withArrow}>{children}</Content>
       </Link>
     );
@@ -117,6 +124,7 @@ export function Button(props: ButtonProps) {
       form={form}
       className={classes}
       aria-label={label}
+      data-cta={cta}
     >
       <Content withArrow={withArrow}>{children}</Content>
     </button>

@@ -1,4 +1,5 @@
 import type { IconName } from "@/components/ui/icons";
+import { siteConfig } from "@/lib/site";
 
 /**
  * Contenido de la landing — fiel al brand kit de LICITATIS (julio 2026).
@@ -7,7 +8,10 @@ import type { IconName } from "@/components/ui/icons";
  * métricas, premios). Disclaimers obligatorios (§18).
  */
 
-export const CONTACT_EMAIL = "info@licitatis.es";
+// Fuente única: `siteConfig` ya resuelve la variable de entorno. Cuando esto era un
+// literal fijo, definir NEXT_PUBLIC_CONTACT_EMAIL mostraba dos correos distintos en
+// la misma página (uno de ellos en el aviso de protección de datos del formulario).
+export const CONTACT_EMAIL = siteConfig.contactEmail;
 export const BETA_MAILTO = `mailto:${CONTACT_EMAIL}?subject=Beta%20Partner%20LICITATIS`;
 
 /* Disclaimers obligatorios (§18) */
@@ -184,56 +188,107 @@ export const aiTransparency = {
 };
 
 /* --------------------------------------------------------------- Funcionalidades (§8) */
+
+/**
+ * Capas del expediente. Las nueve funcionalidades no son una lista plana de
+ * caracteristicas: son las capas por las que pasa un mismo expediente, y en ese
+ * orden. Cada capa deja el expediente en un estado concreto.
+ */
+export type FeatureLayer = "lectura" | "elegibilidad" | "oferta" | "control";
+
 export interface Feature {
   icon: IconName;
   title: string;
   text: string;
+  layer: FeatureLayer;
 }
+
+export const featureLayers: {
+  id: FeatureLayer;
+  number: string;
+  title: string;
+  /** Qué queda hecho cuando esta capa termina. */
+  outcome: string;
+}[] = [
+  {
+    id: "lectura",
+    number: "01",
+    title: "Lectura del pliego",
+    outcome: "El pliego deja de ser un PDF de 90 páginas y pasa a ser información consultable.",
+  },
+  {
+    id: "elegibilidad",
+    number: "02",
+    title: "¿Podemos presentarnos?",
+    outcome: "Requisito a requisito, con evidencia, y los motivos de exclusión sobre la mesa.",
+  },
+  {
+    id: "oferta",
+    number: "03",
+    title: "Preparación de la oferta",
+    outcome: "Memoria estructurada según los criterios del pliego y números con su margen.",
+  },
+  {
+    id: "control",
+    number: "04",
+    title: "Control del avance",
+    outcome: "Quién hace qué, qué falta y qué está bloqueando la candidatura.",
+  },
+];
 export const features: Feature[] = [
   {
     icon: "sparkles",
     title: "Análisis IA del expediente",
     text: "Te dice si ir o no ir, con cuánta confianza y qué le falta por saber. Tú tienes la última palabra.",
+    layer: "lectura",
   },
   {
     icon: "scale",
     title: "Matriz de elegibilidad",
     text: "¿Podemos presentarnos? Requisito a requisito, con semáforo y evidencia.",
+    layer: "elegibilidad",
   },
   {
     icon: "shield",
     title: "Escáner anti-exclusión",
     text: "Los errores que dejan ofertas fuera, detectados cuando aún tienen arreglo.",
+    layer: "elegibilidad",
   },
   {
     icon: "handshake",
     title: "Brecha UTE / Socio",
     text: "Un «no cumples» convertido en «viable con el socio adecuado».",
+    layer: "elegibilidad",
   },
   {
     icon: "euro",
     title: "Escenarios económicos",
     text: "Tres formas de ofertar: prudente, equilibrada o agresiva. Con el margen claro y aviso si rozas la baja temeraria.",
+    layer: "oferta",
   },
   {
     icon: "book",
     title: "Memoria técnica asistida",
     text: "Se estructura según los criterios del pliego y se apoya en lo que has hecho de verdad. Nada de capacidades inventadas.",
+    layer: "oferta",
   },
   {
     icon: "message",
     title: "Chat con citas al pliego",
     text: "Pregúntale lo que quieras al expediente: te responde citando el documento y la página exacta.",
+    layer: "lectura",
   },
   {
     icon: "checklist",
     title: "Tareas y checklist",
     text: "Salen solas del análisis, se reparten entre el equipo y se exportan donde las necesites.",
+    layer: "control",
   },
   {
     icon: "gauge",
     title: "Índice de preparación",
     text: "Un porcentaje que se entiende: qué está listo, qué falta y qué te está bloqueando.",
+    layer: "control",
   },
 ];
 
@@ -345,8 +400,12 @@ export const privacyPoints: PrivacyPoint[] = [
   },
   {
     icon: "backup",
-    title: "Datos alojados en la UE",
-    text: "Infraestructura en la Unión Europea, con protección de sesión reforzada.",
+    // Antes afirmaba «Datos alojados en la UE — Infraestructura en la Unión Europea»
+    // mientras /seguridad-y-privacidad decía que la localización debe confirmarse
+    // antes de la apertura pública: la web se contradecía a sí misma. Se retira la
+    // afirmación (no el tema) hasta que el propietario confirme proveedor y región.
+    title: "Alojamiento y localización de datos",
+    text: "Dónde se alojan los datos, qué proveedores intervienen y con qué garantías, detallado en la página de seguridad y privacidad y en la lista de subencargados.",
   },
 ];
 

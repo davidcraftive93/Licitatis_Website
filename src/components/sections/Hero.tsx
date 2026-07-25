@@ -7,6 +7,7 @@ import { HeroBackdrop } from "@/components/sections/HeroBackdrop";
 import { TiltCard } from "@/components/motion/TiltCard";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { RotatingWord } from "@/components/motion/RotatingWord";
+import { demoExpediente } from "@/lib/demo-expediente";
 
 /** Términos del sector para la marquesina inferior del hero. */
 const MARQUEE_TERMS = [
@@ -89,11 +90,17 @@ export function Hero() {
               style={{ "--enter-delay": "280ms" } as React.CSSProperties}
             >
               <Magnetic>
-                <Button href="#beta" size="lg" variant="gradient" withArrow>
+                <Button
+                  href="#beta"
+                  size="lg"
+                  variant="gradient"
+                  withArrow
+                  data-cta="hero-analizar"
+                >
                   Analizar una licitación real
                 </Button>
               </Magnetic>
-              <Button href="#beta" size="lg" variant="inverse">
+              <Button href="#beta" size="lg" variant="inverse" data-cta="hero-beta-partner">
                 Ser Beta Partner
               </Button>
             </div>
@@ -114,8 +121,8 @@ export function Hero() {
             style={{ "--enter-delay": "200ms" } as React.CSSProperties}
           >
             <div aria-hidden="true" className="absolute inset-6 -z-10">
-              <div className="absolute inset-0 animate-aurora rounded-[2.5rem] bg-brand-500/30 blur-3xl" />
-              <div className="absolute inset-x-10 bottom-0 top-1/2 animate-aurora rounded-[2.5rem] bg-amber-400/20 blur-3xl [animation-delay:-5s]" />
+              <div className="absolute inset-0 rounded-[2.5rem] bg-brand-500/30 blur-3xl" />
+              <div className="absolute inset-x-10 bottom-0 top-1/2 rounded-[2.5rem] bg-amber-400/20 blur-3xl" />
             </div>
             <TiltCard maxTilt={6} idlePose="rotateX(3deg) rotateY(-7deg)">
               <div className="animate-float-slow">
@@ -199,7 +206,11 @@ export function Hero() {
             href="#como-funciona"
             className="group flex flex-col items-center gap-2 text-xs font-medium text-ink-300 transition-colors hover:text-brand-300"
           >
-            <span>Entra en el proceso</span>
+            {/* Nombra el caso: es el arranque explícito del hilo que recorre la página. */}
+            <span>
+              Sigue el expediente{" "}
+              <span className="font-mono text-brand-300">{demoExpediente.code}</span>
+            </span>
             <span
               aria-hidden="true"
               className="flex h-9 w-6 items-start justify-center rounded-full border border-white/20 p-1.5 transition-colors group-hover:border-brand-400/60"

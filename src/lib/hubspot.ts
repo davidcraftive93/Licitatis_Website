@@ -38,7 +38,8 @@ const CHALLENGE_LABELS: Record<string, string> = {
   otra: "Otra",
 };
 
-function buildMessage(input: LeadInput): string {
+/** Exportada para poder comprobar en pruebas qué texto llega de verdad a HubSpot. */
+export function buildMessage(input: LeadInput): string {
   const parts: string[] = [];
   if (input.message) parts.push(input.message.trim());
   const meta: string[] = [];
@@ -55,6 +56,9 @@ function buildMessage(input: LeadInput): string {
         .join(" / ")}`,
     );
   }
+  // Qué botón trajo a la persona. Va DENTRO del mensaje a propósito: crear una
+  // propiedad nueva en HubSpot haría que rechazase el envío y se perdería el lead.
+  if (input.ctaOrigin) meta.push(`CTA de entrada: ${input.ctaOrigin}`);
   // El consentimiento de marketing se registra por separado del de privacidad.
   meta.push(`Consentimiento de marketing: ${input.marketing ? "Sí" : "No"}`);
   if (meta.length) parts.push(`\n---\n${meta.join("\n")}`);

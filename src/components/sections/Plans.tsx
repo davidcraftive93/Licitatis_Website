@@ -90,6 +90,7 @@ export function Plans() {
               <div className="mt-6">
                 <Button
                   href="#beta"
+                  data-cta={`plan-${plan.name.toLowerCase()}`}
                   variant={plan.highlighted ? "gradient" : "secondary"}
                   size="sm"
                   className="w-full"

@@ -8,22 +8,31 @@ ha inventado: se han usado placeholders visibles.
 Ubicación: páginas `/aviso-legal`, `/privacidad`, `/cookies`, `/terminos`
 (`src/app/aviso-legal/…`, etc.) y componente `src/components/layout/LegalShell.tsx`.
 
-- [ ] Razón social
-- [ ] NIF/CIF
-- [ ] Domicilio social
-- [ ] Datos registrales (Registro Mercantil)
-- [ ] Delegado de Protección de Datos (si aplica)
+Ya entregados por el propietario y en `src/lib/legal.ts` (fuente única):
+
+- [x] Razón social — ZSE INNOVATION STUDIO SL (LICITATIS es una marca, no una sociedad)
+- [x] NIF/CIF
+- [x] Domicilio social
+- [x] Datos registrales (Registro Mercantil de Valencia)
+- [x] Delegado de Protección de Datos — **no procede** (confirmado)
+
+Sigue pendiente:
+
 - [ ] Plazos de conservación de datos
-- [ ] Detalle de transferencias internacionales (HubSpot) y sus garantías
+- [ ] Región de datos de HubSpot y base jurídica de una eventual transferencia internacional
+- [ ] Localización de los datos de la aplicación (hasta confirmarla, la landing **no** afirma
+      que estén alojados en la UE: la afirmación se retiró por contradecir
+      `/seguridad-y-privacidad`)
 - [ ] Tabla de cookies (nombre, proveedor, finalidad, duración)
 - [ ] Fuero/jurisdicción aplicable
-- [ ] Fecha de "última actualización" de cada documento
+- [ ] Versión y fecha de «última actualización» de cada documento (hoy `[[VERSIÓN]]` / `[[FECHA]]`)
+- [ ] Descriptor exacto del extracto bancario que use la pasarela de pago
 - [ ] Revisión legal completa de todos los textos (actualmente son borradores)
 
 ## Contacto
 
 - [ ] Correo de contacto definitivo (`NEXT_PUBLIC_CONTACT_EMAIL`; por defecto se muestra
-      `contacto@licitatis.es` como placeholder).
+      `info@licitatis.es`, ya en uso).
 - [ ] Teléfono (opcional; no se muestra actualmente).
 
 ## HubSpot

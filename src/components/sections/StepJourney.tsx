@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { Icon } from "@/components/ui/icons";
 import { howItWorksSteps } from "@/lib/content";
+import { demoExpediente, checklistFraction } from "@/lib/demo-expediente";
+import { journeyProgress, dashOffset, pickActiveStep } from "@/lib/journey";
 import { cn } from "@/lib/utils";
 import { usePrefersReducedMotion, useRafCallback } from "@/components/motion/hooks";
 
@@ -22,7 +24,7 @@ function PanelFrame({ step, children }: { step: number; children: ReactNode }) {
       <div className="flex items-center justify-between border-b border-ink-100 bg-ink-50/70 px-4 py-2.5">
         <span className="flex items-center gap-2 font-mono text-2xs text-ink-400">
           <span className="h-1.5 w-1.5 rounded-full bg-brand-500" aria-hidden="true" />
-          EXP-2024-0142
+          {demoExpediente.code}
         </span>
         <span className="rounded-full bg-white px-2 py-0.5 text-2xs font-semibold text-ink-500 ring-1 ring-ink-100">
           Paso {step} de 6 · Demo
@@ -78,12 +80,13 @@ function VisualDetecta() {
       <div className="rounded-lg border border-brand-200 bg-brand-50/60 px-3 py-2.5 ring-1 ring-brand-100">
         <div className="flex items-center justify-between gap-2">
           <span className="truncate text-xs font-semibold text-ink-900">
-            Servicios de mantenimiento de instalaciones
+            {demoExpediente.title}
           </span>
-          <Chip tone="ok">Encaje 87%</Chip>
+          <Chip tone="ok">Encaje {demoExpediente.fitScore}%</Chip>
         </div>
         <p className="mt-1 flex items-center gap-2 text-2xs text-ink-500">
-          <span className="font-mono">EXP-2024-0142</span> · CPV 50700000 · 214.000 €
+          <span className="font-mono">{demoExpediente.code}</span> · CPV {demoExpediente.cpv} ·{" "}
+          {demoExpediente.amountLabel}
         </p>
         <div className="mt-1.5 flex flex-wrap gap-1">
           <Chip tone="neutral">CPV favorito</Chip>
@@ -119,11 +122,14 @@ function VisualAnaliza() {
             GO con condiciones
           </span>
           <span className="text-2xs text-ink-400">
-            Confianza <strong className="text-ink-700">78%</strong>
+            Confianza <strong className="text-ink-700">{demoExpediente.aiConfidence}%</strong>
           </span>
         </div>
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-ink-100">
-          <div className="h-full w-[78%] rounded-full bg-gradient-brand" />
+          <div
+            className="h-full rounded-full bg-gradient-brand"
+            style={{ width: `${demoExpediente.aiConfidence}%` }}
+          />
         </div>
         <ul className="mt-3 space-y-1.5 text-2xs text-ink-600">
           <li className="flex items-start gap-1.5">
@@ -185,14 +191,13 @@ function VisualExpediente() {
         <p className="text-2xs font-semibold uppercase tracking-wide text-ink-400">
           Checklist documental
         </p>
-        <span className="font-display text-sm font-bold text-brand-700">2/4</span>
+        <span className="font-display text-sm font-bold text-brand-700">{checklistFraction()}</span>
       </div>
-      {[
-        { label: "Declaración responsable (DEUC)", done: true },
-        { label: "Acreditación de solvencia", done: true },
-        { label: "Certificado AEAT", done: false },
-        { label: "Memoria técnica", done: false },
-      ].map((item) => (
+      {/* Las filas salen de la fuente única, igual que la fracción de arriba. Con el
+          array escrito a mano había dos fuentes para el mismo dato en el MISMO panel:
+          marcar el AEAT como vigente en `demo-expediente.ts` habría dejado «3/4» sobre
+          una lista que seguía mostrándolo pendiente. */}
+      {demoExpediente.checklist.map((item) => (
         <Row key={item.label}>
           <span
             className={cn(
@@ -218,10 +223,13 @@ function VisualExpediente() {
       <div className="rounded-lg border border-ink-100 bg-white px-3 py-2">
         <div className="flex items-center justify-between text-2xs">
           <span className="font-medium text-ink-700">Memoria técnica (borrador IA)</span>
-          <span className="text-ink-400">62%</span>
+          <span className="text-ink-400">{demoExpediente.memoriaProgress}%</span>
         </div>
         <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ink-100">
-          <div className="h-full w-[62%] rounded-full bg-gradient-brand" />
+          <div
+            className="h-full rounded-full bg-gradient-brand"
+            style={{ width: `${demoExpediente.memoriaProgress}%` }}
+          />
         </div>
       </div>
     </div>
@@ -241,7 +249,7 @@ function VisualRiesgo() {
       <div className="rounded-lg border border-red-100 bg-red-50/60 px-3 py-2.5">
         <p className="flex items-center gap-1.5 text-xs font-semibold text-red-700">
           <Icon name="alert-triangle" size={13} />
-          Certificado AEAT no vigente
+          {demoExpediente.blocker.label}
         </p>
         <p className="mt-0.5 text-2xs text-ink-500">
           Motivo de exclusión directa. Detectado en tu Pasaporte; renuévalo antes de presentar.
@@ -250,7 +258,7 @@ function VisualRiesgo() {
       <div className="rounded-lg border border-amber-100 bg-amber-50/60 px-3 py-2.5">
         <p className="flex items-center gap-1.5 text-xs font-semibold text-amber-700">
           <Icon name="key" size={13} />
-          Firma electrónica del apoderado caduca en 4 días
+          {demoExpediente.secondRisk.label}
         </p>
         <p className="mt-0.5 text-2xs text-ink-500">
           Antes del fin del plazo de presentación (quedan 6 días).
@@ -259,10 +267,15 @@ function VisualRiesgo() {
       <div className="rounded-lg border border-ink-100 bg-white px-3 py-2">
         <div className="flex items-center justify-between text-2xs">
           <span className="font-medium text-ink-700">Índice de preparación</span>
-          <span className="font-display text-sm font-bold text-ink-900">74%</span>
+          <span className="font-display text-sm font-bold text-ink-900">
+            {demoExpediente.readiness}%
+          </span>
         </div>
         <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ink-100">
-          <div className="h-full w-[74%] rounded-full bg-gradient-brand" />
+          <div
+            className="h-full rounded-full bg-gradient-brand"
+            style={{ width: `${demoExpediente.readiness}%` }}
+          />
         </div>
       </div>
     </div>
@@ -347,14 +360,21 @@ export function StepJourney() {
   // llevan la pantalla del mock incrustada), así que la curva se genera a medida.
   const listRef = useRef<HTMLOListElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const reducedMotion = usePrefersReducedMotion();
   const [route, setRoute] = useState<{
     d: string;
     height: number;
     stations: { x: number; y: number }[];
   } | null>(null);
-  const [drawn, setDrawn] = useState(0); // 0..1 del trazado dibujado
+  // La longitud del trazado es un valor DISCRETO (cambia al medir), así que sí vive en
+  // estado. El progreso del dibujado NO: se escribe como variable CSS (--journey-offset)
+  // directamente en el <svg>, para no re-renderizar la sección en cada frame de scroll.
   const [pathLength, setPathLength] = useState(0);
+  const pathLengthRef = useRef(0);
+  // Espejo de `reducedMotion` legible desde el callback de rAF ya agendado.
+  const reducedRef = useRef(reducedMotion);
+  reducedRef.current = reducedMotion;
 
   // Mide las estaciones y compone una curva suave que serpentea entre ellas.
   useEffect(() => {
@@ -396,23 +416,36 @@ export function StepJourney() {
 
   // Longitud real del trazado (para stroke-dasharray).
   useEffect(() => {
-    if (pathRef.current) setPathLength(pathRef.current.getTotalLength());
+    if (!pathRef.current) return;
+    const length = pathRef.current.getTotalLength();
+    pathLengthRef.current = length;
+    setPathLength(length);
   }, [route]);
 
-  // Progreso de dibujo ligado al scroll (rAF). Con reduced-motion queda dibujada entera.
+  /**
+   * Progreso de dibujo ligado al scroll. Escribe el desplazamiento del trazo como
+   * variable CSS en el <svg>: sin `setState`, así que el scroll no provoca ni un render
+   * de React. Con reduced-motion la ruta queda dibujada entera.
+   */
   const updateDrawn = useRafCallback(() => {
     const list = listRef.current;
-    if (!list) return;
+    const svg = svgRef.current;
+    if (!list || !svg) return;
+    // Si el usuario activa «reducir movimiento» con la página abierta, puede quedar
+    // un frame ya agendado que escribiría el progreso justo después de que React
+    // dejara la ruta dibujada. Este `ref` lo corta.
+    if (reducedRef.current) return;
+
     const box = list.getBoundingClientRect();
-    const line = window.innerHeight * 0.62; // línea de "avance" del viaje
-    setDrawn(Math.max(0, Math.min(1, (line - box.top) / box.height)));
+    const progress = journeyProgress(box.top, box.height, window.innerHeight);
+    svg.style.setProperty("--journey-offset", String(dashOffset(pathLengthRef.current, progress)));
   });
 
   useEffect(() => {
-    if (reducedMotion) {
-      setDrawn(1);
-      return;
-    }
+    // Con reduced-motion la ruta ya nace dibujada por estilo (offset 0): sin listeners.
+    if (reducedMotion) return;
+    // `pathLength` en las dependencias: al remedir, el <svg> ya existe y hay que
+    // repintar el progreso con la longitud nueva.
     updateDrawn();
     window.addEventListener("scroll", updateDrawn, { passive: true });
     window.addEventListener("resize", updateDrawn, { passive: true });
@@ -420,20 +453,22 @@ export function StepJourney() {
       window.removeEventListener("scroll", updateDrawn);
       window.removeEventListener("resize", updateDrawn);
     };
-  }, [reducedMotion, updateDrawn]);
+  }, [reducedMotion, updateDrawn, pathLength]);
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
 
     // El paso que cruza la banda central del viewport pasa a ser el activo.
+    // Si cruzan dos (viewport alto, pasos cortos), decide `pickActiveStep`: gana
+    // el más avanzado. Antes ganaba el último del lote del observador, y ese
+    // orden no está garantizado, así que el paso activo podía retroceder.
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = stepRefs.current.indexOf(entry.target as HTMLLIElement);
-            if (idx !== -1) setActive(idx);
-          }
-        });
+        const intersecting = entries
+          .filter((entry) => entry.isIntersecting)
+          .map((entry) => stepRefs.current.indexOf(entry.target as HTMLLIElement))
+          .filter((index) => index !== -1);
+        if (intersecting.length) setActive((current) => pickActiveStep(intersecting, current));
       },
       { rootMargin: "-38% 0px -52% 0px", threshold: 0 },
     );
@@ -444,18 +479,42 @@ export function StepJourney() {
 
   return (
     <div className="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14">
-      {/* Pasos (columna izquierda). */}
-      <ol ref={listRef} className="relative">
+      {/* Pasos (columna izquierda).
+          `min-w-0`: como celda de grid su minimo por defecto es `auto`, así que el
+          ancho mínimo del panel del mock (que en móvil va dentro de cada paso)
+          ensanchaba la columna y sacaba 76 px de scroll horizontal a la página
+          entera por debajo de ~430 px. */}
+      <ol ref={listRef} className="relative min-w-0">
         {/* Ruta del expediente: se dibuja conforme bajas (stroke-dashoffset). El trazado
             se genera midiendo las estaciones reales, así que encaja con cualquier alto. */}
         {route ? (
           <svg
+            ref={svgRef}
             aria-hidden="true"
             className="pointer-events-none absolute left-0 top-0 z-0 overflow-visible"
             width="48"
             height={route.height}
             viewBox={`0 0 48 ${route.height}`}
             fill="none"
+            /**
+             * Cada variable tiene UN dueño.
+             *
+             * React solo escribe `--journey-length` (cambia al medir, valor discreto) y,
+             * en reduced-motion, el offset —porque ahí nadie más lo escribe—. El scroll
+             * escribe `--journey-offset` imperativamente. Cuando React también ponía el
+             * offset en el `style`, al remedir (resize, rotación, carga de la fuente) lo
+             * reescribía con la longitud completa: la ruta se borraba y se volvía a
+             * dibujar durante un frame.
+             *
+             * El trazo cae en `var(--journey-length)` mientras el offset no exista, así
+             * que el HTML servido nace con la ruta sin recorrer.
+             */
+            style={
+              {
+                "--journey-length": pathLength,
+                ...(reducedMotion ? { "--journey-offset": 0 } : {}),
+              } as CSSProperties
+            }
           >
             <defs>
               <linearGradient id="ruta-expediente" x1="0" y1="0" x2="0" y2="1">
@@ -483,8 +542,10 @@ export function StepJourney() {
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeDasharray={pathLength}
-                strokeDashoffset={pathLength * (1 - drawn)}
-                style={{ transition: reducedMotion ? undefined : "stroke-dashoffset 120ms linear" }}
+                style={{
+                  strokeDashoffset: "var(--journey-offset, var(--journey-length))",
+                  transition: reducedMotion ? undefined : "stroke-dashoffset 120ms linear",
+                }}
               />
             ) : null}
 
@@ -553,14 +614,23 @@ export function StepJourney() {
             </li>
           );
         })}
-        {/* Disclaimer visible también en móvil (el del panel sticky solo existe en escritorio). */}
-        <li className="list-none pt-2 text-center text-xs text-fg-muted lg:hidden">
-          Expediente de demostración: datos ficticios.
+        {/**
+         * Descargo de demostración: SIEMPRE presente y siempre accesible.
+         *
+         * Antes existía en dos copias y en escritorio no llegaba a ningún lector de
+         * pantalla: esta iba con `lg:hidden` (fuera del árbol de accesibilidad) y la
+         * del panel sticky vive dentro de un contenedor `aria-hidden`. Que un aviso
+         * de «datos ficticios» desaparezca para quien no ve la pantalla es
+         * precisamente al revés de lo que debe pasar.
+         */}
+        <li className="list-none pt-3 text-center text-xs text-fg-muted">
+          Seguimos un expediente de demostración ({demoExpediente.code}) por todo el proceso. Datos
+          ficticios.
         </li>
       </ol>
 
       {/* Panel sticky (escritorio): las 6 pantallas superpuestas, crossfade a la activa. */}
-      <div className="relative hidden lg:sticky lg:top-24 lg:block" aria-hidden="true">
+      <div className="relative hidden min-w-0 lg:sticky lg:top-24 lg:block" aria-hidden="true">
         <div className="absolute inset-6 -z-10 rounded-[2.5rem] bg-brand-400/20 blur-2xl" />
         <div className="relative min-h-[26rem]">
           {VISUALS.map((Visual, i) => (
@@ -579,10 +649,6 @@ export function StepJourney() {
             </div>
           ))}
         </div>
-        <p className="mt-4 text-center text-xs text-fg-muted">
-          Seguimos un expediente de demostración (EXP-2024-0142) por todo el proceso. Datos
-          ficticios.
-        </p>
       </div>
     </div>
   );

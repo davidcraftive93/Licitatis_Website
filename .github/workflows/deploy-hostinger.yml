@@ -18,6 +18,13 @@ on:
         required: true
         default: "main"
         type: string
+      permitir_placeholders_legales:
+        description: >-
+          Desplegar AUNQUE las páginas legales lleven datos sin resolver
+          (o HubSpot no esté configurado). Solo para una beta consciente.
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: deploy-hostinger-production
@@ -101,12 +108,32 @@ jobs:
           printf '%s' "$DEPLOY_SHA" > out/__build_sha.txt
           echo "Artefacto out/ verificado."
 
+      # El gate en modo producción bloquea si el HTML que se va a servir lleva datos
+      # legales sin resolver o si HubSpot no está configurado.
+      #
+      # Antes este paso pasaba `--deploy` SIEMPRE, y esa opción degrada a aviso
+      # exactamente esos dos bloqueantes: el gate decía PASS mientras las páginas
+      # legales llevaban [LEGAL_REVIEW_REQUIRED], y el comentario de ci.yml aseguraba
+      # que «el bloqueo duro ocurre en el workflow de despliegue». No ocurría en
+      # ninguna parte.
+      #
+      # Ahora el bypass existe pero hay que pedirlo: la casilla
+      # `permitir_placeholders_legales` queda registrada en el log de la ejecución,
+      # así que desplegar una beta con textos legales pendientes es una decisión
+      # deliberada y trazable, no el comportamiento por defecto.
       - name: Release gate legal (producción)
         env:
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_HUBSPOT_PORTAL_ID: ${{ vars.NEXT_PUBLIC_HUBSPOT_PORTAL_ID }}
           NEXT_PUBLIC_HUBSPOT_FORM_ID: ${{ vars.NEXT_PUBLIC_HUBSPOT_FORM_ID }}
-        run: node scripts/verify-legal-launch.mjs --mode production --deploy
+          PERMITIR_PLACEHOLDERS: ${{ inputs.permitir_placeholders_legales }}
+        run: |
+          if [ "$PERMITIR_PLACEHOLDERS" = "true" ]; then
+            echo "::warning::Se despliega con datos legales SIN RESOLVER por decisión explícita (permitir_placeholders_legales=true). Los placeholders y la falta de HubSpot pasan a ser avisos."
+            node scripts/verify-legal-launch.mjs --mode production --deploy
+          else
+            node scripts/verify-legal-launch.mjs --mode production
+          fi
 
       - name: Validar configuración de Hostinger
         env:
@@ -128,10 +155,23 @@ jobs:
           case "$SSH_PORT" in
             *[!0-9]*) echo "::error::HOSTINGER_PORT debe ser numérico."; exit 1 ;;
           esac
+          # Se admite la virgulilla: la documentación de este repositorio dice que el
+          # docroot es `~/public_html`, así que rechazar esa forma era tropezar con
+          # nuestra propia instrucción. El `~` se expande contra el HOME real del
+          # servidor en el paso «Detectar el docroot servido», y a partir de ahí todo
+          # usa la ruta absoluta ya resuelta ($TARGET).
           case "$DEPLOY_PATH" in
-            *[!A-Za-z0-9_./-]*) echo "::error::HOSTINGER_DEPLOY_PATH contiene caracteres no permitidos."; exit 1 ;;
-            /*/public_html) : ;;
-            *) echo "::error::HOSTINGER_DEPLOY_PATH debe ser una ruta absoluta que termine exactamente en /public_html."; exit 1 ;;
+            *[!A-Za-z0-9_./~-]*)
+              echo "::error::HOSTINGER_DEPLOY_PATH contiene caracteres no permitidos. Solo se aceptan letras, números y _ . / - ~ — sin comillas, sin espacios y sin \$HOME. Formas válidas: '~/public_html' o '/home/USUARIO/public_html'."
+              exit 1
+              ;;
+          esac
+          case "$DEPLOY_PATH" in
+            /*/public_html | "~/public_html" | "~/domains/licitatis.es/public_html") : ;;
+            *)
+              echo "::error::HOSTINGER_DEPLOY_PATH debe terminar exactamente en /public_html. Formas válidas: '~/public_html' (recomendada) o '/home/USUARIO/public_html'."
+              exit 1
+              ;;
           esac
           echo "Configuración básica de Hostinger validada."
 
@@ -193,6 +233,16 @@ jobs:
 
           REMOTE_HOME="$(ssh $SSHO "$SSH_USER@$SSH_HOST" 'printf "%s" "$HOME"')"
           test -n "$REMOTE_HOME" || { echo "::error::No se pudo obtener el HOME remoto."; exit 1; }
+
+          # `~/...` se expande AQUÍ, con el HOME real del servidor, y nunca viaja como
+          # virgulilla a rsync ni a ningún otro comando: a partir de este punto la ruta
+          # es absoluta y sigue teniendo que coincidir con un docroot autorizado.
+          # El patrón va entre comillas ('~/'): sin ellas, el shell expande la
+          # virgulilla DENTRO del patrón, no recorta nada y la ruta acaba siendo
+          # «/home/USUARIO/~/public_html», que no coincide con ningún docroot.
+          case "$DEPLOY_PATH" in
+            "~/"*) DEPLOY_PATH="$REMOTE_HOME/${DEPLOY_PATH#'~/'}" ;;
+          esac
 
           ALLOWED_PRIMARY="$REMOTE_HOME/public_html"
           ALLOWED_DOMAIN="$REMOTE_HOME/domains/licitatis.es/public_html"

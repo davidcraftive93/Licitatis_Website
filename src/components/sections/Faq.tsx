@@ -23,7 +23,7 @@ export function Faq() {
             <span className="font-semibold text-fg-strong">¿Tienes otra pregunta?</span> Cuéntanoslo
             y te respondemos.
           </p>
-          <Button href="#beta" size="sm" withArrow>
+          <Button href="#beta" size="sm" withArrow data-cta="faq">
             Solicitar demostración
           </Button>
         </Reveal>
