@@ -41,7 +41,8 @@ export function ConstellationCanvas({ className }: { className?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const connection = (navigator as Navigator & { connection?: NetworkInformationLike }).connection;
+    const connection = (navigator as Navigator & { connection?: NetworkInformationLike })
+      .connection;
     const saveData = connection?.saveData === true;
     const cores = navigator.hardwareConcurrency || 4;
     const maxParticles = saveData ? 18 : cores <= 4 ? 32 : 55;
