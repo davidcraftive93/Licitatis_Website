@@ -91,7 +91,7 @@ export function Header() {
             >
               Iniciar sesión
             </a>
-            <Button href="/#beta" size="sm" variant="gradient">
+            <Button href="/#beta" size="sm" variant="gradient" data-cta="cabecera">
               Analizar licitación
             </Button>
           </div>
@@ -134,7 +134,13 @@ export function Header() {
                 ))}
               </ul>
               <div className="mt-4 flex flex-col gap-2.5">
-                <Button href="/#beta" size="md" variant="gradient" onClick={() => setOpen(false)}>
+                <Button
+                  href="/#beta"
+                  size="md"
+                  variant="gradient"
+                  data-cta="menu-movil"
+                  onClick={() => setOpen(false)}
+                >
                   Analizar una licitación real
                 </Button>
                 <a

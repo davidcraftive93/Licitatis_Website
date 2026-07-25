@@ -5,7 +5,7 @@ import { problemSolution } from "@/lib/content";
 
 export function ProblemSolution() {
   return (
-    <Section tone="paper">
+    <Section id="el-problema" tone="paper">
       <Reveal className="mx-auto max-w-3xl text-center">
         <p className="font-display text-2xl font-semibold text-fg-strong sm:text-3xl">
           «El problema no es encontrar licitaciones.{" "}
@@ -31,7 +31,7 @@ export function ProblemSolution() {
           <div className="relative h-full overflow-hidden rounded-3xl border border-brand-200 bg-brand-50/50 p-8 shadow-card ring-1 ring-brand-100 transition-shadow duration-300 hover:shadow-brand-glow dark:border-brand-500/30 dark:bg-brand-500/10 dark:ring-brand-500/25">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 animate-aurora rounded-full bg-brand-300/30 blur-2xl"
+              className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-brand-300/30 blur-2xl"
             />
             <span className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-brand text-white shadow-brand-glow">
               <Icon name="check" size={22} />

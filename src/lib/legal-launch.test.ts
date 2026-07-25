@@ -6,6 +6,7 @@ import {
   BRAND_MISUSE_PATTERNS,
   REQUIRED_LEGAL_ROUTES,
   scanText,
+  stripDeliberateCopy,
   isCanonicalUrlOk,
   CANONICAL_DOMAIN,
 } from "../../scripts/legal-launch-rules.mjs";
@@ -116,5 +117,49 @@ describe("release gate legal — dominio canónico", () => {
     expect(isCanonicalUrlOk("https://www.licitatis.es")).toBe(false);
     expect(isCanonicalUrlOk("http://licitatis.es")).toBe(false);
     expect(isCanonicalUrlOk("")).toBe(false);
+  });
+});
+
+/**
+ * El gate en modo producción bloqueaba SIEMPRE por dos textos de la portada que están
+ * ahí a propósito. Un veredicto inalcanzable se aprende a ignorar, y además existía la
+ * vía para ignorarlo. Estas pruebas fijan la frontera: el copy deliberado no bloquea,
+ * y cualquier variante que se le parezca sigue bloqueando.
+ */
+describe("release gate legal — copy deliberado frente a datos sin resolver", () => {
+  it("el marcador de hueco del producto no cuenta como placeholder", () => {
+    const html = "<p>2 huecos marcados <span>[[FALTA: …]]</span> para completar</p>";
+    expect(scanText(html, PLACEHOLDER_PATTERNS)).not.toHaveLength(0);
+    expect(scanText(stripDeliberateCopy(html), PLACEHOLDER_PATTERNS)).toHaveLength(0);
+  });
+
+  it("el aviso veraz de revisión jurídica no cuenta como placeholder", () => {
+    const html = "<p>… se implementa en la propia app y está pendiente de revisión jurídica.</p>";
+    expect(scanText(html, PLACEHOLDER_PATTERNS)).not.toHaveLength(0);
+    expect(scanText(stripDeliberateCopy(html), PLACEHOLDER_PATTERNS)).toHaveLength(0);
+  });
+
+  it("un dato fiscal sin resolver sigue bloqueando aunque se limpie el copy deliberado", () => {
+    for (const html of [
+      "<p>CIF: [[CIF]]</p>",
+      "<p>Versión [[VERSIÓN]] de [[FECHA]]</p>",
+      "<p>[LEGAL_REVIEW_REQUIRED: confirmar plazos]</p>",
+      "<p>Plazos de conservación pendientes de confirmar.</p>",
+    ]) {
+      expect(scanText(stripDeliberateCopy(html), PLACEHOLDER_PATTERNS).length).toBeGreaterThan(0);
+    }
+  });
+
+  it("una variante inventada del marcador NO se cuela", () => {
+    // La excepción es el literal exacto con puntos suspensivos tipográficos. Si alguien
+    // escribe «[[FALTA: CIF]]» está ocultando un dato pendiente, no demostrando nada.
+    for (const html of ["<p>[[FALTA: CIF]]</p>", "<p>[[FALTA: ...]]</p>", "<p>[[falta: …]]</p>"]) {
+      expect(scanText(stripDeliberateCopy(html), PLACEHOLDER_PATTERNS).length).toBeGreaterThan(0);
+    }
+  });
+
+  it("limpiar el copy deliberado no borra nada más del texto", () => {
+    const html = "<p>Antes [[FALTA: …]] y después</p>";
+    expect(stripDeliberateCopy(html)).toBe("<p>Antes  y después</p>");
   });
 });

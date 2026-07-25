@@ -4,6 +4,22 @@ import { z } from "zod";
  * Esquema de validación del formulario de solicitud de demostración.
  * Se usa tanto en el cliente (feedback inmediato) como en el servidor (fuente de verdad).
  */
+
+/**
+ * Texto de atribución: se acota recortando, nunca fallando.
+ *
+ * Estos valores no los escribe la persona (vienen de la URL, de una cookie o del
+ * DOM), así que un valor demasiado largo no es un error que ella pueda corregir:
+ * si lo rechazáramos, el formulario quedaría bloqueado sin nada que señalar.
+ * El recorte conserva la garantía de no mandar cadenas absurdas a HubSpot.
+ */
+function attributionText(max: number) {
+  return z
+    .string()
+    .trim()
+    .transform((value) => value.slice(0, max) || undefined)
+    .optional();
+}
 export const leadSchema = z.object({
   firstName: z
     .string()
@@ -53,19 +69,34 @@ export const leadSchema = z.object({
   marketing: z.boolean().optional().default(false),
   // Campo trampa antispam: debe llegar vacío. Los bots suelen rellenarlo.
   company_url: z.string().max(0).optional().default(""),
-  // Metadatos de atribución (se rellenan en cliente, no son obligatorios).
+  /**
+   * Metadatos de atribución. Los rellena el cliente leyendo la URL, las cookies
+   * y el DOM: la persona que rellena el formulario NO puede corregirlos.
+   *
+   * Por eso se RECORTAN en vez de rechazarse. Con un `.max()` que falla, un
+   * enlace de campaña con una `utm_campaign` larguísima invalidaba el formulario
+   * por un campo sin interfaz: el aviso decía «revisa los campos marcados», no
+   * había ninguno marcado, y no existía forma de enviar. El lead se perdía en
+   * silencio, que es justo lo que este formulario no puede hacer.
+   */
   utm: z
     .object({
-      source: z.string().max(120).optional(),
-      medium: z.string().max(120).optional(),
-      campaign: z.string().max(160).optional(),
-      term: z.string().max(160).optional(),
-      content: z.string().max(160).optional(),
+      source: attributionText(120),
+      medium: attributionText(120),
+      campaign: attributionText(160),
+      term: attributionText(160),
+      content: attributionText(160),
     })
     .partial()
     .optional(),
-  pageUri: z.string().max(500).optional(),
-  hutk: z.string().max(120).optional(),
+  pageUri: attributionText(500),
+  hutk: attributionText(120),
+  /**
+   * Qué botón trajo a la persona hasta el formulario. Se recoge del propio DOM
+   * (atributo `data-cta`), nunca de la URL, y viaja dentro del mensaje: no crea
+   * ninguna propiedad nueva en HubSpot, así que no puede tumbar un envío.
+   */
+  ctaOrigin: attributionText(80),
 });
 
 export type LeadInput = z.infer<typeof leadSchema>;

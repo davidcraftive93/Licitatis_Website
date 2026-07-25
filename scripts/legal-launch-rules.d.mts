@@ -11,5 +11,8 @@ export const PLACEHOLDER_PATTERNS: LegalPattern[];
 export const PROHIBITED_CLAIM_PATTERNS: LegalPattern[];
 export const CERTIFICATION_PATTERNS: LegalPattern[];
 export const BRAND_MISUSE_PATTERNS: LegalPattern[];
+export const DELIBERATE_COPY: LegalPattern[];
 export function scanText(text: string, patterns: LegalPattern[]): string[];
+/** Quita el copy deliberado (marcador de hueco del producto, aviso de revisión jurídica). */
+export function stripDeliberateCopy(text: string): string;
 export function isCanonicalUrlOk(url: unknown): boolean;

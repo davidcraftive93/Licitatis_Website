@@ -9,7 +9,7 @@ export const dynamic = "force-static";
  * hora de build) para que `lastmod` no cambie en cada despliegue sin cambios de
  * contenido; actualízala manualmente cuando el contenido cambie de forma relevante.
  */
-const LAST_UPDATED = new Date("2026-07-18");
+const LAST_UPDATED = new Date("2026-07-25");
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = siteConfig.url;

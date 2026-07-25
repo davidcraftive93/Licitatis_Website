@@ -20,7 +20,7 @@ licitaciones. Este repositorio contiene **únicamente** la web pública y comerc
 - [Variables de entorno](#variables-de-entorno)
 - [HubSpot](#hubspot)
 - [Analítica y cookies](#analítica-y-cookies)
-- [Vercel y despliegues](#vercel-y-despliegues)
+- [Integración continua y despliegue](#integración-continua-y-despliegue)
 - [Ramas](#ramas)
 - [Dominios](#dominios)
 - [Seguridad](#seguridad)
@@ -34,7 +34,8 @@ licitaciones. Este repositorio contiene **únicamente** la web pública y comerc
 
 Captar potenciales clientes y solicitudes de demostración, explicar el valor del producto,
 transmitir confianza y diferenciar LICITATIS de un simple buscador de licitaciones. Los leads
-se registran en HubSpot mediante un endpoint de servidor.
+se registran en HubSpot mediante un envío desde el cliente a su Forms API pública (el sitio es un
+export estático: no hay servidor propio).
 
 Esta web **no** es la aplicación SaaS. La aplicación privada vive en otro repositorio y otro
 proyecto de despliegue (ver [Separación de sistemas](#separación-de-sistemas)).
@@ -46,7 +47,7 @@ proyecto de despliegue (ver [Separación de sistemas](#separación-de-sistemas))
 | Framework       | [Next.js 15](https://nextjs.org) (App Router)          |
 | Lenguaje        | TypeScript (modo estricto)                             |
 | Estilos         | Tailwind CSS 3.4 (sistema de diseño propio)            |
-| Tipografías     | Inter + Space Grotesk (autoalojadas vía `next/font`)   |
+| Tipografías     | Poppins + Inter + Geist Mono (vía `next/font`)         |
 | Validación      | [Zod](https://zod.dev)                                 |
 | Formularios/CRM | HubSpot Forms API (envío desde el cliente; ver docs)   |
 | Iconos          | Set SVG propio                                          |
@@ -115,6 +116,12 @@ Scripts disponibles:
 | `npm run typecheck`   | Comprobación de tipos (`tsc --noEmit`) |
 | `npm run test`        | Tests unitarios (Vitest)             |
 | `npm run format`      | Formatea con Prettier                |
+| `npm run format:check` | Verifica el formato — **CI falla si no está formateado** |
+| `npm run verify:legal-launch` | Release gate legal sobre `out/` (modo dev) |
+| `npm run verify:legal-launch:prod` | Release gate legal en modo producción |
+
+> Antes de abrir una PR: `npm run format` y luego `format:check`, `lint`, `typecheck`, `test`,
+> `build`. CI ejecuta exactamente eso, y el formato es el que más veces la ha puesto en rojo.
 
 ## Build de producción (export estático)
 
@@ -123,7 +130,8 @@ npm run build          # genera el sitio estático en out/
 npx serve out          # (opcional) previsualizar el export en local
 ```
 
-> Nota: `npm run start` no aplica con `output: "export"`; el artefacto es `out/`.
+> Nota: no hay `npm run start`. Con `output: "export"` no existe servidor de Next que arrancar;
+> el artefacto es la carpeta `out/`, que se sirve como estático.
 
 ## Variables de entorno
 
@@ -148,7 +156,9 @@ Hostinger** van exclusivamente en el GitHub Environment `production` (ver
 
 El formulario se envía a HubSpot **desde el cliente** a su Forms API pública (solo IDs públicos, sin
 token), compatible con el sitio estático. Ver [`docs/HUBSPOT.md`](./docs/HUBSPOT.md). Si HubSpot no
-está configurado, el formulario sigue siendo usable (muestra confirmación sin entregar el lead).
+está configurado, el formulario **no finge éxito**: muestra un mensaje veraz y un enlace de correo
+con los datos ya escritos, para no perder el lead. El estado de éxito solo aparece si HubSpot
+confirmó la entrega (ver `DemoForm.tsx`).
 
 ## Analítica y cookies
 
@@ -159,8 +169,14 @@ está configurado, el formulario sigue siendo usable (muestra confirmación sin 
 
 ## Integración continua y despliegue
 
-- **CI** (`.github/workflows/ci.yml`): en cada `push` y `pull_request` ejecuta `lint`, `typecheck`,
-  `test` y `build`. **Nunca despliega.**
+- **CI** (`.github/workflows/ci.yml`): en cada `push` y `pull_request` ejecuta `format:check`,
+  `lint`, `typecheck`, `test`, `build` y el **release gate legal**
+  (`verify:legal-launch` → `scripts/verify-legal-launch.mjs`, con las reglas en
+  `scripts/legal-launch-rules.mjs`). **Nunca despliega.**
+- El **release gate legal** revisa el `out/` ya construido: rutas legales presentes, ausencia de
+  placeholders en el HTML servido, dominio canónico, claims prohibidos y coherencia de marca
+  («LICITATIS S.L.» no existe: la sociedad es ZSE INNOVATION STUDIO SL). En modo `production`
+  varios avisos pasan a ser bloqueantes.
 - **Despliegue** (`.github/workflows/deploy-hostinger.yml`): **manual** (`workflow_dispatch`), con
   confirmación `DEPLOY LICITATIS`, environment `production` y sincronización de `out/` a Hostinger.
   Subir código o fusionar una PR **no** despliega. Ver [`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md).
@@ -192,7 +208,7 @@ honeypot y consentimiento. Sin secretos en el sitio. Ver [`docs/SECURITY.md`](./
 
 - Este repositorio contiene **solo la landing** comercial.
 - La **aplicación SaaS** está en otro repositorio.
-- Los **proyectos de Vercel son independientes**.
+- Los **proyectos de despliegue son independientes** (esta web se publica en Hostinger).
 - **No se comparten credenciales** entre la web y la aplicación.
 - `app.licitatis.es` **no** pertenece a este despliegue.
 

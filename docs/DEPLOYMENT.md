@@ -40,9 +40,14 @@ este entorno, nunca en el código ni en variables públicas.
 | `HOSTINGER_SSH_PRIVATE_KEY` | Clave privada SSH (contenido completo) | Genera un par de claves y añade la pública en hPanel |
 | `HOSTINGER_DEPLOY_PATH` | Ruta absoluta del directorio público | Ver más abajo — **no la inventes** |
 
-**`HOSTINGER_DEPLOY_PATH`**: obtén la ruta real por SSH o desde hPanel. Su valor probable es
-equivalente a `/home/USUARIO/domains/licitatis.es/public_html`, pero debe confirmarse (por SSH:
-`pwd` dentro de `public_html`, o `ls -d ~/domains/*/public_html`).
+**`HOSTINGER_DEPLOY_PATH`**: en esta cuenta, `licitatis.es` se sirve desde **`~/public_html`**, no
+desde `~/domains/licitatis.es/public_html`. Esa confusión ya costó un despliegue «correcto» que no
+cambiaba nada de la web: rsync escribía en una carpeta que nadie servía.
+
+El workflow **autodetecta** el docroot entre los candidatos habituales, comprueba por HTTP que el
+sitio publicado corresponde al commit desplegado (`__build_sha.txt`) y **falla en rojo** si no
+coincide. Si defines la variable a mano, confírmala primero por SSH (`ls -d ~/public_html
+~/domains/*/public_html`) — un valor inventado aquí produce despliegues silenciosamente inútiles.
 
 ### 2b. Variables públicas del build (no secretas)
 
@@ -55,19 +60,23 @@ Variables. El build las inyecta automáticamente (ver el `env:` del workflow):
 | `NEXT_PUBLIC_SITE_URL` | `https://licitatis.es` | Recomendada (canonical/OG correctos) |
 | `NEXT_PUBLIC_HUBSPOT_PORTAL_ID` | `1234567` | Para que el formulario entregue leads |
 | `NEXT_PUBLIC_HUBSPOT_FORM_ID` | `xxxxxxxx-…` | Para que el formulario entregue leads |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | `contacto@licitatis.es` | Opcional |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | `info@licitatis.es` | Opcional |
 | `NEXT_PUBLIC_ENABLE_ANALYTICS` | `false` | Opcional |
 | `NEXT_PUBLIC_GA_ID` | `G-XXXXXXXXXX` | Opcional |
 
-Sin estas variables el sitio funciona igual (el formulario muestra confirmación pero no entrega el
-lead hasta configurar HubSpot).
+Sin estas variables el sitio funciona igual, pero el formulario **no finge éxito**: avisa de que el
+envío automático no está disponible y ofrece un enlace de correo con los datos ya escritos. El
+estado de éxito solo aparece cuando HubSpot confirma la entrega.
 
 ### 3. Clave SSH
 
 ```bash
-ssh-keygen -t ed25519 -C "deploy-licitatis" -f ./id_licitatis_deploy
-# Sube la clave PÚBLICA (id_licitatis_deploy.pub) a hPanel → SSH → Claves SSH.
+ssh-keygen -t ed25519 -C "deploy-licitatis" -f ~/.ssh/id_licitatis_deploy
+# Sube la clave PÚBLICA (~/.ssh/id_licitatis_deploy.pub) a hPanel → SSH → Claves SSH.
 ```
+
+> La clave se genera **fuera del repositorio**, a propósito. Generarla en la raíz del proyecto
+> deja una clave privada a un `git add .` de distancia de acabar publicada.
 
 **Guarda la clave PRIVADA en `HOSTINGER_SSH_PRIVATE_KEY` en BASE64** (recomendado): una sola línea,
 a prueba de saltos de línea/CRLF al pegar (evita el error `Load key ... error in libcrypto`). El

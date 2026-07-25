@@ -75,7 +75,7 @@ export function HeroBackdrop() {
       {/* Fondo de "cabina": rejilla clara + auroras intensas de marca. */}
       <div className="absolute inset-0 bg-grid-light bg-grid opacity-30 [mask-image:radial-gradient(ellipse_at_top,#000_20%,transparent_70%)]" />
       <div className="absolute -right-32 -top-40 h-[34rem] w-[34rem] animate-aurora rounded-full bg-brand-600/30 blur-3xl" />
-      <div className="absolute -left-40 top-1/3 h-96 w-96 animate-aurora rounded-full bg-brand-500/20 blur-3xl [animation-delay:-4s]" />
+      <div className="absolute -left-40 top-1/3 h-96 w-96 rounded-full bg-brand-500/20 blur-3xl" />
 
       {/* Foco que sigue al puntero (estático arriba a la derecha sin ratón). */}
       <div className="hero-spotlight absolute left-0 top-0" />

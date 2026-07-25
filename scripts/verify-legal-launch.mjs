@@ -29,6 +29,7 @@ import {
   CERTIFICATION_PATTERNS,
   BRAND_MISUSE_PATTERNS,
   scanText,
+  stripDeliberateCopy,
   isCanonicalUrlOk,
 } from "./legal-launch-rules.mjs";
 
@@ -72,7 +73,11 @@ const hasBuild = existsSync(OUT);
 // Se escanea el HTML SERVIDO (out/), que es lo que ve el público (sin comentarios de código).
 if (hasBuild) {
   for (const file of walk(OUT, [".html"])) {
-    const hits = scanText(readFileSync(file, "utf8"), PLACEHOLDER_PATTERNS);
+    // `stripDeliberateCopy`: dos literales de la portada son copy a propósito
+    // (el marcador de hueco «[[FALTA: …]]» del producto y el aviso veraz de revisión
+    // jurídica). Sin retirarlos, el modo producción bloqueaba SIEMPRE por la portada
+    // y el veredicto que autoriza a lanzar era inalcanzable.
+    const hits = scanText(stripDeliberateCopy(readFileSync(file, "utf8")), PLACEHOLDER_PATTERNS);
     if (hits.length) {
       const msg = `${rel(file)} contiene placeholders legales: ${[...new Set(hits)].join(", ")}`;
       if (PROD) block("PLACEHOLDER_EN_HTML", msg);

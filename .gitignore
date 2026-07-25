@@ -54,3 +54,13 @@ desktop.ini
 .eslintcache
 .cache/
 .turbo/
+
+# === Config local de herramientas (no forma parte del producto) ===
+.claude/
+
+# === Claves SSH: NUNCA en el repositorio ===
+# Estaban en la raiz del proyecto, sin versionar pero sin ignorar: a un `git add .`
+# de acabar publicadas. Lo suyo es generarlas en ~/.ssh (ver docs/DEPLOYMENT.md).
+id_*
+*.pem
+*.key

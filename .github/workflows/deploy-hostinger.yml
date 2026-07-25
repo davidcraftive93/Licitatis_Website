@@ -18,6 +18,13 @@ on:
         required: true
         default: "main"
         type: string
+      permitir_placeholders_legales:
+        description: >-
+          Desplegar AUNQUE las páginas legales lleven datos sin resolver
+          (o HubSpot no esté configurado). Solo para una beta consciente.
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: deploy-hostinger-production
@@ -101,12 +108,32 @@ jobs:
           printf '%s' "$DEPLOY_SHA" > out/__build_sha.txt
           echo "Artefacto out/ verificado."
 
+      # El gate en modo producción bloquea si el HTML que se va a servir lleva datos
+      # legales sin resolver o si HubSpot no está configurado.
+      #
+      # Antes este paso pasaba `--deploy` SIEMPRE, y esa opción degrada a aviso
+      # exactamente esos dos bloqueantes: el gate decía PASS mientras las páginas
+      # legales llevaban [LEGAL_REVIEW_REQUIRED], y el comentario de ci.yml aseguraba
+      # que «el bloqueo duro ocurre en el workflow de despliegue». No ocurría en
+      # ninguna parte.
+      #
+      # Ahora el bypass existe pero hay que pedirlo: la casilla
+      # `permitir_placeholders_legales` queda registrada en el log de la ejecución,
+      # así que desplegar una beta con textos legales pendientes es una decisión
+      # deliberada y trazable, no el comportamiento por defecto.
       - name: Release gate legal (producción)
         env:
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_HUBSPOT_PORTAL_ID: ${{ vars.NEXT_PUBLIC_HUBSPOT_PORTAL_ID }}
           NEXT_PUBLIC_HUBSPOT_FORM_ID: ${{ vars.NEXT_PUBLIC_HUBSPOT_FORM_ID }}
-        run: node scripts/verify-legal-launch.mjs --mode production --deploy
+          PERMITIR_PLACEHOLDERS: ${{ inputs.permitir_placeholders_legales }}
+        run: |
+          if [ "$PERMITIR_PLACEHOLDERS" = "true" ]; then
+            echo "::warning::Se despliega con datos legales SIN RESOLVER por decisión explícita (permitir_placeholders_legales=true). Los placeholders y la falta de HubSpot pasan a ser avisos."
+            node scripts/verify-legal-launch.mjs --mode production --deploy
+          else
+            node scripts/verify-legal-launch.mjs --mode production
+          fi
 
       - name: Validar configuración de Hostinger
         env:

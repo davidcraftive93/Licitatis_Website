@@ -76,3 +76,24 @@ Estados: `PASS` · `FAIL` · `PARTIAL` · `NOT_APPLICABLE` · `BLOCKED_LEGAL_REV
 - **GO beta privada:** CONDICIONADO — requiere que los participantes conozcan el estado beta, verificar HubSpot y resolver el mínimo legal de la política de privacidad.
 - **GO apertura pública:** **NO** — persisten `[LEGAL_REVIEW_REQUIRED]`, `BLOCKED_LEGAL_REVIEW`, `BLOCKED_PROVIDER_CONFIRMATION`, `BLOCKED_PRODUCT_CONFIRMATION`.
 - **GO servicio cobrable:** **NO** — faltan términos comerciales, DPA, subencargados, política de conservación y revisión jurídica.
+
+---
+
+## Adenda — rama `feature/expediente-vivo` (PR #20, apilada sobre #19)
+
+Esta matriz corresponde a la auditoría anterior. La rama de «El Expediente Vivo» **no cambia
+ninguno de sus veredictos**: sigue `BLOCKED_LEGAL_REVIEW` y la apertura pública sigue en **NO**.
+
+Lo que sí cambia, a favor:
+
+| Punto de la matriz | Antes | Ahora |
+|---|---|---|
+Coherencia de datos mostrados | el mismo expediente de demostración exhibía tres avances distintos (64 % / 50 % / 74 %) | una sola fuente (`src/lib/demo-expediente.ts`); la fracción del checklist se deriva |
+Claim «Datos alojados en la UE» | afirmado en la landing, **contradicho** por `/seguridad-y-privacidad` | retirado de la landing hasta que el propietario confirme proveedor y región |
+Correo de contacto | literal fijo en `content.ts` **y** `siteConfig` en paralelo | fuente única (`siteConfig.contactEmail`) |
+Documentación contra código | README/DEPLOYMENT afirmaban que sin HubSpot «el formulario muestra confirmación sin entregar el lead» | corregido: el código nunca finge éxito, y la documentación ya lo dice |
+Higiene de credenciales | `ssh-keygen` documentado **dentro** del repositorio, claves presentes sin ignorar | instrucción a `~/.ssh` y claves ignoradas (borrarlas del disco es del propietario) |
+Cobertura de pruebas | 21 | **59** (expediente, capas, procedencia, intención de CTA, geometría del viaje, niveles de calidad) |
+
+Sin cambios en: secretos, entorno `production`, workflow de despliegue (sigue manual con
+confirmación `DEPLOY LICITATIS`), DNS, Hostinger, ni en el estado `noindex`.

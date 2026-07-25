@@ -1,5 +1,6 @@
 import { Section, SectionHeader } from "@/components/ui/Section";
 import { StepJourney } from "@/components/sections/StepJourney";
+import { demoExpediente } from "@/lib/demo-expediente";
 
 /**
  * "Cómo funciona" como descenso guiado: el mismo expediente de demostración
@@ -11,7 +12,7 @@ export function HowItWorks() {
       <SectionHeader
         eyebrow="Cómo funciona"
         title="Viaja por dentro de una licitación"
-        description="Del pliego al informe para dirección: sigue el expediente de demostración EXP-2024-0142 paso a paso y mira lo que LICITATIS hace en cada tramo."
+        description={`Del pliego al informe para dirección: sigue el expediente de demostración ${demoExpediente.code} paso a paso y mira lo que LICITATIS hace en cada tramo.`}
       />
       <StepJourney />
     </Section>
