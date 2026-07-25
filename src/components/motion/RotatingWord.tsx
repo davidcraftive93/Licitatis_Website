@@ -14,7 +14,8 @@ interface RotatingWordProps {
 /**
  * Rota una lista de frases con deslizamiento vertical. Reserva el ancho de la
  * frase más larga (sin saltos de layout). Con prefers-reduced-motion se queda
- * en la primera. Para AT anuncia la lista completa una sola vez (sr-only).
+ * en la primera. La propia frase funciona como control accesible para pausar
+ * o reanudar la rotación con ratón, foco, Enter o Espacio.
  */
 export function RotatingWord({ words, interval = 2400, className }: RotatingWordProps) {
   const reduced = usePrefersReducedMotion();
@@ -28,13 +29,22 @@ export function RotatingWord({ words, interval = 2400, className }: RotatingWord
   }, [reduced, paused, words.length, interval]);
 
   return (
-    <span
-      className={cn("relative inline-grid overflow-hidden align-bottom", className)}
-      // Mecanismo de pausa (SC 2.2.2): el movimiento se detiene al señalar/enfocar.
+    <button
+      type="button"
+      className={cn(
+        "relative inline-grid appearance-none overflow-hidden border-0 bg-transparent p-0 text-left align-bottom font-inherit",
+        className,
+      )}
+      aria-pressed={paused}
+      aria-label={`${paused ? "Reanudar" : "Pausar"} rotación. Funciones: ${words.join(", ")}`}
+      onClick={() => setPaused((value) => !value)}
       onPointerEnter={() => setPaused(true)}
-      onPointerLeave={() => setPaused(false)}
+      onPointerLeave={(event) => {
+        if (document.activeElement !== event.currentTarget) setPaused(false);
+      }}
+      onFocus={() => setPaused(true)}
+      onBlur={() => setPaused(false)}
     >
-      <span className="sr-only">{words.join(", ")}</span>
       {/* Fantasma que fija el ancho al de la frase más larga. */}
       <span aria-hidden="true" className="invisible col-start-1 row-start-1 whitespace-nowrap">
         {words.reduce((a, b) => (b.length > a.length ? b : a), "")}
@@ -51,6 +61,6 @@ export function RotatingWord({ words, interval = 2400, className }: RotatingWord
           {word}
         </span>
       ))}
-    </span>
+    </button>
   );
 }
