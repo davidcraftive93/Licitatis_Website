@@ -129,6 +129,7 @@ jobs:
             *[!0-9]*) echo "::error::HOSTINGER_PORT debe ser numérico."; exit 1 ;;
           esac
           case "$DEPLOY_PATH" in
+            *[!A-Za-z0-9_./-]*) echo "::error::HOSTINGER_DEPLOY_PATH contiene caracteres no permitidos."; exit 1 ;;
             */public_html) : ;;
             *) echo "::error::HOSTINGER_DEPLOY_PATH no termina exactamente en /public_html."; exit 1 ;;
           esac
@@ -236,7 +237,7 @@ jobs:
           SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
 
           ssh -i "$HOME/.ssh/id_deploy" -p "$SSH_PORT" -o StrictHostKeyChecking=yes -o ConnectTimeout=20 "$SSH_USER@$SSH_HOST" \
-            "DP='$TARGET'; if [ -d \"\$DP\" ]; then BK=\"\${DP%/}.backup-$(date +%Y%m%d%H%M%S)\"; cp -a \"\$DP\" \"\$BK\"; ls -dt \"\${DP%/}\".backup-* 2>/dev/null | tail -n +6 | xargs -r rm -rf; echo 'Backup creado y retención aplicada.'; else echo 'Primer despliegue: no existe contenido previo.'; fi"
+            "DP='$TARGET'; if [ -d \"\$DP\" ]; then BK=\"\${DP%/}.backup-$(date +%Y%m%d%H%M%S)\"; if cp -a \"\$DP\" \"\$BK\"; then ls -dt \"\${DP%/}\".backup-* 2>/dev/null | tail -n +6 | xargs -r rm -rf; echo 'Backup creado y retención aplicada.'; else echo 'No se pudo crear el backup; se aborta el despliegue.' >&2; exit 1; fi; else echo 'Primer despliegue: no existe contenido previo.'; fi"
 
       - name: Sincronizar out/ hacia Hostinger
         env:
