@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { usePrefersReducedMotion, useFinePointer, useRafCallback } from "@/components/motion/hooks";
 
@@ -37,6 +37,15 @@ export function Magnetic({ children, className, strength = 5 }: MagneticProps) {
     node.style.transform = `translate3d(${(dx * strength * 2).toFixed(1)}px, ${(dy * strength * 2).toFixed(1)}px, 0)`;
   });
 
+  useEffect(() => {
+    if (active) return;
+    const node = ref.current;
+    if (!node) return;
+    node.style.transition = "";
+    node.style.transform = "translate3d(0, 0, 0)";
+    node.style.willChange = "";
+  }, [active]);
+
   function onEnter() {
     if (ref.current) ref.current.style.willChange = "transform";
   }
@@ -55,8 +64,8 @@ export function Magnetic({ children, className, strength = 5 }: MagneticProps) {
       onPointerMove={active ? (e) => onMove(e.clientX, e.clientY) : undefined}
       onPointerEnter={active ? onEnter : undefined}
       onPointerLeave={active ? onLeave : undefined}
-      onTransitionEnd={() => {
-        if (ref.current) ref.current.style.willChange = "";
+      onTransitionEnd={(event) => {
+        if (event.target === event.currentTarget && ref.current) ref.current.style.willChange = "";
       }}
     >
       {children}
