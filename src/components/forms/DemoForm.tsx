@@ -8,11 +8,12 @@ import { TextInput, TextArea, SelectInput, Checkbox } from "@/components/ui/Form
 import { leadSchema, tendersPerYearOptions, challengeOptions } from "@/lib/validation";
 import { readUtmParams, readHubspotUtk } from "@/lib/utm";
 import { submitLeadToHubspot } from "@/lib/hubspot";
+import { startCtaOriginCapture, getCtaOrigin } from "@/lib/cta-origin";
 import { CONTACT_EMAIL } from "@/lib/content";
 import { company } from "@/lib/legal";
 
 /** Enlace de correo alternativo con los datos ya escritos, para no perder el lead. */
-function buildMailtoFallback(values: FormValues): string {
+function buildMailtoFallback(values: FormValues, ctaOrigin?: string): string {
   const subject = "Solicitud de plaza — Beta Partner LICITATIS";
   const lines = [
     `Nombre: ${values.firstName} ${values.lastName}`.trim(),
@@ -21,6 +22,7 @@ function buildMailtoFallback(values: FormValues): string {
     `Correo: ${values.email}`,
     values.phone ? `Teléfono: ${values.phone}` : "",
     values.message ? `\nMensaje:\n${values.message}` : "",
+    ctaOrigin ? `\nEntró por: ${ctaOrigin}` : "",
   ].filter(Boolean);
   return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
     lines.join("\n"),
@@ -79,6 +81,8 @@ export function DemoForm() {
       hutk: readHubspotUtk(),
       pageUri: window.location.href,
     });
+    // Un único listener delegado registra qué CTA trajo a la persona hasta aquí.
+    return startCtaOriginCapture();
   }, []);
 
   function update<K extends keyof FormValues>(key: K, value: FormValues[K]) {
@@ -100,6 +104,7 @@ export function DemoForm() {
       utm: attribution.utm,
       hutk: attribution.hutk,
       pageUri: attribution.pageUri,
+      ctaOrigin: getCtaOrigin(),
     };
 
     const parsed = leadSchema.safeParse(payload);
@@ -368,7 +373,7 @@ export function DemoForm() {
           </p>
           {showFallback ? (
             <a
-              href={buildMailtoFallback(values)}
+              href={buildMailtoFallback(values, getCtaOrigin())}
               className="mt-2 inline-flex items-center gap-1.5 pl-6 font-semibold text-red-800 underline underline-offset-2"
             >
               <Icon name="mail" size={14} />

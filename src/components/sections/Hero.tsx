@@ -90,11 +90,17 @@ export function Hero() {
               style={{ "--enter-delay": "280ms" } as React.CSSProperties}
             >
               <Magnetic>
-                <Button href="#beta" size="lg" variant="gradient" withArrow>
+                <Button
+                  href="#beta"
+                  size="lg"
+                  variant="gradient"
+                  withArrow
+                  data-cta="hero-analizar"
+                >
                   Analizar una licitación real
                 </Button>
               </Magnetic>
-              <Button href="#beta" size="lg" variant="inverse">
+              <Button href="#beta" size="lg" variant="inverse" data-cta="hero-beta-partner">
                 Ser Beta Partner
               </Button>
             </div>

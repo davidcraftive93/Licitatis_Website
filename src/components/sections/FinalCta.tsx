@@ -38,7 +38,13 @@ export function FinalCta() {
               </div>
               <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Magnetic>
-                  <Button href="#beta" size="lg" variant="gradient" withArrow>
+                  <Button
+                    href="#beta"
+                    size="lg"
+                    variant="gradient"
+                    withArrow
+                    data-cta="cierre-analizar"
+                  >
                     Analizar una licitación real
                   </Button>
                 </Magnetic>

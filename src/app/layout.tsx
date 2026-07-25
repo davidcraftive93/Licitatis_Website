@@ -73,6 +73,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang={siteConfig.lang}
       className={`${inter.variable} ${poppins.variable} ${geistMono.variable}`}
+      // El script antiparpadeo añade `dark`/`js` y `color-scheme` a <html> antes de
+      // hidratar, así que React encuentra atributos que no puso. Es intencionado:
+      // sin esto la consola se llena de avisos de hidratación en cada carga.
+      suppressHydrationWarning
     >
       <head>
         {/* Aplica el tema guardado ANTES del primer paint: sin parpadeo blanco al

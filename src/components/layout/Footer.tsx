@@ -40,7 +40,7 @@ export function Footer() {
               tus licitaciones públicas, con IA.
             </p>
             <div className="mt-5">
-              <Button href="/#beta" size="sm" variant="gradient">
+              <Button href="/#beta" size="sm" variant="gradient" data-cta="pie">
                 Analizar una licitación real
               </Button>
             </div>

@@ -66,6 +66,12 @@ export const leadSchema = z.object({
     .optional(),
   pageUri: z.string().max(500).optional(),
   hutk: z.string().max(120).optional(),
+  /**
+   * Qué botón trajo a la persona hasta el formulario. Se recoge del propio DOM
+   * (atributo `data-cta`), nunca de la URL, y viaja dentro del mensaje: no crea
+   * ninguna propiedad nueva en HubSpot, así que no puede tumbar un envío.
+   */
+  ctaOrigin: z.string().trim().max(80).optional(),
 });
 
 export type LeadInput = z.infer<typeof leadSchema>;
