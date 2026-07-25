@@ -471,8 +471,12 @@ export function StepJourney() {
 
   return (
     <div className="mt-12 grid items-start gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-14">
-      {/* Pasos (columna izquierda). */}
-      <ol ref={listRef} className="relative">
+      {/* Pasos (columna izquierda).
+          `min-w-0`: como celda de grid su minimo por defecto es `auto`, así que el
+          ancho mínimo del panel del mock (que en móvil va dentro de cada paso)
+          ensanchaba la columna y sacaba 76 px de scroll horizontal a la página
+          entera por debajo de ~430 px. */}
+      <ol ref={listRef} className="relative min-w-0">
         {/* Ruta del expediente: se dibuja conforme bajas (stroke-dashoffset). El trazado
             se genera midiendo las estaciones reales, así que encaja con cualquier alto. */}
         {route ? (
@@ -594,7 +598,7 @@ export function StepJourney() {
       </ol>
 
       {/* Panel sticky (escritorio): las 6 pantallas superpuestas, crossfade a la activa. */}
-      <div className="relative hidden lg:sticky lg:top-24 lg:block" aria-hidden="true">
+      <div className="relative hidden min-w-0 lg:sticky lg:top-24 lg:block" aria-hidden="true">
         <div className="absolute inset-6 -z-10 rounded-[2.5rem] bg-brand-400/20 blur-2xl" />
         <div className="relative min-h-[26rem]">
           {VISUALS.map((Visual, i) => (
