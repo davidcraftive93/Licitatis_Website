@@ -1,4 +1,5 @@
 import type { IconName } from "@/components/ui/icons";
+import { siteConfig } from "@/lib/site";
 
 /**
  * Contenido de la landing — fiel al brand kit de LICITATIS (julio 2026).
@@ -7,7 +8,10 @@ import type { IconName } from "@/components/ui/icons";
  * métricas, premios). Disclaimers obligatorios (§18).
  */
 
-export const CONTACT_EMAIL = "info@licitatis.es";
+// Fuente única: `siteConfig` ya resuelve la variable de entorno. Cuando esto era un
+// literal fijo, definir NEXT_PUBLIC_CONTACT_EMAIL mostraba dos correos distintos en
+// la misma página (uno de ellos en el aviso de protección de datos del formulario).
+export const CONTACT_EMAIL = siteConfig.contactEmail;
 export const BETA_MAILTO = `mailto:${CONTACT_EMAIL}?subject=Beta%20Partner%20LICITATIS`;
 
 /* Disclaimers obligatorios (§18) */
@@ -396,8 +400,12 @@ export const privacyPoints: PrivacyPoint[] = [
   },
   {
     icon: "backup",
-    title: "Datos alojados en la UE",
-    text: "Infraestructura en la Unión Europea, con protección de sesión reforzada.",
+    // Antes afirmaba «Datos alojados en la UE — Infraestructura en la Unión Europea»
+    // mientras /seguridad-y-privacidad decía que la localización debe confirmarse
+    // antes de la apertura pública: la web se contradecía a sí misma. Se retira la
+    // afirmación (no el tema) hasta que el propietario confirme proveedor y región.
+    title: "Alojamiento y localización de datos",
+    text: "Dónde se alojan los datos, qué proveedores intervienen y con qué garantías, detallado en la página de seguridad y privacidad y en la lista de subencargados.",
   },
 ];
 

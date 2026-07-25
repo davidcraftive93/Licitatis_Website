@@ -11,7 +11,7 @@ Como el sitio es estático (`output: "export"`), **no** hay servidor Next: las c
 | Cabecera | Propósito |
 | --- | --- |
 | `Content-Security-Policy` | Restringe orígenes de scripts, estilos, imágenes y conexiones |
-| `Strict-Transport-Security` | Fuerza HTTPS (HSTS, 2 años, subdominios, preload) |
+| `Strict-Transport-Security` | Fuerza HTTPS (HSTS, 1 año, **solo este host**: sin `includeSubDomains` ni `preload`, para no arrastrar a `app.licitatis.es`, que es otro despliegue) |
 | `X-Content-Type-Options: nosniff` | Evita el MIME sniffing |
 | `X-Frame-Options: DENY` | Anti-clickjacking |
 | `Referrer-Policy: strict-origin-when-cross-origin` | Limita el referrer |
