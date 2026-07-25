@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
@@ -14,6 +14,8 @@ import { cn } from "@/lib/utils";
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const firstMobileLinkRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -24,12 +26,18 @@ export function Header() {
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+
+    const focusFrame = window.requestAnimationFrame(() => firstMobileLinkRef.current?.focus());
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      window.requestAnimationFrame(() => menuButtonRef.current?.focus());
     };
+
     document.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
     return () => {
+      window.cancelAnimationFrame(focusFrame);
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
     };
@@ -92,12 +100,14 @@ export function Header() {
           <div className="flex items-center gap-1 lg:hidden">
             <ThemeToggle />
             <button
+              ref={menuButtonRef}
               type="button"
               className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-white hover:bg-white/10"
               aria-expanded={open}
               aria-controls="mobile-menu"
+              aria-haspopup="menu"
               aria-label={open ? "Cerrar menú" : "Abrir menú"}
-              onClick={() => setOpen((v) => !v)}
+              onClick={() => setOpen((value) => !value)}
             >
               <Icon name={open ? "close" : "menu"} size={24} />
             </button>
@@ -111,9 +121,10 @@ export function Header() {
           <Container>
             <nav aria-label="Principal (móvil)" className="border-t border-white/10 py-4">
               <ul className="flex flex-col gap-1">
-                {navLinks.map((link) => (
+                {navLinks.map((link, index) => (
                   <li key={link.href}>
                     <Link
+                      ref={index === 0 ? firstMobileLinkRef : undefined}
                       href={link.href}
                       onClick={() => setOpen(false)}
                       className="block rounded-lg px-3 py-2.5 text-base font-medium text-ink-100 hover:bg-white/10"
