@@ -6,30 +6,35 @@ si no se ejecutó.
 
 - **Base**: `agent/auditoria-rendimiento-licitatis` @ `1c96925`, construida en un worktree aparte
   reutilizando el mismo `node_modules` (las dependencias no cambian en esta rama).
-- **Rama**: `feature/expediente-vivo` @ `d75260e`.
+- **Rama**: `feature/expediente-vivo` @ `1ba9723` (medición final, con la lógica extraída a
+  `src/lib/journey.ts` y `src/lib/quality-tier.ts`).
 
 ## 1. Peso del artefacto
 
 | Métrica | Base | Rama | Δ | Fiabilidad |
 |---|---|---|---|---|
-`out/_next/static` (bytes) | 1 462 549 | 1 464 636 | **+2 087 (+0,14 %)** | **Medido** (`npm run build` en ambas; entre builds sucesivos varía ±20 B por el hash de los chunks)
+`out/_next/static` (bytes) | 1 462 549 | 1 465 273 | **+2 724 (+0,19 %)** | **Medido** (`npm run build` en ambas; entre builds sucesivos varía ±20 B por el hash de los chunks)
 Chunks JS | 13 | 13 | 0 | **Medido**
 First Load JS compartido | 102 kB | 103 kB | +1 kB | **Medido**
-`/` (tamaño de ruta) | 29,4 kB | 30 kB | +0,6 kB | **Medido**
+`/` (tamaño de ruta) | 29,4 kB | 30,2 kB | +0,8 kB | **Medido**
 `/` First Load JS | 138 kB | 139 kB | **+1 kB (+0,7 %)** | **Medido**
 Páginas HTML exportadas | 10 | 10 | 0 | **Medido** (`find out -name index.html`)
 
 **El presupuesto pedía ≤ 0 % y toleraba hasta +10 % con justificación escrita. Justificación**: la
 rama añade contenido nuevo (chip del expediente en 4 puntos, cadena de procedencia, cabeceras de las
 4 capas) que es **HTML renderizado en servidor**, no JavaScript. El único JS de cliente nuevo es
-`src/lib/cta-origin.ts` (~40 líneas, un listener). La refactorización de la ruta a variable CSS
-elimina renders, no bytes. Se compensó parcialmente borrando 196 líneas de componentes muertos.
+`src/lib/cta-origin.ts` (~40 líneas, un listener) más dos módulos de lógica pura
+(`journey.ts`, `quality-tier.ts`) que **sustituyen** código que ya estaba dentro de los componentes,
+no lo añaden. La refactorización de la ruta a variable CSS elimina renders, no bytes. Se compensó
+parcialmente borrando 196 líneas de componentes muertos.
 
 ## 2. Movimiento
 
 | Métrica | Base | Rama | Fiabilidad |
 |---|---|---|---|
 `setState` por frame de scroll | **1** (`StepJourney`) | **0** | **Medido** (no queda ninguna referencia a `setDrawn`)
+Niveles de calidad implementados y probados | implícitos y repartidos | `low` / `standard` / `enhanced` en `src/lib/quality-tier.ts`, 11 pruebas | **Medido**
+Geometría del viaje probada | 0 pruebas | 13 pruebas (`src/lib/journey.ts`) | **Medido**
 Auroras animadas en bucle | **9** | **2** (atmósfera del hero + cierre) | **Medido** (`grep animate-aurora`)
 Clases `animate-*` distintas | 6 | 6 | **Medido**
 Canvas activos | 1 | 1 | **Medido**
@@ -51,7 +56,7 @@ Cadena de procedencia | 4 niveles, el último sin fuente | **Medido**
 CTA etiquetados | 10 (`cabecera`, `hero-analizar`, `hero-beta-partner`, `plan-free/starter/pro/agency`, `faq`, `cierre-analizar`, `pie`) | **Medido**
 Aviso de hidratación en consola | desaparece con `suppressHydrationWarning` | **Medido**
 Release gate legal | **PASS** (0 bloqueantes, 9 avisos) — mismo estado que la base | **Medido**
-Tests | 21 → **35**, todos en verde | **Medido**
+Tests | 21 → **59**, todos en verde | **Medido**
 
 ## 4. Responsive
 
@@ -91,14 +96,24 @@ Nivel y fuente de la procedencia | 4,73 / 18,72 | 6,25 | **Medido**
 Mínimo observado **4,73:1** — por encima del 4,5:1 exigido, pero con poco margen: conviene no
 oscurecer más el token `--fg-muted`.
 
+## 5.b Defectos latentes que la extracción a lógica pura destapó
+
+Ninguno era visible en el navegador; los tres salieron al escribir las pruebas de los casos límite.
+
+| Defecto | Escenario | Efecto |
+|---|---|---|
+`(línea - top) / height` con `height === 0` | La lista mide 0 antes del primer layout y con `display: none` | `NaN` en `stroke-dashoffset`: valor inválido, la ruta se queda sin dibujar **sin ningún error en consola**
+`dashOffset` con `pathLength` sin medir | `getTotalLength()` aún no llamado | Mismo final: valor inválido en el trazo
+Paso activo elegido por el último del lote del `IntersectionObserver` | Dos pasos cruzando la banda (viewport alto o pasos cortos) | El orden del lote no está garantizado, así que el paso activo podía **retroceder** mientras bajabas
+
 ## 6. Lo que NO se ha medido
 
 | Métrica | Motivo | Cómo obtenerla |
 |---|---|---|
 LCP, CLS, INP, long tasks | Requiere Lighthouse/WebPageTest en equipo real; el panel de previsualización de esta sesión corre con la pestaña oculta (`document.hidden === true`), donde `requestAnimationFrame` no se ejecuta y el `IntersectionObserver` no entrega | Lighthouse en el equipo del propietario sobre el `out/` construido |
-Estaciones del viaje encendiéndose 1→6 al bajar | Depende del `IntersectionObserver`, que no entrega en pestaña oculta. El observador **no se ha tocado** en esta rama | Abrir la página y bajar |
-`prefers-reduced-motion` | No se puede emular desde este panel. En código: la ruta nace con `--journey-offset: 0` (dibujada) y **no se registra ningún listener**; `globals.css` fuerza `animation-delay: 0ms` | DevTools → Rendering → Emulate `prefers-reduced-motion` |
-Tier `low` (`saveData`, `deviceMemory`) | No emulable aquí | Equipo modesto o DevTools |
+Estaciones del viaje encendiéndose 1→6 al bajar | Depende del `IntersectionObserver`, que no entrega en pestaña oculta. **El callback sí se ha tocado** en esta rama (`pickActiveStep`) y su lógica está cubierta por pruebas; lo que no se ha visto es el encendido real | Abrir la página y bajar |
+`prefers-reduced-motion` | No se puede emular desde este panel. En código: la ruta nace con `--journey-offset: 0` (dibujada) y **no se registra ningún listener**; `globals.css` fuerza `animation-delay: 0ms`. `journey.test.ts` fija que progreso 1 ⇒ offset 0 | DevTools → Rendering → Emulate `prefers-reduced-motion` |
+Tier `low` en un dispositivo real (`saveData`, `deviceMemory`) | La **decisión** está cubierta por 11 pruebas (`quality-tier.test.ts`); lo que no se ha observado es el canvas en un equipo con esas señales | Equipo modesto, o DevTools → Network → Save-Data |
 Comportamiento del listener delegado de CTA en la página | En pestaña oculta no llegan clics reales; la lógica está cubierta por 6 pruebas unitarias (`cta-origin.test.ts`) | Pulsar un CTA y enviar el formulario con HubSpot configurado |
 
 ## 7. Veredicto
