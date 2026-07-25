@@ -16,12 +16,18 @@ import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import { JourneyRail, type RailStation } from "@/components/motion/JourneyRail";
 import { faqLd } from "@/lib/seo";
 
-/** Estaciones del "viaje" (rail lateral con scroll-spy, solo escritorio ancho). */
+/**
+ * Estaciones del "viaje" (rail lateral con scroll-spy, solo escritorio ancho).
+ * `covers` recoge las secciones sin parada propia: así el punto activo nunca se
+ * queda clavado mientras el visitante sigue bajando.
+ */
 const STATIONS: RailStation[] = [
-  { id: "producto", label: "Inicio" },
+  { id: "producto", label: "Inicio", covers: ["el-caso"] },
+  { id: "el-problema", label: "El problema" },
   { id: "como-funciona", label: "Cómo funciona" },
   { id: "pasaporte", label: "El Pasaporte" },
-  { id: "funcionalidades", label: "Funcionalidades" },
+  { id: "funcionalidades", label: "Funcionalidades", covers: ["ia"] },
+  { id: "no-es-un-buscador", label: "Por qué LICITATIS", covers: ["para-quien"] },
   { id: "seguridad", label: "Confianza" },
   { id: "planes", label: "Planes" },
   { id: "beta", label: "Beta" },

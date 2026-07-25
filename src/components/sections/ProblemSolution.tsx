@@ -5,7 +5,7 @@ import { problemSolution } from "@/lib/content";
 
 export function ProblemSolution() {
   return (
-    <Section tone="paper">
+    <Section id="el-problema" tone="paper">
       <Reveal className="mx-auto max-w-3xl text-center">
         <p className="font-display text-2xl font-semibold text-fg-strong sm:text-3xl">
           «El problema no es encontrar licitaciones.{" "}

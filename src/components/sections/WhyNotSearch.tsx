@@ -5,7 +5,7 @@ import { searchVsLicitatis } from "@/lib/content";
 
 export function WhyNotSearch() {
   return (
-    <Section tone="paper">
+    <Section id="no-es-un-buscador" tone="paper">
       <SectionHeader
         eyebrow="No es un buscador"
         title="Un buscador te avisa. LICITATIS te lleva hasta la oferta lista."

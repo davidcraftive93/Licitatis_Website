@@ -54,3 +54,6 @@ desktop.ini
 .eslintcache
 .cache/
 .turbo/
+
+# === Config local de herramientas (no forma parte del producto) ===
+.claude/
