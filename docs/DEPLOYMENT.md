@@ -44,6 +44,18 @@ este entorno, nunca en el código ni en variables públicas.
 desde `~/domains/licitatis.es/public_html`. Esa confusión ya costó un despliegue «correcto» que no
 cambiaba nada de la web: rsync escribía en una carpeta que nadie servía.
 
+Valores admitidos (cualquiera de los dos):
+
+| Valor | Nota |
+|---|---|
+| `~/public_html` | Recomendado. La virgulilla se expande contra el HOME real del servidor |
+| `/home/USUARIO/public_html` | Ruta absoluta, si prefieres fijarla |
+
+**Sin comillas, sin espacios, sin `$HOME` y sin barra final de más.** El workflow valida el valor
+antes de conectarse y aborta si no encaja; el mensaje de error dice qué formas acepta. Este chequeo
+ya rechazó un despliegue con el mensaje «HOSTINGER_DEPLOY_PATH contiene caracteres no permitidos»
+porque el valor no era ninguna de esas dos formas.
+
 El workflow **autodetecta** el docroot entre los candidatos habituales, comprueba por HTTP que el
 sitio publicado corresponde al commit desplegado (`__build_sha.txt`) y **falla en rojo** si no
 coincide. Si defines la variable a mano, confírmala primero por SSH (`ls -d ~/public_html
