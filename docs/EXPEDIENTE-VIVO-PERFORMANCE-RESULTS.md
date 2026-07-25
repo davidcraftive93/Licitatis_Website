@@ -6,18 +6,18 @@ si no se ejecutó.
 
 - **Base**: `agent/auditoria-rendimiento-licitatis` @ `1c96925`, construida en un worktree aparte
   reutilizando el mismo `node_modules` (las dependencias no cambian en esta rama).
-- **Rama**: `feature/expediente-vivo` @ `1ba9723` (medición final, con la lógica extraída a
-  `src/lib/journey.ts` y `src/lib/quality-tier.ts`).
+- **Rama**: `feature/expediente-vivo`, medición final tras la revisión adversarial previa al
+  merge (incluye la lógica extraída a `journey.ts`, `quality-tier.ts` y `lead-outcome.ts`).
 
 ## 1. Peso del artefacto
 
 | Métrica | Base | Rama | Δ | Fiabilidad |
 |---|---|---|---|---|
-`out/_next/static` (bytes) | 1 462 549 | 1 465 273 | **+2 724 (+0,19 %)** | **Medido** (`npm run build` en ambas; entre builds sucesivos varía ±20 B por el hash de los chunks)
+`out/_next/static` (bytes) | 1 462 549 | 1 465 983 | **+3 434 (+0,23 %)** | **Medido** (`npm run build` en ambas; entre builds sucesivos varía ±20 B por el hash de los chunks)
 Chunks JS | 13 | 13 | 0 | **Medido**
 First Load JS compartido | 102 kB | 103 kB | +1 kB | **Medido**
-`/` (tamaño de ruta) | 29,4 kB | 30,2 kB | +0,8 kB | **Medido**
-`/` First Load JS | 138 kB | 139 kB | **+1 kB (+0,7 %)** | **Medido**
+`/` (tamaño de ruta) | 29,4 kB | 30,8 kB | +1,4 kB | **Medido**
+`/` First Load JS | 138 kB | 140 kB | **+2 kB (+1,4 %)** | **Medido**
 Páginas HTML exportadas | 10 | 10 | 0 | **Medido** (`find out -name index.html`)
 
 **El presupuesto pedía ≤ 0 % y toleraba hasta +10 % con justificación escrita. Justificación**: la
@@ -35,6 +35,7 @@ parcialmente borrando 196 líneas de componentes muertos.
 `setState` por frame de scroll | **1** (`StepJourney`) | **0** | **Medido** (no queda ninguna referencia a `setDrawn`)
 Niveles de calidad implementados y probados | implícitos y repartidos | `low` / `standard` / `enhanced` en `src/lib/quality-tier.ts`, 11 pruebas | **Medido**
 Geometría del viaje probada | 0 pruebas | 13 pruebas (`src/lib/journey.ts`) | **Medido**
+Camino del lead probado | 0 pruebas (no era testable) | 13 pruebas (`src/lib/lead-outcome.ts` + `buildMessage`) | **Medido**
 Auroras animadas en bucle | **9** | **2** (atmósfera del hero + cierre) | **Medido** (`grep animate-aurora`)
 Clases `animate-*` distintas | 6 | 6 | **Medido**
 Canvas activos | 1 | 1 | **Medido**
@@ -55,8 +56,9 @@ Las 9 funcionalidades siguen en el HTML | 4 capas, 9 tarjetas, ninguna oculta tr
 Cadena de procedencia | 4 niveles, el último sin fuente | **Medido**
 CTA etiquetados | 10 (`cabecera`, `hero-analizar`, `hero-beta-partner`, `plan-free/starter/pro/agency`, `faq`, `cierre-analizar`, `pie`) | **Medido**
 Aviso de hidratación en consola | desaparece con `suppressHydrationWarning` | **Medido**
-Release gate legal | **PASS** (0 bloqueantes, 9 avisos) — mismo estado que la base | **Medido**
-Tests | 21 → **59**, todos en verde | **Medido**
+Release gate legal, modo dev (lo que corre en CI) | **PASS** (0 bloqueantes, 8 avisos) — mismo estado que la base | **Medido**
+Release gate legal, modo **producción** | **BLOCKED_LEGAL_REVIEW** (8 bloqueantes: 7 páginas legales + HubSpot sin configurar). Es el estado correcto y no cambia en esta rama | **Medido**
+Tests | 21 → **83**, todos en verde | **Medido**
 
 ## 4. Responsive
 
@@ -118,7 +120,7 @@ Comportamiento del listener delegado de CTA en la página | En pestaña oculta n
 
 ## 7. Veredicto
 
-Presupuesto **cumplido** salvo el objetivo de «≤ 0 % de JavaScript», que queda en **+0,7 %** del
-First Load de la portada — dentro del margen tolerado y justificado arriba. Ninguna estrategia de
+Presupuesto **cumplido** salvo el objetivo de «≤ 0 % de JavaScript», que queda en **+1,4 %** del
+First Load de la portada — dentro del margen tolerado (+10 %) y justificado arriba. Ninguna estrategia de
 degradación del presupuesto (bajar N4 a N2, recortar la constelación, quitar el efecto) ha hecho
 falta.

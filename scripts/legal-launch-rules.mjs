@@ -47,6 +47,33 @@ export const CERTIFICATION_PATTERNS = [
 ];
 
 /**
+ * Literales que son COPY DELIBERADO, no datos sin resolver.
+ *
+ * Sin esta lista el gate en modo producción era **inalcanzable**: la portada
+ * bloqueaba por dos textos que están ahí a propósito, así que ni resolviendo todos
+ * los datos legales se podía obtener PASS. Un gate que nunca puede pasar se aprende
+ * a ignorar — y existía la vía para ignorarlo (`--deploy`).
+ *
+ * Se retiran del texto ANTES de buscar placeholders, y solo estos dos, escritos con
+ * la máxima precisión para que una variante inventada («[[FALTA: CIF]]») siga
+ * bloqueando:
+ *  1. `[[FALTA: …]]` con puntos suspensivos tipográficos — el marcador de hueco que
+ *     el producto muestra en la demo para probar que la IA señala lo que le falta en
+ *     vez de inventarlo. Es un argumento de venta, no un olvido.
+ *  2. «pendiente de revisión jurídica» — afirmación veraz sobre la transparencia de
+ *     IA dentro de la aplicación, exigida por la propia auditoría legal.
+ */
+export const DELIBERATE_COPY = [
+  { name: "marcador de hueco del producto", re: /\[\[FALTA: …\]\]/g },
+  { name: "aviso veraz de revisión jurídica", re: /pendiente de revisión jurídica/gi },
+];
+
+/** Quita el copy deliberado para que no se confunda con datos sin resolver. */
+export function stripDeliberateCopy(text) {
+  return DELIBERATE_COPY.reduce((acc, { re }) => acc.replace(re, ""), text);
+}
+
+/**
  * Patrones de placeholder legal. Si aparecen en el HTML que se sirve (out/), significa
  * que datos legales sin resolver llegarían al público: bloqueante en producción.
  */

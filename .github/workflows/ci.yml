@@ -67,7 +67,12 @@ jobs:
 
       # Release gate legal en modo "dev": informa de placeholders/HubSpot como aviso, pero
       # falla si hay defectos técnicos (dominio canónico, claims prohibidos, páginas legales
-      # ausentes, sitemap con páginas noindex). NO despliega. El bloqueo duro por placeholders
-      # ocurre en el workflow de despliegue (modo production).
+      # ausentes, sitemap con páginas noindex). NO despliega.
+      #
+      # El bloqueo duro por placeholders ocurre en el workflow de despliegue (modo
+      # production), y ahora de verdad: ese workflow solo degrada los placeholders a
+      # aviso si quien lo lanza marca la casilla "permitir_placeholders_legales".
+      # Antes pasaba "--deploy" siempre, así que el bloqueo duro no existía en ningún
+      # sitio, a pesar de lo que decía este comentario.
       - name: Release gate legal (dev)
         run: npm run verify:legal-launch

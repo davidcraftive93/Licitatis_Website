@@ -131,7 +131,7 @@ hizo cada cosa. Esta tabla dice qué pasó con cada hallazgo. Commits en `featur
 §2 Features: 9 tarjetas planas | **Resuelto** | 4 capas en orden, sin esconder ninguna de las 9 (`4b2ab61`) |
 §2 AiTransparency afirmaba sin mostrar | **Resuelto** | Cadena de procedencia del bloqueante real (`4b2ab61`) |
 §2 FinalCta no cerraba el arco | **Resuelto** | Llega como «Candidatura preparada» (`85d8076`) |
-§3 Último `setState` por frame de scroll | **Resuelto** | Variable CSS `--journey-offset`; geometría pura en `src/lib/journey.ts` con 13 pruebas (`85d8076`, `4283b5c`) |
+§3 Último `setState` por frame de scroll | **Resuelto** | Variable CSS `--journey-offset`; geometría pura en `src/lib/journey.ts` con 13 pruebas (`85d8076`, `845543a`) |
 §3 Rail que se salta 3 secciones | **Resuelto** | `covers` en `RailStation` + ids nuevos (`27eb68e`) |
 §3 9 auroras animadas en bucle | **Resuelto** | Reducidas a 2 (hero + cierre) (`65ecb70`) |
 §3 Código muerto (3 mocks, 196 líneas) | **Resuelto** | Borrados; dos llevaban el código del expediente a mano (`65ecb70`) |
@@ -142,10 +142,25 @@ hizo cada cosa. Esta tabla dice qué pasó con cada hallazgo. Commits en `featur
 | Fuera del diagnóstico: 76 px de scroll horizontal por debajo de ~430 px | **Resuelto** | `min-w-0` en la columna de pasos; barrido en 9 anchos (`d75260e`) |
 | Fuera del diagnóstico: `dark:bg-amber-500/150/15` inválida | **Resuelto** | (`85d8076`) |
 | Fuera del diagnóstico: aviso de hidratación en cada carga | **Resuelto** | `suppressHydrationWarning` en `<html>` (`017cd93`) |
-| Fuera del diagnóstico: el paso activo podía retroceder al bajar | **Resuelto** | `pickActiveStep`: gana el más avanzado, sin depender del orden del lote del observador (`4283b5c`) |
+| Fuera del diagnóstico: el paso activo podía retroceder al bajar | **Resuelto** | `pickActiveStep`: gana el más avanzado, sin depender del orden del lote del observador (`845543a`) |
 
 **Sigue abierto y es del propietario**: plazos de conservación, región de datos de HubSpot y base
 jurídica de transferencia, localización de los datos de la aplicación, tabla de cookies, fuero,
 versión y fecha de cada documento legal, descriptor del extracto de la pasarela, y borrar
 `id_licitatis_deploy` / `.pub` de la raíz. El lanzamiento sigue en `BLOCKED_LEGAL_REVIEW`, que es
 el estado correcto.
+
+## 8. Huecos que la propia revisión no cubría (crítico de completitud)
+
+Tras la revisión adversarial se preguntó explícitamente **qué no se había mirado**. Salieron cuatro
+cosas, todas fuera del diff y por tanto invisibles para las cinco dimensiones.
+
+| Hueco | Estado | Qué era |
+|---|---|---|
+El release gate **no bloqueaba nada** en el único camino a producción | **Resuelto** | `deploy-hostinger.yml` pasaba `--deploy` siempre, y esa opción degrada a aviso precisamente los dos bloqueantes que sostienen el estado legal. El gate decía PASS con las 7 páginas legales llenas de `[LEGAL_REVIEW_REQUIRED]`, mientras `ci.yml` afirmaba que «el bloqueo duro ocurre en el workflow de despliegue». No ocurría en ninguna parte. Ahora el bypass existe pero hay que pedirlo con la casilla `permitir_placeholders_legales`, que queda en el log de la ejecución
+El gate de producción era **inalcanzable** | **Resuelto** | Uno de sus 9 bloqueantes era copy deliberado de la portada: el marcador `[[FALTA: …]]` (que demuestra que la IA señala huecos en vez de inventarlos) y el aviso veraz «pendiente de revisión jurídica». Ni resolviendo todos los datos legales se podía obtener PASS, así que el gate se convertía en ruido — y existía la vía para ignorarlo. `stripDeliberateCopy` retira esos dos literales exactos, con 5 pruebas que fijan la frontera: una variante inventada como `[[FALTA: CIF]]` sigue bloqueando. Producción pasa de 9 a 8 bloqueantes, todos reales
+**Ninguna prueba podía tocar el camino del lead** | **Resuelto** | Vitest corre en `node`, no recoge `.tsx` y no se pueden añadir dependencias, así que `DemoForm` no era testable y `hubspot.ts` no tenía ni una prueba. La regla crítica del proyecto («nunca éxito sin entrega») se sostenía en una lectura atenta. Se extrajo la **decisión** a `src/lib/lead-outcome.ts` y se exportó `buildMessage`: 13 pruebas nuevas cubren que ningún fallo de entrega produce éxito, que un error sin campo visible ofrece el correo en vez de un callejón sin salida, y que el CTA viaja dentro del mensaje
+`/gracias`: ruta huérfana con copy de otra campaña | **Resuelto** | La §2 de este documento la detectó y la tabla §7 se la dejó sin estado. Prometía «una sesión adaptada a tu caso» y hablaba de una solicitud de demostración, mientras el programa vigente es Beta Partner. En cuanto se apuntara ahí como destino de HubSpot, quien acabara de dejar su lead habría leído una promesa que nadie hace. Reescrita para la beta; sigue sin enlazar a propósito (es el destino de redirección cuando se configure HubSpot)
+
+**Error propio corregido**: la tabla §7 atribuía dos arreglos al commit `4283b5c`, que **no existe** —lo
+escribí antes de que el commit existiera—. El real es `845543a`.

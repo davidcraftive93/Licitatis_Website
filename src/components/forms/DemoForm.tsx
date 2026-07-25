@@ -8,6 +8,7 @@ import { TextInput, TextArea, SelectInput, Checkbox } from "@/components/ui/Form
 import { leadSchema, tendersPerYearOptions, challengeOptions } from "@/lib/validation";
 import { readUtmParams, readHubspotUtk } from "@/lib/utm";
 import { submitLeadToHubspot } from "@/lib/hubspot";
+import { outcomeForValidationErrors, outcomeForSubmit } from "@/lib/lead-outcome";
 import { startCtaOriginCapture, getCtaOrigin } from "@/lib/cta-origin";
 import { CONTACT_EMAIL } from "@/lib/content";
 import { company } from "@/lib/legal";
@@ -115,43 +116,19 @@ export function DemoForm() {
         if (messages && messages.length) mapped[key] = messages[0];
       }
       setErrors(mapped);
-      setStatus("error");
 
-      // Campos con interfaz, en el orden en que se leen.
-      const fieldOrder = [
-        "firstName",
-        "lastName",
-        "email",
-        "company",
-        "jobTitle",
-        "phone",
-        "tendersPerYear",
-        "challenge",
-        "message",
-        "privacy",
-      ];
-      const firstInvalid = fieldOrder.find((key) => mapped[key]);
-
-      if (firstInvalid) {
-        setServerMessage("Revisa los campos marcados e inténtalo de nuevo.");
+      // La decisión (qué mensaje, si se ofrece el correo, dónde va el foco) vive en
+      // `src/lib/lead-outcome.ts`, pura y con pruebas: es la regla crítica del
+      // proyecto y no puede depender de que alguien lea bien este componente.
+      const outcome = outcomeForValidationErrors(mapped);
+      setStatus(outcome.status);
+      setServerMessage(outcome.message);
+      setShowFallback(outcome.offerMailFallback);
+      if (outcome.focusField) {
         // Mueve el foco al primer campo inválido para lectores de pantalla y teclado.
-        window.requestAnimationFrame(() => {
-          document.getElementById(firstInvalid)?.focus();
-        });
-        return;
+        const field = outcome.focusField;
+        window.requestAnimationFrame(() => document.getElementById(field)?.focus());
       }
-
-      /**
-       * Nada que la persona pueda corregir: lo que falló es un campo sin interfaz
-       * (el campo trampa antispam, que algún gestor de contraseñas puede rellenar
-       * solo). Decir «revisa los campos marcados» sin marcar ninguno dejaba el
-       * formulario en un callejón sin salida y el lead se perdía en silencio.
-       * No se finge éxito ni se envía: se ofrece el canal de correo.
-       */
-      setShowFallback(true);
-      setServerMessage(
-        "No hemos podido validar el formulario automáticamente. Escríbenos por correo con estos datos y te damos plaza igualmente.",
-      );
       return;
     }
 
@@ -162,19 +139,11 @@ export function DemoForm() {
     // REGLA CRÍTICA: solo mostramos "éxito" si el lead se ENTREGÓ de verdad.
     // Si HubSpot no está configurado o falla, NO simulamos éxito (evita perder leads
     // silenciosamente): mostramos un mensaje veraz y un canal de correo alternativo.
-    const result = await submitLeadToHubspot(parsed.data);
-    if (result.delivered) {
-      setStatus("success");
-      return;
-    }
-
-    setStatus("error");
-    setShowFallback(true);
-    setServerMessage(
-      result.reason === "not_configured"
-        ? "El envío automático del formulario no está disponible ahora mismo. Escríbenos directamente por correo con estos datos y te damos plaza igualmente."
-        : "No hemos podido enviar tu solicitud en este momento. Inténtalo de nuevo en unos minutos o escríbenos directamente por correo.",
-    );
+    // La decisión está en `lead-outcome.ts`, con pruebas que lo fijan.
+    const outcome = outcomeForSubmit(await submitLeadToHubspot(parsed.data));
+    setStatus(outcome.status);
+    setServerMessage(outcome.message);
+    setShowFallback(outcome.offerMailFallback);
   }
 
   if (status === "success") {

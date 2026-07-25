@@ -38,7 +38,8 @@ const CHALLENGE_LABELS: Record<string, string> = {
   otra: "Otra",
 };
 
-function buildMessage(input: LeadInput): string {
+/** Exportada para poder comprobar en pruebas qué texto llega de verdad a HubSpot. */
+export function buildMessage(input: LeadInput): string {
   const parts: string[] = [];
   if (input.message) parts.push(input.message.trim());
   const meta: string[] = [];
