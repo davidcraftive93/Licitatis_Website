@@ -101,6 +101,47 @@ export const demoCompany = {
   ] as DemoCredential[],
 } as const;
 
+export interface ProvenanceStep {
+  /** Nivel de la afirmación: lo que la separa de la siguiente. */
+  kind: "Hecho" | "Inferencia" | "Recomendación" | "Decisión";
+  icon: IconName;
+  text: string;
+  /** De dónde sale. Vacío en la decisión: ahí no hay fuente, hay una persona. */
+  source: string;
+}
+
+/**
+ * Cadena de procedencia: el MISMO bloqueante del caso, desmontado en los cuatro
+ * niveles que la aplicación distingue. Existe para que «la IA no decide por ti»
+ * se pueda comprobar en la pantalla en vez de tener que creérselo.
+ */
+export const demoProvenance: ProvenanceStep[] = [
+  {
+    kind: "Hecho",
+    icon: "book",
+    text: "El pliego exige certificado de la AEAT en vigor para acreditar estar al corriente de obligaciones tributarias.",
+    source: "Pliego administrativo · cláusula 12.2 (con cita a la página)",
+  },
+  {
+    kind: "Inferencia",
+    icon: "sparkles",
+    text: "Tu certificado AEAT figura como no vigente, así que hoy ese requisito no se puede acreditar.",
+    source: `Pasaporte del Licitador · confianza ${demoExpediente.aiConfidence} %`,
+  },
+  {
+    kind: "Recomendación",
+    icon: "alert-triangle",
+    text: `Renovar el certificado antes del cierre del plazo (quedan ${demoExpediente.daysLeft} días) o no presentar: es motivo de exclusión directa.`,
+    source: "Propuesta del análisis, no una resolución",
+  },
+  {
+    kind: "Decisión",
+    icon: "check",
+    text: "Presentarse o no, y con qué oferta, lo decide una persona de tu equipo. Sin esa validación, nada avanza.",
+    source: "",
+  },
+];
+
 /** Fracción del checklist («2/4»), derivada — nunca escrita a mano. */
 export function checklistFraction(): string {
   const done = demoExpediente.checklist.filter((item) => item.done).length;
