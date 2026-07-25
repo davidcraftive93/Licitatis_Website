@@ -142,8 +142,13 @@ jobs:
           SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
           SSH_USER: ${{ secrets.HOSTINGER_USERNAME }}
         run: |
-          DEPLOY_PATH="$(printf '%s' "$DEPLOY_PATH" | tr -d '\r\n')"
-          DEPLOY_PATH="${DEPLOY_PATH%/}"
+          # El ref que se despliega puede ser anterior a este script (se elige aparte
+          # del workflow), y sin él la limpieza no ocurriría en silencio.
+          if [ ! -f scripts/normalize-deploy-path.sh ]; then
+            echo "::error::El ref desplegado no incluye scripts/normalize-deploy-path.sh. Despliega un commit que lo tenga."
+            exit 1
+          fi
+          DEPLOY_PATH="$(sh scripts/normalize-deploy-path.sh)"
           SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
           SSH_PORT="$(printf '%s' "$SSH_PORT" | tr -d '\r\n')"
           SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '\r\n')"
@@ -155,14 +160,31 @@ jobs:
           case "$SSH_PORT" in
             *[!0-9]*) echo "::error::HOSTINGER_PORT debe ser numérico."; exit 1 ;;
           esac
+          # `normalize-deploy-path.sh` ya quitó comillas envolventes, espacios,
+          # tabuladores y la barra final: eso es el mismo valor mal pegado, no otro
+          # valor, y ha costado dos despliegues en rojo.
+          #
           # Se admite la virgulilla: la documentación de este repositorio dice que el
           # docroot es `~/public_html`, así que rechazar esa forma era tropezar con
           # nuestra propia instrucción. El `~` se expande contra el HOME real del
           # servidor en el paso «Detectar el docroot servido», y a partir de ahí todo
           # usa la ruta absoluta ya resuelta ($TARGET).
+          #
+          # Si aun así falla, el error dice QUÉ CLASE de carácter sobra. Decir solo
+          # «caracteres no permitidos» obliga a adivinar, y adivinar cuesta otra
+          # ejecución en rojo. No se imprime el valor: solo la categoría y su longitud.
           case "$DEPLOY_PATH" in
             *[!A-Za-z0-9_./~-]*)
-              echo "::error::HOSTINGER_DEPLOY_PATH contiene caracteres no permitidos. Solo se aceptan letras, números y _ . / - ~ — sin comillas, sin espacios y sin \$HOME. Formas válidas: '~/public_html' o '/home/USUARIO/public_html'."
+              HINT=""
+              case "$DEPLOY_PATH" in *[[:space:]]*) HINT="$HINT espacios o tabuladores;" ;; esac
+              case "$DEPLOY_PATH" in *'"'* | *"'"*) HINT="$HINT comillas;" ;; esac
+              case "$DEPLOY_PATH" in *'$'*) HINT="$HINT el símbolo \$ (no uses \$HOME);" ;; esac
+              case "$DEPLOY_PATH" in *'\'*) HINT="$HINT barras invertidas;" ;; esac
+              case "$DEPLOY_PATH" in *:*) HINT="$HINT dos puntos;" ;; esac
+              if [ -z "$HINT" ]; then
+                HINT=" algún carácter no ASCII (guion largo, espacio duro o comilla tipográfica, típicos de pegar desde un documento);"
+              fi
+              echo "::error::HOSTINGER_DEPLOY_PATH tiene caracteres no permitidos:$HINT longitud del valor tras limpiarlo: ${#DEPLOY_PATH}. Solo se aceptan letras, números y _ . / - ~ . Escríbelo A MANO como '~/public_html' (14 caracteres) o '/home/USUARIO/public_html'."
               exit 1
               ;;
           esac
@@ -224,8 +246,9 @@ jobs:
           SSH_PORT: ${{ secrets.HOSTINGER_PORT }}
           DEPLOY_PATH: ${{ secrets.HOSTINGER_DEPLOY_PATH }}
         run: |
-          DEPLOY_PATH="$(printf '%s' "$DEPLOY_PATH" | tr -d '\r\n')"
-          DEPLOY_PATH="${DEPLOY_PATH%/}"
+          # La MISMA normalización que en el paso de validación: si cada paso limpiara
+          # el secreto a su manera, acabarían comparando valores distintos.
+          DEPLOY_PATH="$(sh scripts/normalize-deploy-path.sh)"
           SSH_PORT="$(printf '%s' "$SSH_PORT" | tr -d '\r\n')"
           SSH_USER="$(printf '%s' "$SSH_USER" | tr -d '\r\n')"
           SSH_HOST="$(printf '%s' "$SSH_HOST" | tr -d '\r\n')"
