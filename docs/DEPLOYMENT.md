@@ -51,10 +51,18 @@ Valores admitidos (cualquiera de los dos):
 | `~/public_html` | Recomendado. La virgulilla se expande contra el HOME real del servidor |
 | `/home/USUARIO/public_html` | Ruta absoluta, si prefieres fijarla |
 
-**Sin comillas, sin espacios, sin `$HOME` y sin barra final de más.** El workflow valida el valor
-antes de conectarse y aborta si no encaja; el mensaje de error dice qué formas acepta. Este chequeo
-ya rechazó un despliegue con el mensaje «HOSTINGER_DEPLOY_PATH contiene caracteres no permitidos»
-porque el valor no era ninguna de esas dos formas.
+El workflow **limpia** el valor antes de validarlo (`scripts/normalize-deploy-path.sh`): tolera
+comillas envolventes, espacios o tabuladores alrededor, retornos de carro y una barra final de más,
+porque todo eso es el mismo valor mal pegado. Lo que **no** admite, porque sí sería otro valor:
+`$HOME`, barras invertidas, dos puntos, punto y coma, y caracteres no ASCII —el guion largo, el
+espacio duro o las comillas tipográficas que aparecen al copiar desde un documento o desde el chat—.
+
+Si aun así falla, el error dice **qué clase de carácter sobra** y la longitud del valor ya limpio;
+si esa longitud no coincide con lo que ves escrito, hay un carácter invisible. La cura segura es
+**escribirlo a mano** en el campo del secreto: `~/public_html` son 14 caracteres.
+
+Este chequeo ya rechazó dos despliegues seguidos, y en ninguno llegó a tocarse el servidor: los
+pasos de SSH, copia de seguridad y sincronización quedan en *skipped*.
 
 El workflow **autodetecta** el docroot entre los candidatos habituales, comprueba por HTTP que el
 sitio publicado corresponde al commit desplegado (`__build_sha.txt`) y **falla en rojo** si no
