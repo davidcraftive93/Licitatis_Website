@@ -12,7 +12,7 @@ si no se ejecutó.
 
 | Métrica | Base | Rama | Δ | Fiabilidad |
 |---|---|---|---|---|
-`out/_next/static` (bytes) | 1 462 549 | 1 464 636 | **+2 087 (+0,14 %)** | **Medido** (`npm run build` en ambas)
+`out/_next/static` (bytes) | 1 462 549 | 1 464 636 | **+2 087 (+0,14 %)** | **Medido** (`npm run build` en ambas; entre builds sucesivos varía ±20 B por el hash de los chunks)
 Chunks JS | 13 | 13 | 0 | **Medido**
 First Load JS compartido | 102 kB | 103 kB | +1 kB | **Medido**
 `/` (tamaño de ruta) | 29,4 kB | 30 kB | +0,6 kB | **Medido**
