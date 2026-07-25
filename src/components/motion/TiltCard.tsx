@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { usePrefersReducedMotion, useFinePointer, useRafCallback } from "@/components/motion/hooks";
 
@@ -45,6 +45,14 @@ export function TiltCard({ children, className, maxTilt = 5, idlePose }: TiltCar
     node.style.setProperty("--gx", `${(px * 100).toFixed(1)}%`);
     node.style.setProperty("--gy", `${(py * 100).toFixed(1)}%`);
   });
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    node.style.transform = idleTransform;
+    if (!active) node.style.willChange = "";
+    if (!active && glareRef.current) glareRef.current.style.opacity = "0";
+  }, [active, idleTransform]);
 
   function onEnter() {
     const node = ref.current;
