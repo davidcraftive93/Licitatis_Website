@@ -47,20 +47,20 @@
     Header set Cache-Control "public, max-age=604800, stale-while-revalidate=86400"
   </FilesMatch>
 
+  # La imagen Open Graph exportada por Next no tiene extensión.
+  <Files "opengraph-image">
+    Header set Cache-Control "public, max-age=604800, stale-while-revalidate=86400"
+  </Files>
+
   # HTML: sin caché agresiva para permitir despliegues y rollbacks inmediatos.
   <FilesMatch "\.html$">
     Header set Cache-Control "public, max-age=0, must-revalidate"
   </FilesMatch>
 </IfModule>
 
-# --- Tipos MIME de archivos sin extensión generados por Next ----------------
-# La imagen Open Graph se exporta como archivo "opengraph-image" sin extensión;
-# forzamos su Content-Type para que los rastreadores sociales la reconozcan.
+# --- Tipo MIME de la imagen social sin extensión ----------------------------
 <Files "opengraph-image">
   ForceType image/png
-  <IfModule mod_headers.c>
-    Header set Cache-Control "public, max-age=604800, stale-while-revalidate=86400"
-  </IfModule>
 </Files>
 
 # --- Páginas de error -------------------------------------------------------
