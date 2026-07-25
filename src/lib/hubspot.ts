@@ -21,6 +21,7 @@ import type { LeadInput } from "@/lib/validation";
 import { company } from "@/lib/legal";
 
 const HUBSPOT_SUBMIT_BASE = "https://api.hsforms.com/submissions/v3/integration/submit";
+const HUBSPOT_TIMEOUT_MS = 12_000;
 
 export interface HubspotSubmitResult {
   delivered: boolean;
@@ -77,7 +78,7 @@ export async function submitLeadToHubspot(input: LeadInput): Promise<HubspotSubm
     { name: "jobtitle", value: input.jobTitle ?? "" },
     { name: "phone", value: input.phone ?? "" },
     { name: "message", value: buildMessage(input) },
-  ].filter((f) => f.value !== "");
+  ].filter((field) => field.value !== "");
 
   const context: Record<string, string> = {};
   if (input.hutk) context.hutk = input.hutk;
@@ -95,18 +96,29 @@ export async function submitLeadToHubspot(input: LeadInput): Promise<HubspotSubm
     },
   };
 
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), HUBSPOT_TIMEOUT_MS);
+
   try {
-    const res = await fetch(`${HUBSPOT_SUBMIT_BASE}/${portalId}/${formId}`, {
+    const response = await fetch(`${HUBSPOT_SUBMIT_BASE}/${portalId}/${formId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
+      credentials: "omit",
+      cache: "no-store",
+      signal: controller.signal,
     });
 
-    if (!res.ok) {
-      return { delivered: false, reason: `hubspot_error_${res.status}` };
+    if (!response.ok) {
+      return { delivered: false, reason: `hubspot_error_${response.status}` };
     }
     return { delivered: true };
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      return { delivered: false, reason: "timeout" };
+    }
     return { delivered: false, reason: "network_error" };
+  } finally {
+    window.clearTimeout(timeout);
   }
 }

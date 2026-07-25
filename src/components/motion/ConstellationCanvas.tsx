@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { usePrefersReducedMotion } from "@/components/motion/hooks";
+import { useFinePointer, usePrefersReducedMotion } from "@/components/motion/hooks";
 
 interface Particle {
   x: number;
@@ -12,18 +12,28 @@ interface Particle {
   warm: boolean; // algunas partículas en ámbar
 }
 
+interface NetworkInformationLike {
+  saveData?: boolean;
+}
+
 const LINK_DIST = 120;
+const LINK_DIST_SQ = LINK_DIST * LINK_DIST;
 const MOUSE_DIST = 170;
+const MOUSE_DIST_SQ = MOUSE_DIST * MOUSE_DIST;
 
 /**
  * Constelación de "expedientes" sobre el hero oscuro: nodos que derivan y se
  * conectan entre sí y con el puntero. Canvas 2D con rAF; se pausa fuera de
- * viewport, con la pestaña oculta o con prefers-reduced-motion (queda un
- * fotograma estático de nodos, sin bucle).
+ * viewport, con la pestaña oculta o con prefers-reduced-motion.
+ *
+ * En pantallas táctiles, ahorro de datos y equipos modestos se reduce el número
+ * de nodos o se dibuja un único fotograma: se conserva la composición sin pagar
+ * un bucle de animación que aporta poco en esos dispositivos.
  */
 export function ConstellationCanvas({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduced = usePrefersReducedMotion();
+  const finePointer = useFinePointer();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -31,25 +41,35 @@ export function ConstellationCanvas({ className }: { className?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const connection = (navigator as Navigator & { connection?: NetworkInformationLike })
+      .connection;
+    const saveData = connection?.saveData === true;
+    const cores = navigator.hardwareConcurrency || 4;
+    const maxParticles = saveData ? 18 : cores <= 4 ? 32 : 55;
+    const moving = finePointer && !reduced && !saveData;
+
     let raf = 0;
     let running = false;
     let visible = true;
+    let pointerListening = false;
     let particles: Particle[] = [];
     let seededW = 0;
     let seededH = 0;
     const mouse = { x: -9999, y: -9999 };
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
 
     const seed = () => {
       const { clientWidth: w, clientHeight: h } = canvas;
+      if (!w || !h) return;
+
       seededW = w;
       seededH = h;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const count = Math.min(55, Math.round((w * h) / 28000));
+
+      const count = Math.min(maxParticles, Math.max(12, Math.round((w * h) / 28000)));
       particles = Array.from({ length: count }, (_, i) => ({
-        // Posiciones deterministas-ish repartidas; velocidad aleatoria suave.
         x: Math.random() * w,
         y: Math.random() * h,
         vx: (Math.random() - 0.5) * 0.35,
@@ -78,35 +98,61 @@ export function ConstellationCanvas({ className }: { className?: string }) {
         ctx.fill();
       }
 
-      // Enlaces entre nodos cercanos.
+      // Distancias al cuadrado: evita calcular raíces para pares que no se dibujan.
       for (let i = 0; i < particles.length; i++) {
+        const a = particles[i];
         for (let j = i + 1; j < particles.length; j++) {
-          const a = particles[i];
           const b = particles[j];
           const dx = a.x - b.x;
           const dy = a.y - b.y;
-          const d = Math.hypot(dx, dy);
-          if (d < LINK_DIST) {
+          const distanceSq = dx * dx + dy * dy;
+          if (distanceSq < LINK_DIST_SQ) {
+            const strength = 1 - Math.sqrt(distanceSq) / LINK_DIST;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
-            ctx.strokeStyle = `rgba(52,211,153,${(0.16 * (1 - d / LINK_DIST)).toFixed(3)})`;
+            ctx.strokeStyle = `rgba(52,211,153,${(0.16 * strength).toFixed(3)})`;
             ctx.lineWidth = 1;
             ctx.stroke();
           }
         }
-        // Enlace al puntero (más brillante): la constelación "responde".
-        const a = particles[i];
-        const dm = Math.hypot(a.x - mouse.x, a.y - mouse.y);
-        if (dm < MOUSE_DIST) {
+
+        const mouseDx = a.x - mouse.x;
+        const mouseDy = a.y - mouse.y;
+        const mouseDistanceSq = mouseDx * mouseDx + mouseDy * mouseDy;
+        if (mouseDistanceSq < MOUSE_DIST_SQ) {
+          const strength = 1 - Math.sqrt(mouseDistanceSq) / MOUSE_DIST;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(mouse.x, mouse.y);
-          ctx.strokeStyle = `rgba(110,231,183,${(0.35 * (1 - dm / MOUSE_DIST)).toFixed(3)})`;
+          ctx.strokeStyle = `rgba(110,231,183,${(0.35 * strength).toFixed(3)})`;
           ctx.lineWidth = 1;
           ctx.stroke();
         }
       }
+    };
+
+    const onPointer = (event: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = event.clientX - rect.left;
+      mouse.y = event.clientY - rect.top;
+    };
+    const onLeave = () => {
+      mouse.x = -9999;
+      mouse.y = -9999;
+    };
+    const addPointerListeners = () => {
+      if (pointerListening || !moving) return;
+      canvas.addEventListener("pointermove", onPointer, { passive: true });
+      canvas.addEventListener("pointerleave", onLeave, { passive: true });
+      pointerListening = true;
+    };
+    const removePointerListeners = () => {
+      if (!pointerListening) return;
+      canvas.removeEventListener("pointermove", onPointer);
+      canvas.removeEventListener("pointerleave", onLeave);
+      pointerListening = false;
+      onLeave();
     };
 
     const loop = () => {
@@ -114,39 +160,27 @@ export function ConstellationCanvas({ className }: { className?: string }) {
       raf = requestAnimationFrame(loop);
     };
     const start = () => {
-      if (!running && visible && !reduced && !document.hidden) {
+      if (!running && visible && moving && !document.hidden) {
         running = true;
+        addPointerListeners();
         raf = requestAnimationFrame(loop);
       }
     };
     const stop = () => {
       running = false;
       cancelAnimationFrame(raf);
+      removePointerListeners();
     };
 
     seed();
-    if (reduced) {
-      draw(false); // fotograma estático: composición sin movimiento
-    } else {
-      start();
-    }
+    if (moving) start();
+    else draw(false);
 
-    const onPointer = (e: PointerEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
-    };
-    const onLeave = () => {
-      mouse.x = -9999;
-      mouse.y = -9999;
-    };
     const onResize = () => {
-      // En móvil, ocultar/mostrar la barra de URL dispara resize sin cambiar el
-      // tamaño real del hero: si las dimensiones no cambian, no re-sembramos
-      // (evita que la constelación "teleporte" durante el scroll).
+      // La barra del navegador móvil puede disparar resize sin cambiar el hero.
       if (canvas.clientWidth === seededW && canvas.clientHeight === seededH) return;
       seed();
-      if (reduced) draw(false);
+      if (!moving || !running) draw(false);
     };
     const onVisibility = () => (document.hidden ? stop() : start());
 
@@ -160,20 +194,16 @@ export function ConstellationCanvas({ className }: { className?: string }) {
       observer.observe(canvas);
     }
 
-    window.addEventListener("pointermove", onPointer, { passive: true });
-    window.addEventListener("pointerout", onLeave, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
       stop();
       observer?.disconnect();
-      window.removeEventListener("pointermove", onPointer);
-      window.removeEventListener("pointerout", onLeave);
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [reduced]);
+  }, [finePointer, reduced]);
 
   return <canvas ref={canvasRef} aria-hidden="true" className={className} />;
 }
