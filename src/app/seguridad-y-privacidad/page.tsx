@@ -53,16 +53,21 @@ export default function SeguridadPage() {
 
       <h2>4. Alojamiento y localización de datos</h2>
       <p>
-        La localización de los datos y las garantías de una eventual transferencia internacional
-        (por ejemplo, respecto de HubSpot) deben confirmarse antes de la apertura pública. Ver la{" "}
-        <a href="/privacidad">política de privacidad</a> y la lista de{" "}
+        Esta web se sirve desde infraestructura de Hostinger en la Unión Europea; a la fecha de esta
+        versión, el servidor que responde en licitatis.es está en París (Francia). Los datos que
+        envías por el formulario los trata HubSpot, con alojamiento en la Unión Europea (Fráncfort)
+        o en Estados Unidos según la configuración de la cuenta y, en ese segundo caso, al amparo
+        del EU-US Data Privacy Framework y de cláusulas contractuales tipo. El detalle está en la{" "}
+        <a href="/privacidad">política de privacidad</a> y en la lista de{" "}
         <a href="/subencargados">subencargados</a>.
       </p>
 
       <h2>5. Contacto de seguridad</h2>
       <p>
-        Si detectas un problema de seguridad, escríbenos a {legalContact.security}. Un canal de
-        seguridad dedicado queda pendiente de definir.
+        Si detectas un problema de seguridad, escríbenos a {legalContact.security} con el asunto
+        «Seguridad». Te confirmaremos la recepción y te mantendremos informado del estado. Te
+        pedimos que no hagas público el hallazgo hasta que podamos corregirlo, y te agradecemos que
+        nos lo cuentes.
       </p>
     </LegalShell>
   );

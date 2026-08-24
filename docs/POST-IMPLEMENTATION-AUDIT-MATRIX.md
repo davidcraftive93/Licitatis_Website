@@ -97,3 +97,26 @@ Cobertura de pruebas | 21 | **59** (expediente, capas, procedencia, intención d
 
 Sin cambios en: secretos, entorno `production`, workflow de despliegue (sigue manual con
 confirmación `DEPLOY LICITATIS`), DNS, Hostinger, ni en el estado `noindex`.
+
+---
+
+## Adenda 2 — cierre de los textos legales (25/08/2026)
+
+Los marcadores han desaparecido y **los veredictos cambian**. Registro del cambio:
+
+| Veredicto | Antes | Ahora |
+|---|---|---|
+GO staging (noindex) | SÍ | SÍ |
+GO beta privada | CONDICIONADO | **SÍ**, con HubSpot configurado |
+GO apertura pública | **NO** — `BLOCKED_LEGAL_REVIEW` | **CONDICIONADO** — el gate ya no bloquea por textos legales; falta configurar HubSpot (`BLOCKED_PROVIDER_CONFIRMATION`) |
+GO servicio cobrable | **NO** | **CONDICIONADO** — términos, DPA y subencargados publicados; el DPA es un contrato y debe revisarlo un profesional antes de firmarlo |
+
+Qué se resolvió: versiones y fechas (1.0 · 25/08/2026), plazos de conservación, base jurídica,
+transferencias internacionales a HubSpot, tabla de cookies real, fuero, desistimiento, DPA completo
+del art. 28 RGPD, códigos de conducta y canal de accesibilidad. Fuentes y decisiones en
+`NORMATIVA-2026.md`.
+
+Qué NO cambia: la web sigue **sin afirmar que cumple** ninguna norma; los claims no verificados
+(aislamiento por organización, 2FA, no-entrenamiento) siguen sin reforzarse; y el release gate sigue
+bloqueando en producción hasta que HubSpot esté configurado, que es lo que hace que el formulario
+entregue leads de verdad.

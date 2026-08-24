@@ -6,8 +6,9 @@ import { company, brand, legalContact, legalDocs } from "@/lib/legal";
 export const metadata: Metadata = {
   title: "Aviso legal",
   description: "Aviso legal e información del titular de la web de LICITATIS.",
-  // noindex mientras el contenido tenga datos pendientes (revisión legal pendiente).
-  robots: { index: false, follow: false },
+  // Indexable: el noindex existía porque el documento tenía datos sin resolver, y ya
+  // no los tiene. Un aviso legal que no se puede encontrar cumple peor su función.
+  robots: { index: true, follow: true },
   alternates: { canonical: "/aviso-legal" },
 };
 
@@ -96,10 +97,27 @@ export default function AvisoLegalPage() {
         cuyo uso se rige por sus propias condiciones.
       </p>
 
-      <h2>7. Legislación aplicable</h2>
+      <h2>7. Códigos de conducta</h2>
       <p>
-        El presente aviso legal se rige por la legislación española. La determinación del fuero y la
-        jurisdicción competente queda pendiente de revisión profesional.
+        A fecha de este documento, {company.name} no está adherida a ningún código de conducta ni
+        sistema de autorregulación en materia de comercio electrónico. Si se adhiere a alguno en el
+        futuro, se indicará aquí junto con la forma de consultarlo.
+      </p>
+
+      <h2>8. Accesibilidad</h2>
+      <p>
+        Trabajamos para que esta web se pueda usar con teclado, con lector de pantalla y con
+        contraste suficiente. Si algo te impide usarla o completar el formulario, escríbenos a{" "}
+        {legalContact.general} indicando qué te ha bloqueado: te responderemos y te daremos una vía
+        alternativa para hacer la misma gestión por correo o por teléfono.
+      </p>
+
+      <h2>9. Legislación aplicable</h2>
+      <p>
+        El presente aviso legal se rige por la legislación española. Para cualquier controversia con{" "}
+        <strong>empresas o profesionales</strong>, las partes se someten a los juzgados y tribunales
+        de <strong>Valencia</strong>. Si eres <strong>consumidor</strong>, se aplica el fuero que la
+        ley te reconoce, normalmente el de tu domicilio.
       </p>
     </LegalShell>
   );

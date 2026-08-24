@@ -42,15 +42,17 @@ export function ConsentBanner() {
           Cookies y privacidad
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-fg">
-          Usamos cookies necesarias para el funcionamiento del sitio y, con tu permiso, cookies de
-          analítica y de marketing. Puedes aceptarlas, rechazarlas o configurarlas. Consulta la{" "}
+          Usamos cookies y almacenamiento propios para que el sitio funcione y para recordar tu
+          decisión. Con tu permiso usaríamos además cookies de analítica (Google Ireland Ltd.) y de
+          marketing (HubSpot, Inc.). No elaboramos perfiles publicitarios. Puedes aceptarlas,
+          rechazarlas o elegir por categorías. Consulta la{" "}
           <Link
             href="/cookies"
             className="font-medium text-brand-700 underline-offset-2 hover:underline dark:text-brand-300"
           >
             política de cookies
           </Link>
-          . <span className="text-fg-muted">(Textos legales pendientes de revisión.)</span>
+          .
         </p>
 
         {showPrefs ? (

@@ -20,8 +20,20 @@ export const REQUIRED_LEGAL_ROUTES = [
   "subencargados",
 ];
 
-/** Rutas legales que llevan noindex mientras tengan placeholders: NO deben ir al sitemap. */
-export const NOINDEX_WHILE_PLACEHOLDER = [...REQUIRED_LEGAL_ROUTES];
+/**
+ * Páginas legales que NO se indexan y que, por tanto, no deben aparecer en el sitemap.
+ *
+ * Hasta el 25/08/2026 eran las siete, porque todas tenían datos sin resolver. Resueltos
+ * esos datos, el aviso legal, la privacidad, las cookies y los términos pasan a ser
+ * indexables: un aviso legal que no se puede encontrar cumple peor su función. Estas
+ * tres siguen fuera del índice porque son documentos operativos que se entregan a quien
+ * contrata, no material de búsqueda.
+ */
+export const NOINDEX_ROUTES = [
+  "seguridad-y-privacidad",
+  "acuerdo-tratamiento-datos",
+  "subencargados",
+];
 
 /**
  * Coherencia de marca (transversal): LICITATIS es una MARCA COMERCIAL, no una sociedad.
@@ -60,12 +72,12 @@ export const CERTIFICATION_PATTERNS = [
  *  1. `[[FALTA: …]]` con puntos suspensivos tipográficos — el marcador de hueco que
  *     el producto muestra en la demo para probar que la IA señala lo que le falta en
  *     vez de inventarlo. Es un argumento de venta, no un olvido.
- *  2. «pendiente de revisión jurídica» — afirmación veraz sobre la transparencia de
- *     IA dentro de la aplicación, exigida por la propia auditoría legal.
+ * La segunda excepción («pendiente de revisión jurídica») se retiró el 25/08/2026 al
+ * desaparecer esa frase del contenido: una excepción sin nada que excepcionar es una
+ * puerta abierta que un día deja pasar algo que sí importaba.
  */
 export const DELIBERATE_COPY = [
   { name: "marcador de hueco del producto", re: /\[\[FALTA: …\]\]/g },
-  { name: "aviso veraz de revisión jurídica", re: /pendiente de revisión jurídica/gi },
 ];
 
 /** Quita el copy deliberado para que no se confunda con datos sin resolver. */

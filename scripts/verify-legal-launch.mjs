@@ -23,7 +23,7 @@ import { fileURLToPath } from "node:url";
 import {
   CANONICAL_DOMAIN,
   REQUIRED_LEGAL_ROUTES,
-  NOINDEX_WHILE_PLACEHOLDER,
+  NOINDEX_ROUTES,
   PLACEHOLDER_PATTERNS,
   PROHIBITED_CLAIM_PATTERNS,
   CERTIFICATION_PATTERNS,
@@ -73,10 +73,9 @@ const hasBuild = existsSync(OUT);
 // Se escanea el HTML SERVIDO (out/), que es lo que ve el público (sin comentarios de código).
 if (hasBuild) {
   for (const file of walk(OUT, [".html"])) {
-    // `stripDeliberateCopy`: dos literales de la portada son copy a propósito
-    // (el marcador de hueco «[[FALTA: …]]» del producto y el aviso veraz de revisión
-    // jurídica). Sin retirarlos, el modo producción bloqueaba SIEMPRE por la portada
-    // y el veredicto que autoriza a lanzar era inalcanzable.
+    // `stripDeliberateCopy`: el marcador «[[FALTA: …]]» de la portada es copy a
+    // propósito (el producto enseña que la IA señala lo que le falta). Sin retirarlo,
+    // el modo producción bloqueaba siempre por la portada.
     const hits = scanText(stripDeliberateCopy(readFileSync(file, "utf8")), PLACEHOLDER_PATTERNS);
     if (hits.length) {
       const msg = `${rel(file)} contiene placeholders legales: ${[...new Set(hits)].join(", ")}`;
@@ -146,23 +145,17 @@ for (const route of REQUIRED_LEGAL_ROUTES) {
 const sitemapSource = join(ROOT, "src", "app", "sitemap.ts");
 if (existsSync(sitemapSource)) {
   const text = readFileSync(sitemapSource, "utf8");
-  for (const route of NOINDEX_WHILE_PLACEHOLDER) {
+  for (const route of NOINDEX_ROUTES) {
     if (new RegExp(`\\\`\\$\\{base\\}/${route}\``).test(text)) {
-      block(
-        "SITEMAP_NOINDEX",
-        `src/app/sitemap.ts incluye /${route}, que es noindex mientras tenga placeholders.`,
-      );
+      block("SITEMAP_NOINDEX", `src/app/sitemap.ts incluye /${route}, que es una página noindex.`);
     }
   }
 }
 if (PROD && existsSync(join(OUT, "sitemap.xml"))) {
   const text = readFileSync(join(OUT, "sitemap.xml"), "utf8");
-  for (const route of NOINDEX_WHILE_PLACEHOLDER) {
+  for (const route of NOINDEX_ROUTES) {
     if (new RegExp(`/${route}([/"<])`).test(text)) {
-      block(
-        "SITEMAP_NOINDEX",
-        `out/sitemap.xml incluye /${route}, que es noindex mientras tenga placeholders.`,
-      );
+      block("SITEMAP_NOINDEX", `out/sitemap.xml incluye /${route}, que es una página noindex.`);
     }
   }
 }

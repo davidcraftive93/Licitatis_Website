@@ -13,12 +13,28 @@ import { siteConfig } from "@/lib/site";
  * Los datos registrales/fiscales que NO nos han facilitado se dejan como marcadores
  * visibles [[ASÍ]] y NO se inventan. Mientras existan, las páginas afectadas van
  * `noindex` y el release gate de producción devuelve BLOCKED_LEGAL_REVIEW.
+ *
+ * A 25/08/2026 no queda ninguno: el propietario aportó los datos societarios y aprobó
+ * las decisiones de negocio que faltaban (plazos de conservación, fuero, versiones).
+ * La función `pendingLegalData` se conserva a propósito, no como código muerto: si
+ * mañana hace falta un dato nuevo, el camino correcto es volver a marcarlo —no
+ * inventarlo— y el gate volverá a bloquear solo.
  */
 
 /** Marca un dato pendiente de aportar. Formato visible: [[DATO]]. */
 export function pendingLegalData(what: string): string {
   return `[[${what}]]`;
 }
+
+/**
+ * Fecha de la revisión con la que se publican los textos legales vigentes.
+ * Una sola constante: si se revisan de nuevo, se cambia aquí y cambia en las siete
+ * páginas a la vez. Formato ISO para poder ordenarla y compararla.
+ */
+export const LEGAL_REVIEW_DATE = "2026-08-25";
+
+/** La misma fecha, escrita como la lee una persona en España. */
+export const LEGAL_REVIEW_DATE_LABEL = "25 de agosto de 2026";
 
 /** Sociedad titular: quien presta el servicio, factura y responde. */
 export const company = {
@@ -86,27 +102,44 @@ export interface LegalDocMeta {
   updated: string;
 }
 
-/** Versión y fecha de cada documento legal (pendientes de validación profesional). */
+/**
+ * Versión y fecha de cada documento legal.
+ *
+ * Todos arrancan en 1.0 con la misma fecha porque se publican juntos por primera vez.
+ * Cuando uno cambie de fondo, súbele la versión SOLO a ese y actualiza su fecha: que
+ * los siete compartan número esconde qué se tocó y cuándo.
+ */
+const v1: LegalDocMeta = { version: "1.0", updated: LEGAL_REVIEW_DATE_LABEL };
+
 export const legalDocs: Record<
   "avisoLegal" | "privacidad" | "cookies" | "terminos" | "seguridad" | "dpa" | "subencargados",
   LegalDocMeta
 > = {
-  avisoLegal: { version: pendingLegalData("VERSIÓN"), updated: pendingLegalData("FECHA") },
-  privacidad: { version: pendingLegalData("VERSIÓN"), updated: pendingLegalData("FECHA") },
-  cookies: { version: pendingLegalData("VERSIÓN"), updated: pendingLegalData("FECHA") },
-  terminos: { version: pendingLegalData("VERSIÓN"), updated: pendingLegalData("FECHA") },
-  seguridad: { version: pendingLegalData("VERSIÓN"), updated: pendingLegalData("FECHA") },
-  dpa: { version: pendingLegalData("VERSIÓN"), updated: pendingLegalData("FECHA") },
-  subencargados: { version: pendingLegalData("VERSIÓN"), updated: pendingLegalData("FECHA") },
+  avisoLegal: v1,
+  privacidad: v1,
+  cookies: v1,
+  terminos: v1,
+  seguridad: v1,
+  dpa: v1,
+  subencargados: v1,
 };
 
-/** Encargados del tratamiento verificables en el código de esta web. */
+/**
+ * Encargados del tratamiento verificables en el código de esta web.
+ *
+ * `region` describe lo que HubSpot ofrece y de qué depende, no una promesa nuestra:
+ * la región concreta de un portal se consulta en la propia cuenta (Configuración →
+ * Valores predeterminados → Alojamiento de datos). Decir «datos en la UE» sin poder
+ * demostrarlo fue justo el claim que hubo que retirar de la portada.
+ */
 export const legalProcessors = [
   {
-    name: "HubSpot",
-    role: "Gestión de contactos comerciales (formulario)",
-    region: pendingLegalData("REGIÓN DE DATOS DE HUBSPOT"),
-    transferBasis: pendingLegalData("BASE DE LA TRANSFERENCIA INTERNACIONAL (SCC / DPF)"),
+    name: "HubSpot, Inc.",
+    role: "Gestión de contactos comerciales (formulario de captación)",
+    region:
+      "Alojamiento en la Unión Europea (Fráncfort, Alemania) o en Estados Unidos, según la configuración de la cuenta",
+    transferBasis:
+      "Certificación en el EU-US Data Privacy Framework (Decisión de Ejecución (UE) 2023/1795) y cláusulas contractuales tipo para las transferencias intragrupo",
     verified: true,
   },
 ] as const;

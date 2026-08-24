@@ -16,18 +16,26 @@ Ya entregados por el propietario y en `src/lib/legal.ts` (fuente única):
 - [x] Datos registrales (Registro Mercantil de Valencia)
 - [x] Delegado de Protección de Datos — **no procede** (confirmado)
 
+Resuelto el 25/08/2026 (ver `NORMATIVA-2026.md` para las fuentes y las decisiones):
+
+- [x] Plazos de conservación — 12 meses desde el último contacto; 3 años la prueba del consentimiento
+- [x] Región de datos de HubSpot y base de la transferencia — UE (Fráncfort) o EE. UU. según la
+      cuenta, con Data Privacy Framework y cláusulas contractuales tipo
+- [x] Localización de los datos de esta web — Hostinger, servidor en París (Francia), comprobado
+- [x] Tabla de cookies — inventario real del código, con nombres, proveedores y duraciones
+- [x] Fuero — Valencia para empresas y profesionales; el que la ley reconozca al consumidor
+- [x] Versión y fecha de cada documento — 1.0 · 25 de agosto de 2026
+- [x] Texto del DPA (art. 28 RGPD) — redactado; **pendiente de revisión profesional por ser contrato**
+
 Sigue pendiente:
 
-- [ ] Plazos de conservación de datos
-- [ ] Región de datos de HubSpot y base jurídica de una eventual transferencia internacional
-- [ ] Localización de los datos de la aplicación (hasta confirmarla, la landing **no** afirma
-      que estén alojados en la UE: la afirmación se retiró por contradecir
-      `/seguridad-y-privacidad`)
-- [ ] Tabla de cookies (nombre, proveedor, finalidad, duración)
-- [ ] Fuero/jurisdicción aplicable
-- [ ] Versión y fecha de «última actualización» de cada documento (hoy `[[VERSIÓN]]` / `[[FECHA]]`)
+- [ ] **Configurar HubSpot** (`NEXT_PUBLIC_HUBSPOT_PORTAL_ID` y `_FORM_ID`). Sin esto el formulario
+      NO entrega leads y el gate de producción sigue bloqueando
+- [ ] Confirmar en HubSpot la región del portal, para afinar la redacción
 - [ ] Descriptor exacto del extracto bancario que use la pasarela de pago
-- [ ] Revisión legal completa de todos los textos (actualmente son borradores)
+- [ ] Tomo y folio del Registro Mercantil, si la asesoría los facilita
+- [ ] Confirmar que la sociedad no está adherida a ningún código de conducta (es lo que se declara)
+- [ ] Revisión profesional del DPA antes de firmarlo con un cliente
 
 ## Contacto
 

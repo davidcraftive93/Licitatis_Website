@@ -34,22 +34,31 @@ export default function SubencargadosPage() {
           </thead>
           <tbody>
             <tr>
-              <td>Hostinger</td>
+              <td>Hostinger International Ltd.</td>
               <td>Alojamiento web (sitio estático)</td>
-              <td>Logs de servidor</td>
-              <td>Pendiente de confirmar (UE)</td>
+              <td>Registros de servidor (dirección IP, fecha, recurso solicitado)</td>
+              <td>
+                Unión Europea. A la fecha de esta versión, el servidor que atiende licitatis.es está
+                en París (Francia)
+              </td>
             </tr>
             <tr>
-              <td>HubSpot</td>
-              <td>Gestión de contactos comerciales (formulario)</td>
-              <td>Nombre, correo, empresa, mensaje</td>
-              <td>Pendiente de confirmar (UE/EEUU + garantías)</td>
+              <td>HubSpot, Inc.</td>
+              <td>Gestión de contactos comerciales (formulario de captación)</td>
+              <td>Nombre, apellidos, correo, empresa, cargo, teléfono y mensaje</td>
+              <td>
+                Unión Europea (Fráncfort) o Estados Unidos según la configuración de la cuenta.
+                Certificación en el EU-US Data Privacy Framework y cláusulas contractuales tipo
+              </td>
             </tr>
             <tr>
-              <td>Google (Analytics 4)</td>
-              <td>Analítica (solo si se activa y aceptas)</td>
-              <td>Identificadores de uso agregados</td>
-              <td>Pendiente de confirmar</td>
+              <td>Google Ireland Ltd.</td>
+              <td>Analítica (Google Analytics 4). Solo si se activa y das tu consentimiento</td>
+              <td>Identificadores de uso e IP anonimizada</td>
+              <td>
+                Unión Europea, con posible acceso desde fuera del EEE conforme a las garantías que
+                Google documenta en sus términos de tratamiento de datos
+              </td>
             </tr>
           </tbody>
         </table>
