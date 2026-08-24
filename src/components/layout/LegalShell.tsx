@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Icon } from "@/components/ui/icons";
 import { PrintButton } from "@/components/layout/PrintButton";
-import type { LegalDocMeta } from "@/lib/legal";
+import { hasUnresolvedLegalData, type LegalDocMeta } from "@/lib/legal";
 
 export interface LegalTocItem {
   id: string;
@@ -19,8 +19,13 @@ interface LegalShellProps {
   /** Índice de navegación interna (para documentos largos). */
   toc?: LegalTocItem[];
   /**
-   * true (por defecto) muestra el aviso de plantilla pendiente de revisión legal. Poner a
-   * false solo cuando el contenido esté validado y sin placeholders.
+   * Muestra el aviso de «texto pendiente de revisión legal».
+   *
+   * Por defecto NO se decide a mano: sale de `hasUnresolvedLegalData()`, que mira si
+   * queda algún marcador [[DATO]] en la fuente legal. Así el aviso desaparece solo
+   * cuando de verdad no falta nada, y reaparece solo si alguien vuelve a dejar un dato
+   * sin resolver. Un booleano escrito a mano se queda desactualizado y acaba mintiendo
+   * en las dos direcciones.
    */
   draft?: boolean;
 }
@@ -32,7 +37,7 @@ export function LegalShell({
   children,
   docMeta,
   toc,
-  draft = true,
+  draft = hasUnresolvedLegalData(),
 }: LegalShellProps) {
   return (
     <Container className="max-w-3xl py-16 sm:py-20">
@@ -63,10 +68,10 @@ export function LegalShell({
         >
           <Icon name="alert-triangle" size={18} className="mt-0.5 shrink-0" />
           <p>
-            <strong>Texto pendiente de revisión legal.</strong> Este contenido es una plantilla de
-            referencia. Debe revisarlo y completarlo un profesional antes de la publicación. Los
-            datos marcados como <code>[LEGAL_REVIEW_REQUIRED: …]</code> deben sustituirse por datos
-            reales. Mientras tanto, esta página no se indexa.
+            <strong>Faltan datos por resolver.</strong> Este documento contiene marcadores
+            <code> [[ASÍ]] </code> en lugar de datos reales, que deben sustituirse antes de darlo
+            por bueno. Mientras existan, esta página no se indexa y el control previo al despliegue
+            sigue bloqueando la publicación.
           </p>
         </div>
       ) : null}

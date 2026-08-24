@@ -37,3 +37,21 @@ No se afirman certificaciones **concretas y no acreditadas** como ISO 27001, ENS
 1. **Propietario / producto:** confirmar límites de planes y funcionalidades de seguridad (2FA, roles, aislamiento, no-entrenamiento, región UE) o marcarlas como «durante la beta / en desarrollo».
 2. **Legal:** validar que «sin entrenar con tus datos» y «alojado en la UE» son ciertos y respaldados por contrato con proveedores (incl. HubSpot y cualquier proveedor de IA del SaaS).
 3. **Técnico (hecho):** el gate impide reintroducir claims absolutos prohibidos.
+
+---
+
+## Adenda (25/08/2026)
+
+Los textos legales se cerraron: sin marcadores, con versión 1.0 y fecha de 25 de agosto de 2026.
+Las afirmaciones nuevas que se han añadido son **verificables**, y así se comprobaron:
+
+| Afirmación | Cómo se verificó |
+|---|---|
+| HubSpot ofrece alojamiento en la UE (Fráncfort) o EE. UU. según la cuenta | Documentación oficial de HubSpot sobre alojamiento de datos |
+| HubSpot está certificada en el EU-US Data Privacy Framework y usa cláusulas tipo | Política de privacidad de HubSpot |
+| El marco de adecuación sigue vigente | Decisión (UE) 2023/1795; el Tribunal General desestimó el recurso Latombe el 03/09/2025 |
+| Nombres y duraciones de las cookies de HubSpot | Base de conocimiento de HubSpot |
+| Esta web se sirve desde la UE | Resolución DNS de licitatis.es y titularidad de la IP: Hostinger, París (Francia) |
+| Cookies propias y almacenamiento local | Inventario leído del propio código: `consent.ts`, `theme.ts` y `Analytics.tsx` |
+
+Los claims de la tabla anterior que seguían sin verificar **no se han reforzado**.

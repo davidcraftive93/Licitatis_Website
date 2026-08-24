@@ -299,16 +299,19 @@ export function DemoForm() {
         />
       </div>
 
-      {/* Información básica de protección de datos (primera capa). El detalle y la
-          base jurídica definitiva están en la política de privacidad (pendiente de
-          revisión legal). El consentimiento de marketing es aparte y opcional. */}
+      {/* Información básica de protección de datos: PRIMERA CAPA. Debe caber de un
+          vistazo y decir lo esencial (responsable, finalidad, base, destinatario,
+          derechos); el detalle vive en la política de privacidad, que es la segunda
+          capa. El consentimiento de marketing va aparte y es opcional. */}
       <div className="rounded-xl border border-hairline bg-surface/70 p-3.5 text-xs leading-relaxed text-fg">
         <p>
           <strong className="font-semibold text-fg">Responsable:</strong> {company.name} (titular de
           la marca LICITATIS). <strong className="font-semibold text-fg">Finalidad:</strong>{" "}
           gestionar tu solicitud de plaza en la beta y ponernos en contacto contigo.{" "}
-          <strong className="font-semibold text-fg">Destinatario:</strong> HubSpot (proveedor que
-          usamos para gestionar contactos comerciales).{" "}
+          <strong className="font-semibold text-fg">Base:</strong> medidas precontractuales a
+          petición tuya; el envío de comunicaciones comerciales, tu consentimiento (casilla
+          opcional). <strong className="font-semibold text-fg">Destinatario:</strong> HubSpot, Inc.
+          (gestión de contactos comerciales).{" "}
           <strong className="font-semibold text-fg">Derechos:</strong> acceso, rectificación y
           supresión, entre otros, escribiendo a{" "}
           <a

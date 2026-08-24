@@ -133,10 +133,11 @@ describe("release gate legal — copy deliberado frente a datos sin resolver", (
     expect(scanText(stripDeliberateCopy(html), PLACEHOLDER_PATTERNS)).toHaveLength(0);
   });
 
-  it("el aviso veraz de revisión jurídica no cuenta como placeholder", () => {
-    const html = "<p>… se implementa en la propia app y está pendiente de revisión jurídica.</p>";
-    expect(scanText(html, PLACEHOLDER_PATTERNS)).not.toHaveLength(0);
-    expect(scanText(stripDeliberateCopy(html), PLACEHOLDER_PATTERNS)).toHaveLength(0);
+  it("«pendiente de revisión jurídica» vuelve a bloquear", () => {
+    // Fue una excepción mientras esa frase estaba en la portada. Al desaparecer del
+    // contenido se retiró: si alguien la reintroduce, es un dato sin resolver otra vez.
+    const html = "<p>La base jurídica está pendiente de revisión jurídica.</p>";
+    expect(scanText(stripDeliberateCopy(html), PLACEHOLDER_PATTERNS).length).toBeGreaterThan(0);
   });
 
   it("un dato fiscal sin resolver sigue bloqueando aunque se limpie el copy deliberado", () => {

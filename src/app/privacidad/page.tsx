@@ -6,8 +6,9 @@ import { company, brand, legalContact, legalRefs, legalDocs } from "@/lib/legal"
 export const metadata: Metadata = {
   title: "Política de privacidad",
   description: "Cómo trata LICITATIS los datos personales de quienes solicitan una demostración.",
-  // noindex mientras el contenido tenga placeholders sin resolver (revisión legal pendiente).
-  robots: { index: false, follow: false },
+  // Indexable: el noindex existía porque el documento tenía datos sin resolver, y ya
+  // no los tiene. Un aviso legal que no se puede encontrar cumple peor su función.
+  robots: { index: true, follow: true },
   alternates: { canonical: "/privacidad" },
 };
 
@@ -46,28 +47,75 @@ export default function PrivacidadPage() {
 
       <h2>3. Legitimación</h2>
       <p>
-        La base jurídica para gestionar tu solicitud es tu <strong>consentimiento</strong>, prestado
-        al enviar el formulario y aceptar esta política, y/o la aplicación de medidas
-        precontractuales a petición tuya. El envío de comunicaciones comerciales se basa en tu
-        consentimiento específico (casilla opcional). Podrás retirar cualquier consentimiento en
-        cualquier momento. La determinación definitiva de la base jurídica queda pendiente de
-        revisión profesional.
+        Tratamos tus datos para gestionar tu solicitud sobre la base de la{" "}
+        <strong>aplicación de medidas precontractuales</strong> a petición tuya (artículo 6.1.b del
+        RGPD): nos escribes para pedir plaza en el programa y necesitamos tus datos para atenderte.
+      </p>
+      <p>
+        El envío de <strong>comunicaciones comerciales</strong> tiene base distinta: tu{" "}
+        <strong>consentimiento</strong> específico (artículo 6.1.a del RGPD), que prestas marcando
+        una casilla opcional, nunca premarcada, y que puedes retirar cuando quieras sin que ello
+        afecte a la gestión de tu solicitud ni a la licitud del tratamiento anterior a la retirada.
+      </p>
+      <p>
+        Facilitar los datos del formulario es voluntario, pero sin los marcados como obligatorios no
+        podemos atender la solicitud.
       </p>
 
-      <h2>4. Destinatarios y encargados</h2>
+      <h2>4. Destinatarios y transferencias internacionales</h2>
       <p>
-        Para gestionar los contactos comerciales utilizamos <strong>HubSpot</strong> como
-        proveedor/encargado del tratamiento. La región de alojamiento de los datos y las garantías
-        de una eventual transferencia internacional (por ejemplo, cláusulas contractuales tipo o el
-        marco de adecuación aplicable) deben confirmarse y detallarse aquí. Puedes consultar la
-        lista de subencargados en la página correspondiente cuando esté disponible.
+        Utilizamos <strong>HubSpot, Inc.</strong> (25 First Street, Cambridge, MA 02141, Estados
+        Unidos) como encargado del tratamiento para gestionar los contactos comerciales: trata tus
+        datos únicamente siguiendo nuestras instrucciones y para las finalidades del apartado 2, con
+        el contrato de encargo que la propia HubSpot publica en su{" "}
+        <a href="https://legal.hubspot.com/dpa" target="_blank" rel="noopener noreferrer">
+          Acuerdo de Tratamiento de Datos
+        </a>
+        . No cedemos tus datos a nadie más, salvo obligación legal.
+      </p>
+      <p>
+        HubSpot ofrece alojamiento en la Unión Europea (centro de datos de Fráncfort, Alemania) y
+        también en Estados Unidos; la región concreta depende de la configuración de la cuenta. Para
+        los tratamientos que impliquen acceso desde Estados Unidos, HubSpot, Inc. está{" "}
+        <strong>certificada en el EU-US Data Privacy Framework</strong> —marco declarado adecuado
+        por la Comisión Europea mediante la Decisión de Ejecución (UE) 2023/1795— y aplica además
+        las <strong>cláusulas contractuales tipo</strong> aprobadas por la Comisión para las
+        transferencias entre sus sociedades.
+      </p>
+      <p>
+        Puedes consultar el detalle en la <a href="/subencargados">lista de subencargados</a> y en
+        la{" "}
+        <a
+          href="https://legal.hubspot.com/privacy-policy"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          política de privacidad de HubSpot
+        </a>
+        .
       </p>
 
       <h2>5. Conservación</h2>
+      <p>Conservamos los datos el tiempo estrictamente necesario para cada finalidad:</p>
+      <ul>
+        <li>
+          <strong>Solicitud de plaza en el programa:</strong> mientras dure la relación y, si no
+          llega a haberla, hasta <strong>12 meses</strong> desde el último contacto, plazo en el que
+          una conversación comercial puede razonablemente retomarse.
+        </li>
+        <li>
+          <strong>Comunicaciones comerciales:</strong> hasta que retires tu consentimiento o
+          solicites la baja.
+        </li>
+        <li>
+          <strong>Prueba del consentimiento y de la baja:</strong> mientras puedan derivarse
+          responsabilidades, con un máximo de <strong>3 años</strong>, que es el plazo general de
+          prescripción de las acciones personales del artículo 1964.2 del Código Civil.
+        </li>
+      </ul>
       <p>
-        Conservaremos tus datos mientras exista interés mutuo o hasta que solicites su supresión, y
-        durante los plazos legalmente exigibles. Los plazos concretos quedan pendientes de definir
-        en la revisión profesional.
+        Cumplidos esos plazos, los datos se suprimen o se anonimizan. Si nos pides antes la
+        supresión, la atendemos salvo que debamos conservarlos por una obligación legal.
       </p>
 
       <h2>6. Derechos</h2>
