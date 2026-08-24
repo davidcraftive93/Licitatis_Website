@@ -21,9 +21,10 @@ omitir las que sí.
 | RGPD, art. 28 | 25/05/2018 | Contrato de encargo con HubSpot; el nuestro con clientes, en `/acuerdo-tratamiento-datos` |
 | RGPD, arts. 44-46 | 25/05/2018 | Base de la transferencia a HubSpot: adecuación (DPF) y cláusulas contractuales tipo |
 | **Decisión (UE) 2023/1795** (EU-US Data Privacy Framework) | 10/07/2023 | Marco de adecuación vigente. El Tribunal General **desestimó** el recurso Latombe el 03/09/2025; queda recurso pendiente ante el TJUE (C-703/25 P) |
-| **Guía de cookies de la AEPD**, mayo 2024 | 11/01/2024 | Rechazar tan fácil como aceptar, granularidad, información por capas, retirada sencilla |
+| **Guía de cookies de la AEPD** (versión vigente; actualizada tras las directrices del CEPD) | exigible desde 11/01/2024 | Rechazar tan fácil como aceptar, granularidad, información por capas, retirada sencilla |
 | **Directrices 2/2023 del CEPD** (ámbito técnico del art. 5.3 ePrivacy) | 07/10/2024 | El almacenamiento local (p. ej. la preferencia de tema) entra en el mismo régimen que las cookies |
 | **Reglamento de IA** (UE) 2024/1689, modificado por el **(UE) 2026/1744** | 02/08/2026 | Aplicable ya. Sus deberes de transparencia operan **en la aplicación**, no en esta web |
+| **Data Act** (UE) 2023/2854, art. 28 | 12/09/2025 | **Publicar en la web** la jurisdicción de la infraestructura y las medidas frente a accesos o transferencias de datos no personales contrarios al Derecho de la Unión. Publicado en `/seguridad-y-privacidad` |
 
 ## 2. Lo que NO aplica (y conviene no copiar de plantillas)
 
@@ -57,6 +58,35 @@ se cumplen **dentro de la app**:
 - Alfabetización en IA del equipo (art. 4): registro interno, no contenido de web.
 
 Detalle y traspaso: `docs/SAAS-AI-TRANSPARENCY-HANDOFF.md`.
+
+## 3.b Matices que conviene tener anotados
+
+**El marcado de contenido generado tiene reloj.** El art. 50.2 del Reglamento de IA concede un
+margen a los sistemas ya en el mercado antes del 02/08/2026: hasta el **2 de diciembre de 2026**
+para marcar las salidas de forma legible por máquina. Afecta a la app, no a esta web.
+
+**La excepción B2B del art. 50.2 no sirve aquí.** Exige, entre otras condiciones, que la salida
+**no esté destinada a salir de la organización**. Una memoria técnica se presenta al órgano de
+contratación: sale por diseño. Conviene dejarlo documentado por escrito, porque es justo el
+argumento que puede llevar a no hacer nada antes de diciembre.
+
+**Traducir no obliga a marcar; resumir sí.** Las directrices definitivas de la Comisión (20/07/2026)
+movieron la traducción automática al grupo de «edición estándar». Los resúmenes de pliegos y los
+borradores de memoria siguen exigiendo marcado.
+
+**En España aún no hay régimen sancionador del Reglamento de IA.** El proyecto de ley orgánica que
+designa a la AESIA y fija los tramos sigue en tramitación a 25/08/2026. La obligación es exigible;
+la sanción nacional, todavía sin cauce. El riesgo inmediato de la web es de práctica comercial y
+contractual, no de multa.
+
+**El Data Privacy Framework está vigente, pero vigilado.** Además del recurso pendiente ante el
+TJUE (C-703/25 P), la sentencia del Tribunal Supremo de EE. UU. de 29/06/2026 sobre la destitución
+de comisionados de la FTC afecta a una de las premisas de la decisión de adecuación. Por eso los
+textos **no se apoyan solo en el DPF**: citan también las cláusulas contractuales tipo, que
+seguirían operando si la adecuación decayera.
+
+**El Ómnibus de datos (cookies) es todavía una propuesta.** No hay que adaptar nada del banner:
+cualquier cambio en esa dirección hoy sería prematuro.
 
 ## 4. Decisiones tomadas al cerrar los textos
 

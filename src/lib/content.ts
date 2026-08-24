@@ -184,7 +184,7 @@ export const aiTransparency = {
       text: "LICITATIS no adjudica ni excluye por ti, y no garantiza la obtención de contratos. Prepara y controla; tú decides y presentas.",
     },
   ] as AiPoint[],
-  note: "El Reglamento (UE) 2024/1689 de inteligencia artificial, modificado por el Reglamento (UE) 2026/1744, es aplicable desde el 2 de agosto de 2026. Sus obligaciones de transparencia operan dentro de la aplicación —avisar de que se está ante un sistema de IA y marcar el contenido que genera—, no en esta web comercial, que no ejecuta IA. Esta sección describe cómo trabajamos; no afirma un cumplimiento normativo.",
+  note: "El Reglamento (UE) 2024/1689 de inteligencia artificial, modificado por el Reglamento (UE) 2026/1744, es aplicable desde el 2 de agosto de 2026. Lo que exige en materia de transparencia —avisar de que se está ante un sistema de IA y marcar el contenido generado— se dirige a la aplicación, no a esta web comercial, que no ejecuta IA. Esta sección describe cómo trabajamos; no afirma un cumplimiento normativo.",
 };
 
 /* --------------------------------------------------------------- Funcionalidades (§8) */

@@ -62,7 +62,36 @@ export default function SeguridadPage() {
         <a href="/subencargados">subencargados</a>.
       </p>
 
-      <h2>5. Contacto de seguridad</h2>
+      <h2>5. Jurisdicción de la infraestructura y datos no personales</h2>
+      <p>
+        El artículo 28 del Reglamento (UE) 2023/2854 (Data Act), aplicable desde el 12 de septiembre
+        de 2025, pide a los proveedores de servicios de tratamiento de datos que publiquen esta
+        información. Se publica aquí:
+      </p>
+      <ul>
+        <li>
+          <strong>Jurisdicción de la infraestructura:</strong> la web se sirve desde infraestructura
+          de Hostinger en la Unión Europea (servidor en Francia). La gestión de contactos
+          comerciales se apoya en HubSpot, sujeta a la jurisdicción de Estados Unidos, con
+          alojamiento en la Unión Europea o en Estados Unidos según la configuración de la cuenta.
+        </li>
+        <li>
+          <strong>
+            Medidas frente a accesos o transferencias contrarios al Derecho de la Unión:
+          </strong>{" "}
+          se contrata únicamente con proveedores que asumen por contrato obligaciones de
+          confidencialidad y de notificación de requerimientos de autoridades; se limita el dato
+          entregado a cada proveedor al mínimo necesario para su función; las transferencias fuera
+          del Espacio Económico Europeo se amparan en una decisión de adecuación o en cláusulas
+          contractuales tipo; y se revisa la lista de proveedores al incorporar o sustituir alguno.
+        </li>
+      </ul>
+      <p>
+        Si en algún momento un proveedor cambia de jurisdicción o de región de alojamiento, se
+        actualizará esta página.
+      </p>
+
+      <h2>6. Contacto de seguridad</h2>
       <p>
         Si detectas un problema de seguridad, escríbenos a {legalContact.security} con el asunto
         «Seguridad». Te confirmaremos la recepción y te mantendremos informado del estado. Te
